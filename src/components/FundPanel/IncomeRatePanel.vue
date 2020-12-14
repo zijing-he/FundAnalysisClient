@@ -52,7 +52,7 @@ function drawIncome (legendData, xData, series, isFirstDraw) {
       myChart.setOption(option)
       myChart.on('datazoom', function (e) {
         let stateDate = xData[parseInt(xData.length * e.start / 100)]
-        let echartsData = fundTool.incomeRate2echartsData(fundIncomeRate, stateDate)
+        let echartsData = fundTool.fundNav2echartsData(fundNav, stateDate)
         let _option = myChart.getOption()
         _option.series = echartsData.series
         myChart.setOption(_option, true)
