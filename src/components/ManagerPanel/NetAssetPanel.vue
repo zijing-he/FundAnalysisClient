@@ -2,7 +2,7 @@
     <div>
         <h2>基金经理基金规模图</h2>
         <div>
-            <label>基金经理编号<input id="managerId" type="text" defaultValue="101001596"></label>
+            <label>基金经理编号<input id="managerId-netAsset" type="text" defaultValue="101001596"></label>
             <label>开始时间<input type="startDate" value="20130101"></label>
             <button @click="draw" type="button">查询</button>
         </div>
@@ -73,7 +73,7 @@ export default {
     methods: {
         draw () {
             this.$http.post(this.$remoteIP + 'get_manager_asset_value', {
-                'm_ids': [$('#managerId').val()]
+                'm_ids': [$('#managerId-netAsset').val()]
             }).then(response => {
                 // debugger
                 managerFundNav = response.data

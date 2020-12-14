@@ -72,8 +72,6 @@ export default {
             this.$http.post(this.$remoteIP + 'get_market_sector'
             ).then(response => {
                 sectorValues = response.data
-                            console.log("market",sectorValues)
-
                 let echartData = this.$fundTool.marketSector2echartsData(sectorValues)
                 drawNavDistribution(echartData['timelineData'], echartData['xData'], echartData['seriesData'])
             })

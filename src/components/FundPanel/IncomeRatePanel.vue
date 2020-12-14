@@ -1,12 +1,11 @@
 <template>
     <div>
-        <h2>基金经理累计净值图</h2>
+        <h2>基金收益率变化图</h2>
         <div>
-            <label>基金经理编号<input id="managerId-accNet" type="text" defaultValue="101001596"></label>
-            <label>开始时间<input type="startDate" value="20130101"></label>
-            <button @click="drawAccNet" type="button">查询累计单位净值</button>
+            <label>基金编号<input id="fundId-incomeRate" type="text" defaultValue="510310"></label>
+            <button @click="draw" type="button">查询</button>
         </div>
-        <div id="managerAccNet" style="width: 50vm; height: 300px"></div>
+        <div id="fundIncomeRate" style="width: 50vm; height: 300px"></div>
     </div>
 </template>
 
@@ -15,12 +14,12 @@ import $ from 'jquery'
 
 let myChart
 let fundTool
-let managerFundNav
+let fundNav
 let isFirstDraw = true
 
-function drawNav (legendData, xData, series, isFirstDraw) {
-    if (isFirstDraw) {
-      myChart = myChart.init($('#managerAccNet').get(0))
+function drawIncome (legendData, xData, series, isFirstDraw) {
+    if (isFirstDraw){
+      myChart = myChart.init($('#fundIncomeRate').get(0))
       let option = {
         toolbox: {
           orient: 'vertical',
@@ -45,7 +44,7 @@ function drawNav (legendData, xData, series, isFirstDraw) {
         },
         xAxis: {data: xData},
         yAxis: {
-          name: '累计单位净值',
+          name: '收益率',
           splitLine: {show: false}
         },
         series: series
@@ -53,9 +52,9 @@ function drawNav (legendData, xData, series, isFirstDraw) {
       myChart.setOption(option)
       myChart.on('datazoom', function (e) {
         let stateDate = xData[parseInt(xData.length * e.start / 100)]
-        let echartData = fundTool.nav(managerFundNav, stateDate)
+        let echartsData = fundTool.incomeRate2echartsData(fundIncomeRate, stateDate)
         let _option = myChart.getOption()
-        _option.series = echartData.series
+        _option.series = echartsData.series
         myChart.setOption(_option, true)
       })
     }else {
@@ -65,22 +64,22 @@ function drawNav (legendData, xData, series, isFirstDraw) {
       option.series = series;
       myChart.setOption(option);
     }
-
 }
 
 export default {
     name: '',
     methods: {
-        drawAccNet () {
-            this.$http.post(this.$remoteIP + 'get_manager_acc_net', {
-                'm_ids': [$('#managerId-accNet').val()]
-            }).then(response => {
-                managerFundNav = response.data
-                let echartsData = this.$fundTool.nav(response.data, $('#startDate').val())
-                drawNav(echartsData['legendData'], echartsData['xData'], echartsData['series'], isFirstDraw)
-                if(isFirstDraw) isFirstDraw = false
-            })
-        }
+      draw () {
+        this.$http.post(this.$remoteIP + 'get_fund_nav', {
+          'f_ids': [$('#fundId-incomeRate').val()]
+        }).then(response => {
+          fundNav = response.data
+          let firstStartDate = Object.keys(Object.values(fundNav)[0])[0]
+          let echartsData = this.$fundTool.fundNav2echartsData(fundNav, firstStartDate)
+          drawIncome(echartsData['legendData'], echartsData['xData'], echartsData['series'], isFirstDraw)
+          if (isFirstDraw) isFirstDraw = false
+        })
+      }
     },
     data () {
         return {}

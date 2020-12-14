@@ -2,7 +2,7 @@
     <div>
         <h2>基金经理单位净值图</h2>
         <div>
-            <label>基金经理编号<input id="managerId" type="text" defaultValue="101001596"></label>
+            <label>基金经理编号<input id="managerId-unitNet" type="text" defaultValue="101001596"></label>
             <label>开始时间<input type="startDate" value="20130101"></label>
             <button @click="drawUnitNet" type="button">查询单位净值</button>
         </div>
@@ -72,7 +72,7 @@ export default {
     methods: {
         drawUnitNet () {
             this.$http.post(this.$remoteIP + 'get_manager_nav', {
-                'm_ids': [$('#managerId').val()]
+                'm_ids': [$('#managerId-unitNet').val()]
             }).then(response => {
                 managerFundNav = response.data
                 let echartsData = this.$fundTool.nav(response.data, $('#startDate').val())

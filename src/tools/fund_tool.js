@@ -1,5 +1,5 @@
 export default {
-    nav2income: (_json, startDate) => {
+    managerNav2income: (_json, startDate) => {
         let legendData = []
         let xData = []
         let series = []
@@ -147,5 +147,32 @@ export default {
           seriesData.push({value:data[key],name:key})
         }
         return {'legendData':legendData, 'seriesData':seriesData}
+      },
+
+    fundNav2echartsData: (_json, firstStartDate) => {
+      let legendData = [Object.keys(_json)[0]]
+      let xData = Object.keys(Object.values(_json)[0])
+      xData = [...new Set(xData.sort())]
+      let series = []
+      for (let _id in _json) {
+          let yData = []
+          let firstNav
+          for (let datetime of xData) {
+            if (parseInt(datetime) < parseInt(firstStartDate)) {
+              yData.push(undefined)
+              continue
+            }
+            if (Object.keys(_json[_id]).indexOf(datetime) != -1) {
+              if (firstNav === undefined) {
+                firstNav = _json[_id][datetime]
+              }
+              yData.push((_json[_id][datetime] / firstNav - 1) * 100)
+            } else {
+              yData.push(undefined)
+            }
+          }
+          series.push({name: _id, type: 'line', data: [...yData]})
       }
+      return {'legendData': legendData, 'xData': xData, 'series': series}
+    }
 }

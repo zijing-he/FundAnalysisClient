@@ -2,7 +2,7 @@
     <div>
         <h2>基金持仓的行业规模图</h2>
         <div>
-          <label>基金编号<input id="fundId" type="text" defaultValue="510310"></label>
+          <label>基金编号<input id="fundId-sectorValue" type="text" defaultValue="510310"></label>
           <button @click="draw" type="button">查询</button>
         </div>
         <div id="fundSectorValue" style="width: 50vm; height: 300px"></div>
@@ -65,7 +65,8 @@ function drawSectorValues (timelineData, xData, seriesData, isFirstDraw) {
       myChart.setOption(option)
     }else {
       let option = myChart.getOption();
-      console.log("option.baseOption",option.baseOption.timeline.data)
+      console.log("option.baseOption",option.timeline)
+      option.timeline[0].data = timelineData
       option.xAxis[0].data = xData;
       option.options = seriesData;
       myChart.setOption(option);
@@ -78,10 +79,9 @@ export default {
     methods: {
         draw () {
             this.$http.post(this.$remoteIP + 'get_fund_sector', {
-                'f_ids': [$('#fundId').val()]
+                'f_ids': [$('#fundId-sectorValue').val()]
             }).then(response => {
                 sectorValues = response.data
-                            console.log("fund",Object.values(sectorValues)[0])
                 let echartsData = this.$fundTool.marketSector2echartsData(Object.values(sectorValues)[0])
                 drawSectorValues(echartsData['xData'], echartsData['timelineData'], echartsData['seriesData'], isFirstDraw)
                 if(isFirstDraw) isFirstDraw = false

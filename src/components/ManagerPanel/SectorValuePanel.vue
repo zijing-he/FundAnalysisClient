@@ -2,7 +2,7 @@
     <div>
         <h2>基金经理基金的行业市值分布图</h2>
         <div>
-            <label>基金经理编号<input id="managerId" type="text" defaultValue="101001596"></label>
+            <label>基金经理编号<input id="managerId-sectorValue" type="text" defaultValue="101001596"></label>
             <button @click="draw" type="button">查询</button>
         </div>
         <div id="managerSectorValue" style="width: 50vm; height: 300px"></div>
@@ -73,7 +73,7 @@ export default {
     methods: {
         draw () {
             this.$http.post(this.$remoteIP + 'get_manager_sector', {
-                'm_ids': [$('#managerId').val()]
+                'm_ids': [$('#managerId-sectorValue').val()]
             }).then(response => {
                 managerSectorValues = response.data
                 console.log(managerSectorValues)

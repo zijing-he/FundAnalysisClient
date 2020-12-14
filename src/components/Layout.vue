@@ -28,6 +28,9 @@
         <div id="fundSectorValuePanel">
           <FundSectorValuePanel/>
         </div>
+        <div id="fundIncomeRatePanel">
+          <FundIncomeRatePanel/>
+        </div>
     </div>
 </template>
 
@@ -41,15 +44,19 @@ import ManagerAccNetPanel from './ManagerPanel/AccNetPanel'
 import ManagerNetAssetPanel from './ManagerPanel/NetAssetPanel'
 import ManagerSectorValuePanel from './ManagerPanel/SectorValuePanel'
 import FundSectorValuePanel from './FundPanel/SectorValuePanel'
-
+import FundIncomeRatePanel from './FundPanel/IncomeRatePanel'
+// let manage_id = $('#manageID').val()
 export default {
     name: 'layout',
+    methods :{
+
+    },
     data () {
         return {}
     },
     components: {
         MarketNavDistributionPanel, MarketAssetDistributionPanel, MarketSectorValuePanel, ManagerIncomePanel, ManagerUnitNetPanel, ManagerAccNetPanel, ManagerNetAssetPanel, ManagerSectorValuePanel,
-      FundSectorValuePanel
+      FundSectorValuePanel,FundIncomeRatePanel
     },
     mounted () {
     }
