@@ -2,8 +2,8 @@
     <div>
         <h2>基金经理行业市值分布图</h2>
 <!--        <div>-->
-<!--            <label>基金经理编号<input id="managerId-sectorValue" type="text" defaultValue="101001596"></label>-->
-<!--            <button @click="draw" type="button">查询</button>-->
+<!--            <label>基金经理编号<input id="managerId-sectorValue" type="text" defaultValue="101001715" ref="managerIdSectorValue"></label>-->
+<!--            <button @click="()=>draw(this.$refs.managerIdSectorValue.value)" type="button">查询</button>-->
 <!--        </div>-->
         <div id="managerSectorValue" style="width: 50vm; height: 300px"></div>
     </div>
@@ -17,52 +17,61 @@ let fundTool
 let managerSectorValues
 let isFirstDraw = true
 
-function drawSectorValues (legendData, seriesData) {
+function drawSectorValues (legendData, timelineData, xData, seriesData, optionsData, isFirstDraw) {
     if (isFirstDraw) {
       myChart = myChart.init($('#managerSectorValue').get(0))
       let option = {
-        title: {
-          text: '',
-          subtext: ''
+        baseOption: {
+          timeline: {
+            axisType: 'category',
+            // realtime: false,
+            // loop: false,
+            autoPlay: true,
+            playInterval: 1000,
+
+            data: timelineData,
+            label: {
+              // formatter: function (s) {
+              //   return (new Date(s)).getFullYear()
+              // }
+            }
+          },
+          tooltip: {},
+          legend: {
+            left: 'right',
+            data: legendData
+          },
+          calculable: true,
+          grid: {
+            top: 80,
+            bottom: 100
+          },
+          xAxis: [
+            {
+              'type': 'category',
+              'axisLabel': {'interval': 0},
+              data: xData,
+              splitLine: {show: false}
+            }
+          ],
+          yAxis: [
+            {
+              type: 'value',
+              name: '规模（元）',
+            }
+          ],
+          series: seriesData
         },
-        tooltip: {
-          trigger: 'item',
-          formatter: '{a} <br/>{b} : {c} ({d}%)'
-        },
-        legend: {
-          left: 'center',
-          data: legendData
-        },
-        toolbox: {
-          show: true,
-          feature: {
-            mark: {show: true},
-            dataView: {show: true, readOnly: false},
-            magicType: {
-              show: true,
-              type: ['pie', 'funnel']
-            },
-            restore: {show: true},
-            saveAsImage: {show: true}
-          }
-        },
-        series: [
-          {
-            name: '',
-            type: 'pie',
-            radius: [30, 110],
-            center: ['50%', '50%'],
-            top: '20%',
-            roseType: 'area',
-            data: seriesData
-          }
-        ]
+        options: optionsData
       }
       myChart.setOption(option)
     }else {
       let option = myChart.getOption();
       option.legend[0].data = legendData;
+      option.timeline[0].data = timelineData;
+      option.xAxis[0].data = xData;
       option.series[0].data = seriesData;
+      option.options = optionsData;
       myChart.setOption(option);
     }
 
@@ -77,13 +86,13 @@ export default {
             }).then(response => {
                 managerSectorValues = response.data
                 let echartsData = this.$fundTool.managerSector2echartsData(managerSectorValues)
-                drawSectorValues(echartsData['legendData'], echartsData['seriesData'], isFirstDraw)
+                drawSectorValues(echartsData['legendData'], echartsData['timelineData'], echartsData['xData'], echartsData['seriesData'], echartsData['optionsData'], isFirstDraw)
                 if(isFirstDraw) isFirstDraw = false
             })
         },
         monitoring () { // 监听事件
-            this.$on('childMethod', (managerID) => {
-              this.draw(managerID)
+            this.$on('childMethod', (res) => {
+              this.draw(res)
           })
         }
     },
