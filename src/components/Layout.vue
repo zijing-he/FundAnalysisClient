@@ -10,41 +10,22 @@
         <div id="marketSectorValuePanel">
           <MarketSectorValuePanel/>
         </div>
-        <div id="manageIncomePanel">
-            <ManagerIncomePanel/>
+        <div id="managerLayout">
+          <ManagerLayout/>
         </div>
-        <div id="managerUnitNetPanel">
-            <ManagerUnitNetPanel/>
-        </div>
-        <div id="managerAccNetPanel">
-            <ManagerAccNetPanel/>
-        </div>
-        <div id="managerNetAssetPanel">
-            <ManagerNetAssetPanel/>
-        </div>
-        <div id="managerSectorValuePanel">
-            <ManagerSectorValuePanel/>
-        </div>
-        <div id="fundSectorValuePanel">
-          <FundSectorValuePanel/>
-        </div>
-        <div id="fundIncomeRatePanel">
-          <FundIncomeRatePanel/>
+        <div id="fundLayout">
+          <FundLayout/>
         </div>
     </div>
 </template>
 
 <script>
-import MarketNavDistributionPanel from './MarketPanel/NavDistributionPanel'
-import MarketAssetDistributionPanel from './MarketPanel/AssetDisPanel'
-import MarketSectorValuePanel from './MarketPanel/SectorValuePanel'
-import ManagerIncomePanel from './ManagerPanel/IncomePanel'
-import ManagerUnitNetPanel from './ManagerPanel/UnitNetPanel'
-import ManagerAccNetPanel from './ManagerPanel/AccNetPanel'
-import ManagerNetAssetPanel from './ManagerPanel/NetAssetPanel'
-import ManagerSectorValuePanel from './ManagerPanel/SectorValuePanel'
-import FundSectorValuePanel from './FundPanel/SectorValuePanel'
-import FundIncomeRatePanel from './FundPanel/IncomeRatePanel'
+import MarketNavDistributionPanel from './Market/NavDistributionPanel'
+import MarketAssetDistributionPanel from './Market/AssetDisPanel'
+import MarketSectorValuePanel from './Market/SectorValuePanel'
+import ManagerLayout from './Manager/ManagerLayout'
+import FundLayout from './Fund/FundLayout'
+
 // let manage_id = $('#manageID').val()
 export default {
     name: 'layout',
@@ -55,8 +36,8 @@ export default {
         return {}
     },
     components: {
-        MarketNavDistributionPanel, MarketAssetDistributionPanel, MarketSectorValuePanel, ManagerIncomePanel, ManagerUnitNetPanel, ManagerAccNetPanel, ManagerNetAssetPanel, ManagerSectorValuePanel,
-      FundSectorValuePanel,FundIncomeRatePanel
+        MarketNavDistributionPanel, MarketAssetDistributionPanel, MarketSectorValuePanel,
+      ManagerLayout, FundLayout
     },
     mounted () {
     }

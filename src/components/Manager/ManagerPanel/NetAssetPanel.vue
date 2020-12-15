@@ -1,12 +1,11 @@
 <template>
     <div>
-        <h2>基金经理单位净值图</h2>
-        <div>
-            <label>基金经理编号<input id="managerId-unitNet" type="text" defaultValue="101001596"></label>
-            <label>开始时间<input type="startDate" value="20130101"></label>
-            <button @click="drawUnitNet" type="button">查询单位净值</button>
-        </div>
-        <div id="managerUnitNet" style="width: 50vm; height: 300px"></div>
+        <h2>基金经理基金规模图</h2>
+<!--        <div>-->
+<!--            <label>基金经理编号<input id="managerId-netAsset" type="text" defaultValue="101001715" ref="managerIdNetAsset"></label>-->
+<!--            <button @click="()=>draw(this.$refs.managerIdNetAsset.value)" type="button">查询</button>-->
+<!--        </div>-->
+        <div id="managerAsset" style="width: 50vm; height: 300px"></div>
     </div>
 </template>
 
@@ -18,9 +17,9 @@ let fundTool
 let managerFundNav
 let isFirstDraw = true
 
-function drawNav (legendData, xData, series) {
+function drawNetAsset (legendData, xData, series) {
     if (isFirstDraw) {
-      myChart = myChart.init($('#managerUnitNet').get(0))
+      myChart = myChart.init($('#managerAsset').get(0))
       let option = {
         toolbox: {
           orient: 'vertical',
@@ -45,7 +44,7 @@ function drawNav (legendData, xData, series) {
         },
         xAxis: {data: xData},
         yAxis: {
-          name: '单位净值',
+          name: '规模',
           splitLine: {show: false}
         },
         series: series
@@ -67,18 +66,24 @@ function drawNav (legendData, xData, series) {
     }
 }
 
+
 export default {
     name: '',
     methods: {
-        drawUnitNet () {
-            this.$http.post(this.$remoteIP + 'get_manager_nav', {
-                'm_ids': [$('#managerId-unitNet').val()]
+        draw (managerID) {
+            this.$http.post(this.$remoteIP + 'get_manager_asset_value', {
+                'm_ids': [managerID]
             }).then(response => {
                 managerFundNav = response.data
-                let echartsData = this.$fundTool.nav(response.data, $('#startDate').val())
-                drawNav(echartsData['legendData'], echartsData['xData'], echartsData['series'], isFirstDraw)
+                let echartsData = this.$fundTool.nav(managerFundNav, '19980101')
+                drawNetAsset(echartsData['legendData'], echartsData['xData'], echartsData['series'], isFirstDraw)
                 if(isFirstDraw) isFirstDraw = false
             })
+        },
+        monitoring () { // 监听事件
+            this.$on('childMethod', (managerID) => {
+              this.draw(managerID)
+          })
         }
     },
     data () {
@@ -87,6 +92,7 @@ export default {
     mounted () {
         myChart = this.$chart
         fundTool = this.$fundTool
+        this.monitoring() // 注册监听事件
     }
 }
 </script>

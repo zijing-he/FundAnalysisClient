@@ -1,11 +1,11 @@
 <template>
     <div>
-        <h2>基金收益率变化图</h2>
-        <div>
-            <label>基金编号<input id="fundId-incomeRate" type="text" defaultValue="510310"></label>
-            <button @click="draw" type="button">查询</button>
-        </div>
-        <div id="fundIncomeRate" style="width: 50vm; height: 300px"></div>
+        <h2>基金经理累计净值图</h2>
+<!--        <div>-->
+<!--            <label>基金经理编号<input id="managerId-accNet" type="text" defaultValue="101001715" ref="managerIdAccNet"></label>-->
+<!--            <button @click="()=>draw(this.$refs.managerIdAccNet.value)" type="button">查询</button>-->
+<!--        </div>-->
+        <div id="managerAccNet" style="width: 50vm; height: 300px"></div>
     </div>
 </template>
 
@@ -14,12 +14,12 @@ import $ from 'jquery'
 
 let myChart
 let fundTool
-let fundNav
+let managerFundNav
 let isFirstDraw = true
 
-function drawIncome (legendData, xData, series, isFirstDraw) {
-    if (isFirstDraw){
-      myChart = myChart.init($('#fundIncomeRate').get(0))
+function drawNav (legendData, xData, series, isFirstDraw) {
+    if (isFirstDraw) {
+      myChart = myChart.init($('#managerAccNet').get(0))
       let option = {
         toolbox: {
           orient: 'vertical',
@@ -44,7 +44,7 @@ function drawIncome (legendData, xData, series, isFirstDraw) {
         },
         xAxis: {data: xData},
         yAxis: {
-          name: '收益率',
+          name: '累计单位净值',
           splitLine: {show: false}
         },
         series: series
@@ -52,9 +52,9 @@ function drawIncome (legendData, xData, series, isFirstDraw) {
       myChart.setOption(option)
       myChart.on('datazoom', function (e) {
         let stateDate = xData[parseInt(xData.length * e.start / 100)]
-        let echartsData = fundTool.fundNav2echartsData(fundNav, stateDate)
+        let echartData = fundTool.nav(managerFundNav, stateDate)
         let _option = myChart.getOption()
-        _option.series = echartsData.series
+        _option.series = echartData.series
         myChart.setOption(_option, true)
       })
     }else {
@@ -64,22 +64,27 @@ function drawIncome (legendData, xData, series, isFirstDraw) {
       option.series = series;
       myChart.setOption(option);
     }
+
 }
 
 export default {
     name: '',
     methods: {
-      draw () {
-        this.$http.post(this.$remoteIP + 'get_fund_nav', {
-          'f_ids': [$('#fundId-incomeRate').val()]
-        }).then(response => {
-          fundNav = response.data
-          let firstStartDate = Object.keys(Object.values(fundNav)[0])[0]
-          let echartsData = this.$fundTool.fundNav2echartsData(fundNav, firstStartDate)
-          drawIncome(echartsData['legendData'], echartsData['xData'], echartsData['series'], isFirstDraw)
-          if (isFirstDraw) isFirstDraw = false
-        })
-      }
+        draw (managerID) {
+            this.$http.post(this.$remoteIP + 'get_manager_acc_net', {
+                'm_ids': [managerID]
+            }).then(response => {
+                managerFundNav = response.data
+                let echartsData = this.$fundTool.nav(managerFundNav, '19980101')
+                drawNav(echartsData['legendData'], echartsData['xData'], echartsData['series'], isFirstDraw)
+                if(isFirstDraw) isFirstDraw = false
+            })
+        },
+        monitoring () { // 监听事件
+            this.$on('childMethod', (managerID) => {
+              this.draw(managerID)
+          })
+        }
     },
     data () {
         return {}
@@ -87,6 +92,7 @@ export default {
     mounted () {
         myChart = this.$chart
         fundTool = this.$fundTool
+        this.monitoring() // 注册监听事件
     }
 }
 </script>

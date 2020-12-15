@@ -1,10 +1,10 @@
 <template>
     <div>
-        <h2>基金经理基金的行业市值分布图</h2>
-        <div>
-            <label>基金经理编号<input id="managerId-sectorValue" type="text" defaultValue="101001596"></label>
-            <button @click="draw" type="button">查询</button>
-        </div>
+        <h2>基金经理行业市值分布图</h2>
+<!--        <div>-->
+<!--            <label>基金经理编号<input id="managerId-sectorValue" type="text" defaultValue="101001596"></label>-->
+<!--            <button @click="draw" type="button">查询</button>-->
+<!--        </div>-->
         <div id="managerSectorValue" style="width: 50vm; height: 300px"></div>
     </div>
 </template>
@@ -71,16 +71,20 @@ function drawSectorValues (legendData, seriesData) {
 export default {
     name: '',
     methods: {
-        draw () {
+        draw (managerID) {
             this.$http.post(this.$remoteIP + 'get_manager_sector', {
-                'm_ids': [$('#managerId-sectorValue').val()]
+                'm_ids': [managerID]
             }).then(response => {
                 managerSectorValues = response.data
-                console.log(managerSectorValues)
                 let echartsData = this.$fundTool.managerSector2echartsData(managerSectorValues)
                 drawSectorValues(echartsData['legendData'], echartsData['seriesData'], isFirstDraw)
                 if(isFirstDraw) isFirstDraw = false
             })
+        },
+        monitoring () { // 监听事件
+            this.$on('childMethod', (managerID) => {
+              this.draw(managerID)
+          })
         }
     },
     data () {
@@ -89,6 +93,7 @@ export default {
     mounted () {
         myChart = this.$chart
         fundTool = this.$fundTool
+        this.monitoring() // 注册监听事件
     }
 }
 </script>

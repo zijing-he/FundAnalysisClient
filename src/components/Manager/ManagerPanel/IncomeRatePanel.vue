@@ -1,11 +1,11 @@
 <template>
     <div>
         <h2>基金经理收益图</h2>
-        <div>
-            <label>基金经理编号<input id="managerId-income" type="text" defaultValue="101001596"></label>
-            <label>开始时间<input type="startDate" value="20130101"></label>
-            <button @click="draw" type="button">查询</button>
-        </div>
+<!--        <div>-->
+<!--            <label>基金经理编号<input id="managerId-incomeRate" type="text" defaultValue="101001715" ref="managerIdIncomeRate"></label>-->
+<!--&lt;!&ndash;            <label>开始时间<input id="startDate-incomeRate" defaultValue="20130101" ref="startDateIncomeRate"></label>&ndash;&gt;-->
+<!--            <button @click="()=>draw(this.$refs.managerIdIncomeRate.value)" type="button">查询</button>-->
+<!--        </div>-->
         <div id="managerIncomeRate" style="width: 50vm; height: 300px"></div>
     </div>
 </template>
@@ -18,7 +18,7 @@ let fundTool
 let managerFundNav
 let isFirstDraw = true
 
-function drawIncome (legendData, xData, series, isFirstDraw) {
+function drawIncome(legendData, xData, series, isFirstDraw) {
     if (isFirstDraw){
       myChart = myChart.init($('#managerIncomeRate').get(0))
       let option = {
@@ -52,12 +52,13 @@ function drawIncome (legendData, xData, series, isFirstDraw) {
       }
       myChart.setOption(option)
       myChart.on('datazoom', function (e) {
+        console.log(e.start)
+        console.log(parseInt(xData.length * e.start / 100))
         let stateDate = xData[parseInt(xData.length * e.start / 100)]
-        let echartsData = fundTool.nav2income(managerFundNav, stateDate)
+        let echartsData = fundTool.managerNav2income(managerFundNav, stateDate)
         let _option = myChart.getOption()
         _option.series = echartsData.series
         myChart.setOption(_option, true)
-        console.log(echartsData.series)
         console.log(stateDate)
       })
     }else {
@@ -72,16 +73,20 @@ function drawIncome (legendData, xData, series, isFirstDraw) {
 export default {
     name: '',
     methods: {
-        draw () {
+        draw (managerID) {
             this.$http.post(this.$remoteIP + 'get_manager_nav', {
-                'm_ids': [$('#managerId-income').val()]
+                'm_ids': [managerID]
             }).then(response => {
                 managerFundNav = response.data
-                console.log(managerFundNav)
-                let echartsData = this.$fundTool.managerNav2income(response.data, $('#startDate').val())
+                let echartsData = this.$fundTool.managerNav2income(managerFundNav, '19980101')
                 drawIncome(echartsData['legendData'], echartsData['xData'], echartsData['series'], isFirstDraw)
                 if(isFirstDraw) isFirstDraw = false
             })
+        },
+        monitoring () { // 监听事件
+          this.$on('childMethod', (managerID) => {
+            this.draw(managerID)
+          })
         }
     },
     data () {
@@ -90,6 +95,7 @@ export default {
     mounted () {
         myChart = this.$chart
         fundTool = this.$fundTool
+        this.monitoring() // 注册监听事件
     }
 }
 </script>

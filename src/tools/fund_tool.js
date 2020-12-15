@@ -69,6 +69,7 @@ export default {
         }
         return {'legendData': legendData, 'xData': xData, 'series': series}
     },
+
     nav2seriesData: (_json) =>{
       let seriesData = []
       let month = ['01','02','03','04','05','06','07','08','09','10','11','12']
@@ -89,6 +90,7 @@ export default {
       }
       return seriesData
     },
+
     asset2seriesData: (_json) =>{
       let seriesData = []
       for (let _year in _json){
@@ -109,6 +111,7 @@ export default {
       }
       return seriesData
     },
+
     marketSector2echartsData: (_json) =>{
         let xData = Object.keys(_json)
         let timelineData = []
@@ -139,15 +142,88 @@ export default {
         }
         return {'timelineData':timelineData ,'xData':xData, 'seriesData':seriesData}
       },
-      managerSector2echartsData: (_json) => {
-        let data = Object.values(_json)[0]
-        let legendData = Object.keys(data)
-        let seriesData = []
-        for (let key in data){
-          seriesData.push({value:data[key],name:key})
+
+    managerSector2echartsData: (_json) => {
+      let data = Object.values(_json)[0]
+      let legendData = Object.keys(data)
+      let seriesData = []
+      for (let key in data) {
+        seriesData.push({value: data[key], name: key})
+      }
+      return {'legendData': legendData, 'seriesData': seriesData}
+    },
+    managerSector2echartsDataNew: (_json) => {
+      let timelineData = [] //年
+      timelineData = timelineData.sort()
+      let xData = []
+      let seriesData = []
+      for (let _year in _json) {
+        for (let _fund in _json[_year]) { //
+
+
+          for (let _sector in _json[_year][_fund]) {
+            if (xData.indexOf(_sector) == -1) {
+              xData.push(_sector)
+            }
+          }
         }
-        return {'legendData':legendData, 'seriesData':seriesData}
-      },
+      }
+      for (let year_index in timelineData) {
+        let seriesFundsData = []
+        let _year = timelineData[year_index]
+        let seriesYearData = []
+        for (let _fund in _json[_year]) {   //
+
+          for (let sector_index in xData) {
+            let sector = xData[sector_index]
+            if ((Object.keys(_json[quarter])).indexOf(sector) != -1) {
+              seriesYearData.push(_json[_year][sector])
+            } else {
+              seriesYearData.push(0)
+            }
+          }
+          seriesFundsData.push({data: seriesYearData})
+        }
+        seriesData.push({
+          title: {text: _year + '基金行业规模图'},
+          series: seriesFundsData
+        })
+      }
+
+      return {'timelineData': timelineData, 'xData': xData, 'seriesData': seriesData}
+    },
+
+    fundSector2echartsData: (_json) => {
+      let timelineData = Object.keys(_json)
+      timelineData = timelineData.sort()
+      let xData = []
+      let seriesData = []
+      for (let _year in _json) {
+        for (let _sector in _json[_year]) {
+          if (xData.indexOf(_sector) == -1) {
+              xData.push(_sector)
+          }
+        }
+      }
+      for (let quarter_index in timelineData) {
+        let quarter = timelineData[quarter_index]
+        let seriesYearData = []
+        for (let sector_index in xData) {
+          let sector = xData[sector_index]
+          if ((Object.keys(_json[quarter])).indexOf(sector) != -1) {
+            seriesYearData.push(_json[quarter][sector])
+          } else {
+            seriesYearData.push(0)
+          }
+        }
+        seriesData.push({
+          title: {text: quarter + '基金行业规模图'},
+          series: {data: seriesYearData}
+        })
+      }
+
+      return {'timelineData': timelineData, 'xData': xData, 'seriesData': seriesData}
+    },
 
     fundNav2echartsData: (_json, firstStartDate) => {
       let legendData = [Object.keys(_json)[0]]
