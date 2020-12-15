@@ -2,7 +2,7 @@
     <div>
         <h2>基金经理累计净值图</h2>
         <div>
-            <label>基金经理编号<input id="managerId" type="text" defaultValue="101001596"></label>
+            <label>基金经理编号<input id="managerId" type="text" value="101001596"></label>
             <label>开始时间<input type="startDate" value="20130101"></label>
             <button @click="drawAccNet" type="button">查询累计单位净值</button>
         </div>
