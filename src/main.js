@@ -9,7 +9,7 @@ import fundTool from '@/tools/fund_tool'
 
 Vue.config.productionTip = false
 
-Vue.prototype.$remoteIP = 'http://10.76.0.165:5000/'
+Vue.prototype.$remoteIP = 'http://10.76.0.165:5001/'
 Vue.prototype.$http = axios
 Vue.prototype.$chart = echarts
 Vue.prototype.$fundTool = fundTool

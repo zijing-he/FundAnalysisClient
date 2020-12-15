@@ -1,7 +1,7 @@
 <template>
     <div>
         <h2>市场基金行业规模图</h2>
-        <div id="sectorValue" style="width: 50vm; height: 300px"></div>
+        <div id='sectorValue' style='width: 50vm; height: 300px'></div>
     </div>
 </template>
 
@@ -26,7 +26,7 @@ function drawNavDistribution (timelineData, xData, seriesData) {
 
                 data: timelineData,
                 label: {
-                    formatter: function(s) {
+                    formatter: function (s) {
                         return (new Date(s)).getFullYear()
                     }
                 }
@@ -36,7 +36,7 @@ function drawNavDistribution (timelineData, xData, seriesData) {
             //     left: 'right',
             //     data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
             // },
-            calculable : true,
+            calculable: true,
             grid: {
                 top: 80,
                 bottom: 100
@@ -44,7 +44,7 @@ function drawNavDistribution (timelineData, xData, seriesData) {
             xAxis: [
                 {
                     'type': 'category',
-                    'axisLabel': {'interval':0},
+                    'axisLabel': {'interval': 0},
                     'data': xData,
                     splitLine: {show: false}
                 }
@@ -72,8 +72,6 @@ export default {
             this.$http.post(this.$remoteIP + 'get_market_sector'
             ).then(response => {
                 sectorValues = response.data
-                            console.log("market",sectorValues)
-
                 let echartData = this.$fundTool.marketSector2echartsData(sectorValues)
                 drawNavDistribution(echartData['timelineData'], echartData['xData'], echartData['seriesData'])
             })

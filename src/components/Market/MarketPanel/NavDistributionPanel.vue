@@ -1,7 +1,7 @@
 <template>
     <div>
         <h2>市场基金净值分布图</h2>
-        <div id="navDistribution" style="width: 50vm; height: 300px"></div>
+        <div id='navDistribution' style='width: 50vm; height: 300px'></div>
     </div>
 </template>
 
@@ -26,7 +26,7 @@ function drawNavDistribution (data, seriesData) {
 
                 data: Object.keys(data),
                 label: {
-                    formatter: function(s) {
+                    formatter: function (s) {
                         return (new Date(s)).getFullYear()
                     }
                 }
@@ -39,7 +39,7 @@ function drawNavDistribution (data, seriesData) {
                 left: 'right',
                 data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
             },
-            calculable : true,
+            calculable: true,
             grid: {
                 top: 80,
                 bottom: 100
@@ -47,7 +47,7 @@ function drawNavDistribution (data, seriesData) {
             xAxis: [
                 {
                     'type': 'category',
-                    'axisLabel': {'interval':0},
+                    'axisLabel': {'interval': 0},
                     'data': Object.keys(data['2019']['201901']),
                     splitLine: {show: false}
                 }
@@ -104,5 +104,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>
