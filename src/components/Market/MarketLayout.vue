@@ -1,24 +1,24 @@
 <template>
     <div>
         <h1>基金市场</h1>
+        <UnitNavPanel ref='UnitNavPanel'></UnitNavPanel>
+        <AssetPanel ref='AssetPanel'></AssetPanel>
+        <SectorPanel ref='SectorPanel'></SectorPanel>
     </div>
 </template>
 
 <script>
-import AssetDisPanel from './MarketPanel/AssetDisPanel'
-import UnitNetPanel from './MarketPanel/NavDistributionPanel'
-import SectorValuePanel from './MarketPanel/SectorValuePanel'
+import UnitNavPanel from './MarketPanel/UnitNavPanel'
+import AssetPanel from './MarketPanel/AssetPanel'
+import SectorPanel from './MarketPanel/SectorPanel'
 
 export default {
     name: 'marketLayout',
-    methods: {},
     data () {
         return {}
     },
     components: {
-        AssetDisPanel, UnitNetPanel, SectorValuePanel
-    },
-    mounted () {
+        UnitNavPanel, AssetPanel, SectorPanel
     }
 }
 </script>

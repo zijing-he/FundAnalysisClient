@@ -1,16 +1,16 @@
 <template>
     <div>
-        <h4>基金经理收益图</h4>
-        <div id='managerIncomeRate' style='width: 50vm; height: 300px'></div>
+        <h4>基金经理基金规模图</h4>
+        <div id='managerAsset' style='width: 50vm; height: 300px'></div>
     </div>
 </template>
 
 <script>
-let myChart, fundTool, managerFundNav, layout, isFirstDraw
+let myChart, layout, isFirstDraw
 
-function drawIncome (legendData, xData, series, isFirstDraw) {
+function drawManager (legendData, xData, series, isFirstDraw) {
     if (isFirstDraw) {
-        myChart = myChart.init(document.getElementById('managerIncomeRate'))
+        myChart = myChart.init(document.getElementById('managerAsset'))
         let option = {
             toolbox: {
                 orient: 'vertical',
@@ -25,7 +25,7 @@ function drawIncome (legendData, xData, series, isFirstDraw) {
             dataZoom: [{start: 80}],
             legend: {width: '50%', selector: true, data: legendData},
             xAxis: {data: xData},
-            yAxis: {name: '收益率', splitLine: {show: false}},
+            yAxis: {name: '规模', splitLine: {show: false}},
             series: series
         }
         myChart.setOption(option)
@@ -43,23 +43,20 @@ function drawIncome (legendData, xData, series, isFirstDraw) {
 
 function update (start, end) {
     let _option = myChart.getOption()
-    let echartsData = fundTool.managerNav2income(managerFundNav, start)
-    _option.series = echartsData.series
     _option.dataZoom[0].start = start
     _option.dataZoom[0].end = end
     myChart.setOption(_option, true)
 }
 
 export default {
-    name: 'incomeRatePanel',
+    name: 'managerAssetPanel',
     methods: {
         draw (managerID) {
-            this.$http.post(this.$remoteIP + 'get_manager_nav', {
+            this.$http.post(this.$remoteIP + 'get_manager_asset', {
                 'm_ids': [managerID]
             }).then(response => {
-                managerFundNav = response.data
-                let echartsData = this.$fundTool.managerNav2income(managerFundNav, 0)
-                drawIncome(echartsData['legendData'], echartsData['xData'], echartsData['series'], isFirstDraw)
+                let echartsData = this.$fundTool.json2echartData(response.data)
+                drawManager(echartsData['legendData'], echartsData['xData'], echartsData['series'], isFirstDraw)
                 isFirstDraw = false
             })
         },
@@ -78,7 +75,6 @@ export default {
     mounted () {
         isFirstDraw = true
         myChart = this.$chart
-        fundTool = this.$fundTool
         layout = this.$parent
         this.monitoring() // 注册监听事件
     }

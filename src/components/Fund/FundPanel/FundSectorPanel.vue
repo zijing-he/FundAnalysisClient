@@ -1,40 +1,24 @@
 <template>
     <div>
-        <h2>基金持仓的行业规模图</h2>
-        <!--        <div>-->
-        <!--          <label>基金编号<input id="fundId-sectorValue" type="text" defaultValue="510310" ref="fundIdSectorValue"></label>-->
-        <!--          <button @click="()=>draw(this.$refs.fundIdSectorValue.value)" type="button">查询</button>-->
-        <!--        </div>-->
-        <div id='fundSectorValue' style='width: 50vm; height: 300px'></div>
+        <h4>基金持仓的行业规模图</h4>
+        <div id='fundSector' style='width: 50vm; height: 300px'></div>
     </div>
 </template>
 
 <script>
-import $ from 'jquery'
-
-let myChart
-let fundTool
-let sectorValues
-let isFirstDraw = true
+let myChart, layout, isFirstDraw
 
 function drawSectorValues (timelineData, xData, seriesData, isFirstDraw) {
     if (isFirstDraw) {
-        myChart = myChart.init($('#fundSectorValue').get(0))
+        myChart = myChart.init(document.getElementById('fundSector'))
         let option = {
             baseOption: {
                 timeline: {
                     axisType: 'category',
-                    // realtime: false,
-                    // loop: false,
                     autoPlay: true,
                     playInterval: 1000,
-
                     data: timelineData,
-                    label: {
-                        // formatter: function (s) {
-                        //   return (new Date(s)).getFullYear()
-                        // }
-                    }
+                    label: {}
                 },
                 tooltip: {},
                 calculable: true,
@@ -55,23 +39,31 @@ function drawSectorValues (timelineData, xData, seriesData, isFirstDraw) {
     }
 }
 
+function update (start, end) {
+    let _option = myChart.getOption()
+    _option.dataZoom[0].start = start
+    _option.dataZoom[0].end = end
+    myChart.setOption(_option, true)
+}
+
 export default {
-    name: 'sectorValuePanel',
+    name: 'fundSectorPanel',
     methods: {
         draw (fundId) {
             this.$http.post(this.$remoteIP + 'get_fund_sector', {
                 'f_ids': [fundId]
             }).then(response => {
-                sectorValues = response.data
-                console.log('Fund sectorValues:', sectorValues)
-                let echartsData = this.$fundTool.fundSector2echartsData(Object.values(sectorValues)[0])
+                let echartsData = this.$fundTool.fundSector2echartsData(Object.values(response.data)[0])
                 drawSectorValues(echartsData['timelineData'], echartsData['xData'], echartsData['seriesData'], isFirstDraw)
-                if (isFirstDraw) isFirstDraw = false
+                isFirstDraw = false
             })
         },
         monitoring () { // 监听事件
-            this.$on('childMethod', (res) => {
-                this.draw(res)
+            this.$on('drawFund', (managerId) => {
+                this.draw(managerId)
+            })
+            this.$on('updateDataZoom', (start, end) => {
+                update(start, end)
             })
         }
     },
@@ -79,8 +71,9 @@ export default {
         return {}
     },
     mounted () {
+        isFirstDraw = true
         myChart = this.$chart
-        fundTool = this.$fundTool
+        layout = this.$parent
         this.monitoring() // 注册监听事件
     }
 }

@@ -138,54 +138,64 @@ export default {
         }
         return {'timelineData': timelineData, 'xData': xData, 'seriesData': seriesData}
     },
-
     managerSector2echartsData: (_json) => {
-        let data = Object.values(_json)[0]
-        let legendData = Object.keys(data)
-        let seriesData = []
-        for (let key in data) {
-            seriesData.push({value: data[key], name: key})
-        }
-        return {'legendData': legendData, 'seriesData': seriesData}
-    },
-    managerSector2echartsDataNew: (_json) => {
-        let timelineData = [] // 年
+        _json = Object.values(_json)[0]
+        let timelineData = Object.keys(_json)
         timelineData = timelineData.sort()
         let xData = []
+        let optionsData = []
+        let legendData = []
         let seriesData = []
-        for (let _year in _json) {
-            for (let _fund in _json[_year]) { //
-                for (let _sector in _json[_year][_fund]) {
+        for (let _quarter in _json) {
+            for (let _fund in _json[_quarter]) {
+                if (legendData.indexOf(_fund) === -1) {
+                    legendData.push(_fund)
+                }
+                for (let _sector in _json[_quarter][_fund]) {
                     if (xData.indexOf(_sector) === -1) {
                         xData.push(_sector)
                     }
                 }
             }
         }
-        for (let year_index in timelineData) {
+        for (let fund_index in legendData) {
+            seriesData.push({name: legendData[fund_index], type: 'bar', stack: '总量'})
+        }
+        for (let quarter_index in timelineData) {
             let seriesFundsData = []
-            let _year = timelineData[year_index]
-            let seriesYearData = []
-            // eslint-disable-next-line no-unused-vars
-            for (let _fund in _json[_year]) { //
-                for (let sector_index in xData) {
-                    let sector = xData[sector_index]
-                    // eslint-disable-next-line no-undef
-                    if ((Object.keys(_json[quarter])).indexOf(sector) !== -1) {
-                        seriesYearData.push(_json[_year][sector])
-                    } else {
+            let _quarter = timelineData[quarter_index]
+            for (let fund_index in legendData) {
+                let _fund = legendData[fund_index]
+                let seriesYearData = []
+                if (_fund in _json[_quarter]) {
+                    for (let sector_index in xData) {
+                        let sector = xData[sector_index]
+                        if ((Object.keys(_json[_quarter][_fund])).indexOf(sector) !== -1) {
+                            seriesYearData.push(_json[_quarter][_fund][sector])
+                        } else {
+                            seriesYearData.push(0)
+                        }
+                    }
+                } else {
+                    // eslint-disable-next-line no-unused-vars
+                    for (let _ in xData) {
                         seriesYearData.push(0)
                     }
                 }
                 seriesFundsData.push({data: seriesYearData})
             }
-            seriesData.push({
-                title: {text: _year + '基金行业规模图'},
+            optionsData.push({
+                title: {text: _quarter + '基金行业规模图'},
                 series: seriesFundsData
             })
         }
-
-        return {'timelineData': timelineData, 'xData': xData, 'seriesData': seriesData}
+        return {
+            'legendData': legendData,
+            'timelineData': timelineData,
+            'xData': xData,
+            'seriesData': seriesData,
+            'optionsData': optionsData
+        }
     },
 
     fundSector2echartsData: (_json) => {
@@ -219,16 +229,17 @@ export default {
         return {'timelineData': timelineData, 'xData': xData, 'seriesData': seriesData}
     },
 
-    fundNav2echartsData: (_json, firstStartDate) => {
+    fundNav2echartsData: (_json, start) => {
         let legendData = [Object.keys(_json)[0]]
         let xData = Object.keys(Object.values(_json)[0])
-        xData = [...new Set(xData.sort())]
         let series = []
+        xData = [...new Set(xData.sort())]
+        let startDate = xData[parseInt(xData.length * start / 100)]
         for (let _id in _json) {
             let yData = []
             let firstNav
             for (let datetime of xData) {
-                if (parseInt(datetime) < parseInt(firstStartDate)) {
+                if (parseInt(datetime) < parseInt(startDate)) {
                     yData.push(undefined)
                     continue
                 }

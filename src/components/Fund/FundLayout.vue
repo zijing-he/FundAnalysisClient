@@ -1,38 +1,38 @@
 <template>
     <div>
         <h1>基金</h1>
-        <label>基金编号<input defaultValue='510310' id='fundId' ref='fundId' type='text'></label>
-        <button @click='drawChild' type='button'>查询</button>
-        <FundSectorValuePanel ref='FundSectorValuePanel'></FundSectorValuePanel>
-        <FundIncomeRatePanel ref='FundIncomeRatePanel'></FundIncomeRatePanel>
+        <label>基金编号<input ref='fundId' type='text' value='510310'></label>
+        <button @click='drawFund' type='button'>查询</button>
+        <FundIncomePanel ref='FundIncomePanel'></FundIncomePanel>
+        <FundSectorPanel ref='FundSectorPanel'></FundSectorPanel>
     </div>
 </template>
 
 <script>
-import FundSectorValuePanel from './FundPanel/SectorValuePanel'
-import FundIncomeRatePanel from './FundPanel/IncomeRatePanel'
+import FundSectorPanel from './FundPanel/FundSectorPanel'
+import FundIncomePanel from './FundPanel/FundIncomePanel'
 
 export default {
     name: 'fundLayout',
     methods: {
-        drawChild () {
+        drawFund () {
             let fundId = this.$refs.fundId.value
-            this.$refs.FundSectorValuePanel.$emit('childMethod', fundId)
-            this.$refs.FundIncomeRatePanel.$emit('childMethod', fundId)
+            this.$refs.FundIncomePanel.$emit('drawFund', fundId)
+            this.$refs.FundSectorPanel.$emit('drawFund', fundId)
+        },
+        updateDate (start, end) {
+            this.$refs.FundIncomePanel.$emit('updateDataZoom', start, end)
+            this.$refs.FundSectorPanel.$emit('updateDataZoom', start, end)
         }
     },
     data () {
         return {}
     },
     components: {
-        FundSectorValuePanel, FundIncomeRatePanel
-    },
-    mounted () {
-
+        FundSectorPanel, FundIncomePanel
     }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 </style>

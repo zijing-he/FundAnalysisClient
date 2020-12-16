@@ -1,50 +1,49 @@
 <template>
     <div>
         <h1>基金经理</h1>
-        <label>基金经理编号<input value='101001715' ref='managerId' type='text'></label>
+        <label>基金经理编号<input ref='managerId' type='text' value='101001715'></label>
         <button @click='drawManager' type='button'>查询</button>
-        <UnitNetPanel ref='UnitNetPanel'></UnitNetPanel>
-        <AccNetPanel ref='AccNetPanel'></AccNetPanel>
-        <IncomeRatePanel ref='IncomeRatePanel'></IncomeRatePanel>
-        <NetAssetPanel ref='NetAssetPanel'></NetAssetPanel>
-        <SectorValuePanel ref='SectorValuePanel'></SectorValuePanel>
+        <UnitNavPanel ref='UnitNavPanel'></UnitNavPanel>
+        <AccNavPanel ref='AccNavPanel'></AccNavPanel>
+        <IncomePanel ref='IncomePanel'></IncomePanel>
+        <AssetPanel ref='AssetPanel'></AssetPanel>
+        <SectorPanel ref='SectorPanel'></SectorPanel>
     </div>
 </template>
 
 <script>
-import IncomeRatePanel from './ManagerPanel/IncomeRatePanel'
-import UnitNetPanel from './ManagerPanel/UnitNetPanel'
-import AccNetPanel from './ManagerPanel/AccNetPanel'
-import NetAssetPanel from './ManagerPanel/NetAssetPanel'
-import SectorValuePanel from './ManagerPanel/SectorValuePanel'
+import UnitNavPanel from './ManagerPanel/UnitNavPanel'
+import AccNavPanel from './ManagerPanel/AccNavPanel'
+import IncomePanel from './ManagerPanel/IncomePanel'
+import AssetPanel from './ManagerPanel/AssetPanel'
+import SectorPanel from './ManagerPanel/SectorPanel'
 
 export default {
     name: 'managerLayout',
     methods: {
         drawManager () {
             let managerId = this.$refs.managerId.value
-            this.$refs.UnitNetPanel.$emit('drawManager', managerId)
-            this.$refs.AccNetPanel.$emit('drawManager', managerId)
-            this.$refs.IncomeRatePanel.$emit('drawManager', managerId)
-            this.$refs.NetAssetPanel.$emit('drawManager', managerId)
-            this.$refs.SectorValuePanel.$emit('childMethod', managerId)
+            this.$refs.UnitNavPanel.$emit('drawManager', managerId)
+            this.$refs.AccNavPanel.$emit('drawManager', managerId)
+            this.$refs.IncomePanel.$emit('drawManager', managerId)
+            this.$refs.AssetPanel.$emit('drawManager', managerId)
+            this.$refs.SectorPanel.$emit('drawManager', managerId)
         },
         updateDate (start, end) {
-            this.$refs.UnitNetPanel.$emit('updateDataZoom', start, end)
-            this.$refs.AccNetPanel.$emit('updateDataZoom', start, end)
-            this.$refs.IncomeRatePanel.$emit('updateDataZoom', start, end)
-            this.$refs.NetAssetPanel.$emit('updateDataZoom', start, end)
+            this.$refs.UnitNavPanel.$emit('updateDataZoom', start, end)
+            this.$refs.AccNavPanel.$emit('updateDataZoom', start, end)
+            this.$refs.IncomePanel.$emit('updateDataZoom', start, end)
+            this.$refs.AssetPanel.$emit('updateDataZoom', start, end)
         }
     },
     data () {
         return {}
     },
     components: {
-        IncomeRatePanel, UnitNetPanel, AccNetPanel, NetAssetPanel, SectorValuePanel
+        UnitNavPanel, AccNavPanel, IncomePanel, AssetPanel, SectorPanel
     }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 </style>

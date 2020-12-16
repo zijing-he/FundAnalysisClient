@@ -1,16 +1,16 @@
 <template>
     <div>
-        <h4>基金经理单位净值图</h4>
-        <div id='managerUnitNet' style='width: 50vm; height: 300px'></div>
+        <h4>基金经理累计净值图</h4>
+        <div id='managerAccNav' style='width: 50vm; height: 300px'></div>
     </div>
 </template>
 
 <script>
 let myChart, layout, isFirstDraw
 
-function drawNav (legendData, xData, series, isFirstDraw) {
+function drawManager (legendData, xData, series, isFirstDraw) {
     if (isFirstDraw) {
-        myChart = myChart.init(document.getElementById('managerUnitNet'))
+        myChart = myChart.init(document.getElementById('managerAccNav'))
         let option = {
             toolbox: {
                 orient: 'vertical',
@@ -25,7 +25,7 @@ function drawNav (legendData, xData, series, isFirstDraw) {
             dataZoom: [{start: 80}],
             legend: {width: '50%', selector: true, data: legendData},
             xAxis: {data: xData},
-            yAxis: {name: '单位净值', splitLine: {show: false}},
+            yAxis: {name: '累计净值', splitLine: {show: false}},
             series: series
         }
         myChart.setOption(option)
@@ -49,14 +49,14 @@ function update (start, end) {
 }
 
 export default {
-    name: 'unitNetPanel',
+    name: 'managerAccNavPanel',
     methods: {
         draw (managerID) {
-            this.$http.post(this.$remoteIP + 'get_manager_nav', {
+            this.$http.post(this.$remoteIP + 'get_manager_acc_net', {
                 'm_ids': [managerID]
             }).then(response => {
                 let echartsData = this.$fundTool.json2echartData(response.data)
-                drawNav(echartsData['legendData'], echartsData['xData'], echartsData['series'], isFirstDraw)
+                drawManager(echartsData['legendData'], echartsData['xData'], echartsData['series'], isFirstDraw)
                 isFirstDraw = false
             })
         },
