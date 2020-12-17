@@ -255,5 +255,33 @@ export default {
             series.push({name: _id, type: 'line', data: [...yData]})
         }
         return {'legendData': legendData, 'xData': xData, 'series': series}
+    },
+
+    fundSum2echartsData: (_json) => {
+        let xData = []
+        let seriesData = []
+        let tmpDict = {}
+        let yearNum = 0
+        let dateList = Object.keys(_json)
+            for (let _date_index in dateList) {
+                let date = dateList[_date_index]
+                yearNum = _json[date].length
+                let year = dateList[_date_index].substring(0, 4)
+                tmpDict[year] = yearNum
+            }
+        xData = Object.keys(tmpDict)
+        seriesData = Object.values(tmpDict)
+        return {'xData': xData, 'seriesData': seriesData}
+    },
+
+    fundAsset2echartsData: (_json) => {
+        let xData = []
+        let seriesData = []
+        xData = Object.keys(_json).sort()
+        for (let _quarter_index in xData){
+          let _quarter = xData[_quarter_index]
+          seriesData.push(_json[_quarter])
+        }
+        return {'xData': xData, 'seriesData': seriesData}
     }
 }

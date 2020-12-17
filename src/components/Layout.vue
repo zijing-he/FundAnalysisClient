@@ -10,6 +10,9 @@
         <div id='fundLayout'>
             <FundLayout/>
         </div>
+        <div id="companyLayout">
+          <CompanyLayout/>
+        </div>
     </div>
 </template>
 
@@ -17,6 +20,7 @@
 import MarketLayout from './Market/MarketLayout'
 import ManagerLayout from './Manager/ManagerLayout'
 import FundLayout from './Fund/FundLayout'
+import CompanyLayout from './Company/CompanyLayout'
 
 export default {
     name: 'layout',
@@ -25,7 +29,7 @@ export default {
         return {}
     },
     components: {
-        MarketLayout, ManagerLayout, FundLayout
+        MarketLayout, ManagerLayout, FundLayout, CompanyLayout
     },
     mounted () {
     }

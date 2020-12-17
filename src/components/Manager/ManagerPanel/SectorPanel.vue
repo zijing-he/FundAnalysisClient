@@ -36,7 +36,7 @@ function drawManager (legendData, timelineData, xData, seriesData, optionsData, 
         option.legend[0].data = legendData
         option.timeline[0].data = timelineData
         option.xAxis[0].data = xData
-        option.series[0].data = seriesData
+        option.series = seriesData
         option.options = optionsData
         myChart.setOption(option)
     }
@@ -56,8 +56,6 @@ export default {
             this.$http.post(this.$remoteIP + 'get_manager_sector', {
                 'm_ids': [managerID]
             }).then(response => {
-                debugger
-                console.log(response.data)
                 let echartsData = this.$fundTool.managerSector2echartsData(response.data)
                 drawManager(echartsData['legendData'], echartsData['timelineData'], echartsData['xData'], echartsData['seriesData'], echartsData['optionsData'], isFirstDraw)
                 isFirstDraw = false

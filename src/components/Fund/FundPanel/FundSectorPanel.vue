@@ -62,9 +62,6 @@ export default {
             this.$on('drawFund', (managerId) => {
                 this.draw(managerId)
             })
-            this.$on('updateDataZoom', (start, end) => {
-                update(start, end)
-            })
         }
     },
     data () {

@@ -1,7 +1,7 @@
 <template>
     <div>
         <h4>市场基金行业规模图</h4>
-        <div id='marketSector' style='width: 50vm; height: 300px'></div>
+        <div id='marketSector' style='width: 50vm; height: 400px'></div>
     </div>
 </template>
 
@@ -28,7 +28,7 @@ function drawMarket (timelineData, xData, seriesData) {
             calculable: true,
             grid: {top: 80, bottom: 100},
             xAxis: [{'type': 'category', 'axisLabel': {'interval': 0}, 'data': xData, splitLine: {show: false}}],
-            yAxis: [{type: 'value', name: '规模（万元）',}],
+            yAxis: [{type: 'value', name: '规模（万元）', max:22000000, min:0, splitNumber:10, boundaryGap: [0.2, 0.2]}],
             series: [{name: '规模', type: 'bar'}]
         },
         options: seriesData

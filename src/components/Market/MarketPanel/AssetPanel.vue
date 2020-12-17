@@ -1,7 +1,7 @@
 <template>
     <div>
         <h4>市场基金资产配置分布图</h4>
-        <div id='marketAsset' style='width: 50vm; height: 300px'></div>
+        <div id='marketAsset' style='width: 50vm; height: 400px'></div>
     </div>
 </template>
 
@@ -42,7 +42,7 @@ function drawMarket (data, seriesData) {
                     splitLine: {show: false}, axisTick: {alignWithLabel: true}
                 }
             ],
-            yAxis: [{type: 'value', name: '基金个数',}
+            yAxis: [{type: 'value', name: '基金个数', max:2400, min:0, splitNumber:15, boundaryGap: [0.2, 0.2]}
             ],
             color: ['#FA8072', '#FFC0CB', '#EEEE00', '#43CD80', '#5CACEE'],
             series: [
