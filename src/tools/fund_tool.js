@@ -95,10 +95,10 @@ export default {
                 seriesYearData.push({data: _json[_year]['stock'][_range]})
             }
             for (let _range in _json[_year]['bond']) {
-                seriesYearData.push({data: _json[_year]['stock'][_range]})
+                seriesYearData.push({data: _json[_year]['bond'][_range]})
             }
             for (let _range in _json[_year]['cash']) {
-                seriesYearData.push({data: _json[_year]['stock'][_range]})
+                seriesYearData.push({data: _json[_year]['cash'][_range]})
             }
             seriesData.push({
                 title: {text: _year + '全市场基金的资产配置(stock/bond/cash)分布图'},
