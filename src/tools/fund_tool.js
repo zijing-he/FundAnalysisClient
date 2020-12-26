@@ -110,6 +110,7 @@ export default {
     return seriesData;
   },
 
+
   asset2seriesData: _json => {
     let seriesData = [];
     for (let _year in _json) {
@@ -130,6 +131,7 @@ export default {
     }
     return seriesData;
   },
+
 
   marketSector2echartsData: _json => {
     let xData = Object.keys(_json);
