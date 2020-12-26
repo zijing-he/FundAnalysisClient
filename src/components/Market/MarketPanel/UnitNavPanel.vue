@@ -6,7 +6,7 @@
 </template>
 
 <script>
-let myChart
+let myChart;
 
 function drawMarket (data, seriesData) {
     myChart = myChart.init(document.getElementById('marketUnitNav'))
@@ -38,7 +38,15 @@ function drawMarket (data, seriesData) {
                     splitLine: {show: false}
                 }
             ],
-            yAxis: [{type: 'value', name: '基金个数', max:800, min:0, splitNumber:10, boundaryGap: [0.2, 0.2]},
+            yAxis: [
+				{
+					type: 'value', 
+					name: '基金个数', 
+					max:800, 
+					min:0, 
+					splitNumber:10, 
+					boundaryGap: [0.2, 0.2],
+				},
             {
                 type: 'value',
                 scale: true,
@@ -105,7 +113,7 @@ export default {
     methods: {
         draw () {
             this.$http.post(this.$remoteIP + 'get_market_unit_nav'
-            ).then(response => {
+            ).then((response) => {
                 let seriesData = this.$fundTool.nav2seriesData(response.data)
                 drawMarket(response.data, seriesData)
             })
