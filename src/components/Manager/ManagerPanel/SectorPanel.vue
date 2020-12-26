@@ -25,7 +25,7 @@ function drawManager (legendData, timelineData, xData, seriesData, optionsData, 
                 calculable: true,
                 grid: {top: 80, bottom: 100},
                 xAxis: [{'type': 'category', 'axisLabel': {'interval': 0}, data: xData, splitLine: {show: false}}],
-                yAxis: [{type: 'value', name: '规模（元）',}],
+                yAxis: [{type: 'value', name: '规模占比（%）',}],
                 series: seriesData
             },
             options: optionsData

@@ -9,9 +9,9 @@
 let myChart
 
 function drawMarket (timelineData, xData, seriesData) {
-    myChart = myChart.init(document.getElementById('marketSector'))
-
-    let option = {
+    myChart = myChart.init(document.getElementById('marketSector'));
+   
+   let option = {
         baseOption: {
             timeline: {
                 axisType: 'category',
@@ -28,8 +28,8 @@ function drawMarket (timelineData, xData, seriesData) {
             calculable: true,
             grid: {top: 80, bottom: 100},
             xAxis: [{'type': 'category', 'axisLabel': {'interval': 0}, 'data': xData, splitLine: {show: false}}],
-            yAxis: [{type: 'value', name: '规模（万元）', max:22000000, min:0, splitNumber:10, boundaryGap: [0.2, 0.2]}],
-            series: [{name: '规模', type: 'bar'}]
+            yAxis: [{type: 'value', name: '规模占比（%）'}],
+            series: [{name: '规模占比(%)', type: 'bar',}]
         },
         options: seriesData
     }
