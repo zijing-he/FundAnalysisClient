@@ -1,4 +1,4 @@
-export default {
+let FundTool = {
   managerNav2income: (_json, start) => {
     let legendData = [];
     let xData = [];
@@ -20,6 +20,7 @@ export default {
             yData.push(undefined);
             continue;
           }
+          // eslint-disable-next-line no-prototype-builtins
           if (_json[_id][sub_id].hasOwnProperty(datetime)) {
             if (firstNav === undefined) {
               firstNav = _json[_id][sub_id][datetime];
@@ -55,6 +56,7 @@ export default {
         let yData = [];
         let firstNav;
         for (let datetime of xData) {
+          // eslint-disable-next-line no-prototype-builtins
           if (_json[_id][sub_id].hasOwnProperty(datetime)) {
             if (firstNav === undefined) {
               firstNav = _json[_id][sub_id][datetime];
@@ -327,4 +329,6 @@ export default {
     }
     return { xData: xData, seriesData: seriesData };
   }
-};
+}
+
+export default FundTool;
