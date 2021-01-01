@@ -1,8 +1,18 @@
 <template>
   <div>
-    <h1>基金经理</h1>
-    <label>基金经理编号<input v-model="managerID" type='text'></label>
-    <button @click='drawManager' type='button'>查询</button>
+    <a-row>
+      <a-col :span="10">
+        <h2>基金经理</h2>
+      </a-col>
+      <a-col :span="10">
+        <label>基金经理编号<input v-model="managerID" type='text'></label>
+      </a-col>
+      <a-col :span="4">
+        <a-button type="primary" @click='drawManager'>
+          <template #icon><SearchOutlined /></template>查询
+        </a-button>
+      </a-col>
+    </a-row>
     <ManagerUnitNavPanel
         :manager-unit-nav-data="managerUnitNavData"
         :manager-date="managerDate"
@@ -19,6 +29,7 @@
 
 <script>
 import DataService from "@/utils/data-service";
+import { SearchOutlined } from '@ant-design/icons-vue';
 import ManagerUnitNavPanel from "@/components/Manager/manager-panel-unit-nav"
 // import AccNavPanel from './ManagerPanel/AccNavPanel'
 import ManagerIncomePanel from "@/components/Manager/manager-panel-income"
@@ -28,6 +39,7 @@ import ManagerIncomePanel from "@/components/Manager/manager-panel-income"
 export default {
   name: 'ManagerLayout',
   components: {
+    SearchOutlined,
     ManagerUnitNavPanel,
     // AccNavPanel,
     ManagerIncomePanel,

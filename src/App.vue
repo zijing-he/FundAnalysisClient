@@ -1,11 +1,18 @@
 <template>
-  <div id="app">
-    <h1>总对比图</h1>
-    <MarketLayout></MarketLayout>
-    <ManagerLayout></ManagerLayout>
-<!--    <FundLayout/>-->
-<!--    <CompanyLayout/>-->
-  </div>
+  <a-row :gutter="16">
+    <a-col :span="12">
+      <div class="gutter-box">
+        <MarketLayout></MarketLayout>
+      </div>
+    </a-col>
+    <a-col :span="12">
+      <div class="gutter-box">
+        <ManagerLayout></ManagerLayout>
+      </div>
+    </a-col>
+  </a-row>
+  <!--    <FundLayout/>-->
+  <!--    <CompanyLayout/>-->
 </template>
 
 <script>
@@ -33,7 +40,14 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  width: 1280px;
+  height: 720px;
+  margin: 10px;
+  border: 2px solid lightblue;
+}
+
+.gutter-box {
+  border: 1px solid lightseagreen;
+  padding: 5px 0;
 }
 </style>

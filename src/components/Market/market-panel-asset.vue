@@ -1,7 +1,7 @@
 <template>
   <div>
     <h4>市场基金资产配置分布图</h4>
-    <div id='marketAsset' style='width: 50vm; height: 400px'></div>
+    <div id='marketAsset' style='width: 50vm; height: 300px'></div>
   </div>
 </template>
 

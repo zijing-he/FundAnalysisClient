@@ -1,8 +1,12 @@
 <template>
   <div>
-    <h1>基金市场</h1>
-    <MarketUnitNavPanel :market-unit-nav-data="marketUnitNavData"></MarketUnitNavPanel>
-    <MarketAssetPanel></MarketAssetPanel>
+    <h2>基金市场</h2>
+    <a-col>
+      <MarketUnitNavPanel :market-unit-nav-data="marketUnitNavData"></MarketUnitNavPanel>
+    </a-col>
+    <a-col>
+      <MarketAssetPanel></MarketAssetPanel>
+    </a-col>
     <!--        <SectorPanel ref='SectorPanel'></SectorPanel>-->
   </div>
 </template>
