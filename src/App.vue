@@ -1,5 +1,5 @@
 <template>
-  <a-row :gutter="16">
+  <a-row :gutter="8">
     <a-col :span="12">
       <div class="gutter-box">
         <MarketLayout></MarketLayout>
@@ -40,8 +40,8 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  width: 1280px;
-  height: 720px;
+  width: 1600px;
+  height: 900px;
   margin: 10px;
   border: 2px solid lightblue;
 }
