@@ -9,25 +9,28 @@
       </a-col>
       <a-col :span="4">
         <a-button type="primary" @click='drawManager'>
-          <template #icon><SearchOutlined /></template>查询
+          <SearchOutlined/>查询
         </a-button>
       </a-col>
     </a-row>
     <ManagerUnitNavPanel
         :manager-unit-nav-data="managerUnitNavData"
         :manager-date="managerDate"
-        @updateDate="updateDate"></ManagerUnitNavPanel>
+        @updateDate="debounceZoom"
+    ></ManagerUnitNavPanel>
     <!--    <AccNavPanel ref='AccNavPanel'></AccNavPanel>-->
     <ManagerIncomePanel
         :manager-income-data="managerUnitNavData"
         :manager-date="managerDate"
-        @updateDate="updateDate"></ManagerIncomePanel>
+        @updateDate="debounceZoom"
+    ></ManagerIncomePanel>
     <!--    <AssetPanel ref='AssetPanel'></AssetPanel>-->
     <!--    <SectorPanel ref='SectorPanel'></SectorPanel>-->
   </div>
 </template>
 
 <script>
+import _ from "lodash";
 import DataService from "@/utils/data-service";
 import { SearchOutlined } from '@ant-design/icons-vue';
 import ManagerUnitNavPanel from "@/components/Manager/manager-panel-unit-nav"
@@ -52,6 +55,12 @@ export default {
       managerUnitNavData: null,
       managerDate: [0, 100],
     }
+  },
+  created() {
+    this.debounceZoom = _.debounce(this.updateDate,33);
+  },
+  unmounted() {
+    this.debounceZoom.cancel();
   },
   methods: {
     drawManager () {
