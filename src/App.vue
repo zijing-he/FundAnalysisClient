@@ -1,37 +1,44 @@
 <template>
   <a-row :gutter="8">
-    <a-col :span="12">
+    <a-col :span="18">
       <div class="gutter-box">
-        <MarketLayout></MarketLayout>
+        <OverView/>
+        <!-- <MarketLayout></MarketLayout> -->
       </div>
     </a-col>
-    <a-col :span="12">
+    <a-col :span="6">
       <div class="gutter-box">
-        <ManagerLayout></ManagerLayout>
+        <div>收益对比</div>
+        <div>风险对比</div>
+        <div>规模对比</div>
+        <div>持仓分布</div>
       </div>
     </a-col>
   </a-row>
+  
+  <!-- <ManagerLayout/> -->
   <!--    <FundLayout/>-->
   <!--    <CompanyLayout/>-->
 </template>
 
 <script>
-import MarketLayout from "@/components/Market/market-layout";
-import ManagerLayout from "@/components/Manager/manager-layout";
+import OverView from "@/components/Overview/overView";
+// import MarketLayout from "@/components/Market/market-layout";
+// import ManagerLayout from "@/components/Manager/manager-layout";
 // import FundLayout from "@/components/Fund/FundLayout";
 // import CompanyLayout from "@/components/Company/CompanyLayout";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    MarketLayout,
-    ManagerLayout,
+    OverView,
+    // MarketLayout,
+    // ManagerLayout,
     // FundLayout,
     // CompanyLayout
   },
-  mounted () {
-  }
-}
+  mounted() {},
+};
 </script>
 
 <style>

@@ -1,7 +1,7 @@
 <template>
     <div>
         <h1>基金</h1>
-        <label>基金编号<input ref='fundId' type='text' value='510310'></label>
+        <span>基金编号<input ref='fundId' type='text' value='510310'></span>
         <button @click='drawFund' type='button'>查询</button>
         <FundIncomePanel ref='FundIncomePanel'></FundIncomePanel>
         <FundSectorPanel ref='FundSectorPanel'></FundSectorPanel>

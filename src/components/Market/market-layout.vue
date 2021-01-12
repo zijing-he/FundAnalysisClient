@@ -7,7 +7,7 @@
     <a-col>
       <MarketAssetPanel></MarketAssetPanel>
     </a-col>
-    <!--        <SectorPanel ref='SectorPanel'></SectorPanel>-->
+    <!--<SectorPanel ref='SectorPanel'></SectorPanel>-->
   </div>
 </template>
 
