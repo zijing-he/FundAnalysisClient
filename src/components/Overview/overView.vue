@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>星空全局概览</h2>
+    <h2>基金全局概览</h2>
     <a-row>
       <a-col :span="6"> 基金代码：<a-input v-model:value="value" /> </a-col>
       <a-col :span="6">
@@ -39,7 +39,28 @@
       </a-col>
     </a-row>
     <a-row>
-      <fundStarlitSky />
+      <div style="width: 20px; height: 600px">
+        <div style="display: inline-block; height: 300px; margin-top: 60px">
+          <a-slider
+            vertical
+            v-model:value="threshold"
+            :min="0.4315619128949616"
+            :max="10.773764402407565"
+            :step="0.001"
+          />
+        </div>
+      </div>
+      <a-col
+        style="
+          width: 1073px;
+          height: 600px;
+          border: 2px solid lightseagreen;
+          margin: 10px;
+          margin-left: 10px;
+        "
+      >
+        <fundStarlitSky :threshold="threshold" />
+      </a-col>
     </a-row>
   </div>
 </template>
@@ -53,11 +74,13 @@ export default {
   data() {
     return {
       value: 510310,
+      threshold: 0.4315619128949616,
     };
   },
   components: {
     DownOutlined,
     fundStarlitSky,
+    // D3Bar,
   },
   methods: {
     onClickFundType({ key }) {
