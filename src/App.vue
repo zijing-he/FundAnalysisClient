@@ -8,10 +8,10 @@
     </a-col>
     <a-col :span="6">
       <div class="gutter-box">
-        <div>收益对比</div>
-        <div>风险对比</div>
-        <div>规模对比</div>
-        <div>持仓分布</div>
+        <div class="sidebar">收益对比</div>
+        <div class="sidebar">风险对比</div>
+        <div class="sidebar">规模对比</div>
+        <div class="sidebar">持仓分布</div>
       </div>
     </a-col>
   </a-row>
@@ -56,5 +56,12 @@ export default {
 .gutter-box {
   border: 1px solid lightseagreen;
   padding: 5px 0;
+}
+
+.sidebar{
+  width:100%;
+  height: 223px;
+  
+  border: 1px solid lightblue;
 }
 </style>
