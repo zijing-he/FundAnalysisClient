@@ -111,6 +111,70 @@ export default {
   },
 
 
+    return2seriesData: _json => {
+    console.log(_json)
+    let seriesData = [];
+    let month = [
+      "01",
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07",
+      "08",
+      "09",
+      "10",
+      "11",
+      "12",
+      "13"
+    ];
+    for (let _year in _json) {
+      let seriesYearData = [];
+      for (let index in month) {
+        let every_month = month[index];
+        if (Object.keys(_json[_year]).indexOf(_year + every_month) !== -1) {
+          seriesYearData.push({
+            data: Object.values(_json[_year][_year + every_month])
+          });
+        } else {
+          seriesYearData.push({ data: [] });
+        }
+      }
+      seriesData.push({
+        title: { text: _year + "全市场基金的收益率分布情况" },
+        series: seriesYearData
+      });
+    }
+    return seriesData;
+  },
+
+
+  avgReturn2echartsData: _json => {
+    let seriesData = []
+    let xAxisData = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
+    let legendData = []
+    for (let _year in _json){
+      legendData.push(_year)
+      let seriesYearData = []
+      for (let _index in xAxisData){
+        let month = xAxisData[_index]
+        if (Object.keys(_json[_year]).indexOf(_year + month) != -1){
+          seriesYearData.push(_json[_year][_year + month])
+        }else {
+          seriesYearData.push(undefined)
+        }
+      }
+      seriesData.push({
+        name: _year,
+        type: 'line',
+        data: seriesYearData
+      })
+    }
+    return {'seriesData':seriesData, 'legendData':legendData, 'xAxisData':xAxisData}
+  },
+
+
   asset2seriesData: _json => {
     let seriesData = [];
     for (let _year in _json) {
@@ -119,10 +183,10 @@ export default {
         seriesYearData.push({ data: _json[_year]["stock"][_range] });
       }
       for (let _range in _json[_year]["bond"]) {
-        seriesYearData.push({ data: _json[_year]["stock"][_range] });
+        seriesYearData.push({ data: _json[_year]["bond"][_range] });
       }
       for (let _range in _json[_year]["cash"]) {
-        seriesYearData.push({ data: _json[_year]["stock"][_range] });
+        seriesYearData.push({ data: _json[_year]["cash"][_range] });
       }
       seriesData.push({
         title: { text: _year + "全市场基金的资产配置(stock/bond/cash)分布图" },
