@@ -44,8 +44,8 @@
           <a-slider
             vertical
             v-model:value="threshold"
-            :min="0.4315619128949616"
-            :max="10.773764402407565"
+            :min="0"
+            :max="10"
             :step="0.001"
           />
         </div>
@@ -74,13 +74,12 @@ export default {
   data() {
     return {
       value: 510310,
-      threshold: 0.4315619128949616,
+      threshold: 0,
     };
   },
   components: {
     DownOutlined,
     fundStarlitSky,
-    // D3Bar,
   },
   methods: {
     onClickFundType({ key }) {
