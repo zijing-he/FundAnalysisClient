@@ -31,7 +31,7 @@ export default {
   },
 
   mounted: function () {
-    console.log(this.data.map(d => d[0]));
+    console.log(this.data.map((d) => d[0]));
     this.renderInit();
     this.renderUpdate();
   },
@@ -58,7 +58,7 @@ export default {
 
       let xScale = d3
         .scaleBand()
-        .domain(this.data.map(d => d[0]))
+        .domain(this.data.map((d) => d[0]))
         .range([0, innerWidth]);
 
       let yScaleSize = d3
@@ -92,20 +92,23 @@ export default {
 
       let linePathSize = d3
         .line()
-        .x((d) => xScale(d[0])+ 51.8513513514)
+        .curve(d3.curveCatmullRom)
+        .x((d) => xScale(d[0]) + 51.8513513514)
         .y((d) => yScaleSize(d[1]));
 
       let linePathNumber = d3
         .line()
-        .x((d) => xScale(d[0])+ 51.8513513514)
+        .curve(d3.curveCatmullRom)
+        .x((d) => xScale(d[0]) + 51.8513513514)
         .y((d) => yScaleNumber(d[2]));
 
       let linePathAverageIncome = d3
         .line()
-        .x((d) => xScale(d[0])+ 51.8513513514)
+        .curve(d3.curveCatmullRom)
+        .x((d) => xScale(d[0]) + 51.8513513514)
         .y((d) => yScaleAverageIncome(d[3]));
 
-    //折线绘制
+      //曲线绘制
       g.append("g")
         .append("path")
         .attr("class", "line-path-size")
