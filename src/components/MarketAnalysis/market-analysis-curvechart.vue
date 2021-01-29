@@ -1,14 +1,13 @@
 
 <template>
-  <svg id="mainsvg" width="1359" height="160"></svg>
+  <svg id="mainsvg" width="1018" height="120"></svg>
 </template>
 
 <script>
 import * as d3 from "d3";
-import dataJSON from "@/data/tsne_date_loc.json";
 
 export default {
-  name: "MarketAnalysis",
+  name: "MarketAnalysisCurveChart",
   props: {},
   components: {},
   data() {
@@ -31,7 +30,6 @@ export default {
   },
 
   mounted: function () {
-    console.log(this.data.map((d) => d[0]));
     this.renderInit();
     this.renderUpdate();
   },
@@ -48,7 +46,7 @@ export default {
       // Configuration
       let width = d3.select("#mainsvg").attr("width");
       let height = d3.select("#mainsvg").attr("height");
-      let margin = { top: 20, right: 40, bottom: 30, left: 40 };
+      let margin = { top: 10, right: 20, bottom: 20, left: 20 };
       let innerWidth = width - margin.left - margin.right;
       let innerHeight = height - margin.top - margin.bottom;
       let g = this.svg

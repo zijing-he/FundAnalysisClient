@@ -1,6 +1,9 @@
 <template>
   <a-row>
-    <a-col :span="24">
+    <a-col :span="6">
+      雷达图
+    </a-col>
+    <a-col :span="18">
       <MarketAnalysisLayout />
       
     </a-col>

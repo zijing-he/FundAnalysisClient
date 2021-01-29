@@ -1,18 +1,21 @@
 <template>
   <div class="container">
-    <h2>基金市场的演变</h2>
-    <MarketAnalysis />
+    <h3>基金市场的演变</h3>
+    <MarketAnalysisCurveChart />
+    <MarketAnalysisStramGraph />
   </div>
 </template>
 <script>
-import MarketAnalysis from "@/components/MarketAnalysis/market-analysis";
+import MarketAnalysisCurveChart from "@/components/MarketAnalysis/market-analysis-curvechart";
+import MarketAnalysisStramGraph from "@/components/MarketAnalysis/market-analysis-streamgraph";
 export default {
   name: "MarketAnalysisLayout",
   data() {
     return {};
   },
   components: {
-    MarketAnalysis,
+    MarketAnalysisCurveChart,
+    MarketAnalysisStramGraph
   },
   methods: {},
   mounted() {},
@@ -21,11 +24,11 @@ export default {
 
 <style scoped>
 .container {
-  height: 200px;
+  height: 270px;
   width: 100%;
   border: 2px solid black;
 }
-.container h2 {
+.container h3 {
   border-bottom: 2px solid black;
   margin-bottom: 0;
 }
