@@ -1,14 +1,13 @@
 
 <template>
-  <svg id="mainsvg" width="1359" height="160"></svg>
+  <svg id="mainsvg" width="1018" height="120"></svg>
 </template>
 
 <script>
 import * as d3 from "d3";
-import dataJSON from "@/data/tsne_date_loc.json";
 
 export default {
-  name: "MarketAnalysis",
+  name: "MarketAnalysisCurveChart",
   props: {},
   components: {},
   data() {
@@ -27,11 +26,11 @@ export default {
         ["20190610", 1095, 380, 0.174],
         ["20191230", 1250, 450, 0.18],
       ],
+      idleTimeout : null,
     };
   },
 
   mounted: function () {
-    console.log(this.data.map((d) => d[0]));
     this.renderInit();
     this.renderUpdate();
   },
@@ -48,7 +47,7 @@ export default {
       // Configuration
       let width = d3.select("#mainsvg").attr("width");
       let height = d3.select("#mainsvg").attr("height");
-      let margin = { top: 20, right: 40, bottom: 30, left: 40 };
+      let margin = { top: 10, right: 20, bottom: 20, left: 20 };
       let innerWidth = width - margin.left - margin.right;
       let innerHeight = height - margin.top - margin.bottom;
       let g = this.svg
@@ -60,6 +59,11 @@ export default {
         .scaleBand()
         .domain(this.data.map((d) => d[0]))
         .range([0, innerWidth]);
+
+      let xAxis = g //append是maingroup的函数
+        .append("g")
+        .call(d3.axisBottom(xScale))
+        .attr("transform", `translate(0,${innerHeight})`);
 
       let yScaleSize = d3
         .scaleLinear()
@@ -79,16 +83,14 @@ export default {
         .range([innerHeight, 0])
         .nice();
 
-      let xAxis = d3.axisBottom(xScale);
-
       // let yAxis = d3.axisLeft(yScaleSize);
-      let xGroup = g //append是maingroup的函数
-        .append("g")
-        .call(xAxis)
-        .attr("transform", `translate(0,${innerHeight})`);
-
       // let yGroup = g.append("g").call(yAxis);
-      d3.selectAll(".tick text").attr("font-size", "1em");
+
+
+      
+      let brush = d3.brushX()
+      .extent([[0,-margin.top],[innerWidth, innerHeight]])
+      .on("end",updateChart);
 
       let linePathSize = d3
         .line()
@@ -108,8 +110,11 @@ export default {
         .x((d) => xScale(d[0]) + 51.8513513514)
         .y((d) => yScaleAverageIncome(d[3]));
 
+      
       //曲线绘制
-      g.append("g")
+      let curveChart = g.append("g");
+
+      curveChart.append("g")
         .append("path")
         .attr("class", "line-path-size")
         .attr("d", linePathSize(this.data))
@@ -117,7 +122,7 @@ export default {
         .attr("stroke-width", 2)
         .attr("stroke", "#BBE6E9");
 
-      g.append("g")
+      curveChart.append("g")
         .append("path")
         .attr("class", "line-path-number")
         .attr("d", linePathNumber(this.data))
@@ -125,13 +130,23 @@ export default {
         .attr("stroke-width", 2)
         .attr("stroke", "#FFD9DF");
 
-      g.append("g")
+      curveChart.append("g")
         .append("path")
         .attr("class", "line-path-average-income")
         .attr("d", linePathAverageIncome(this.data))
         .attr("fill", "none")
         .attr("stroke-width", 2)
         .attr("stroke", "#CEBDED");
+
+      curveChart.append("g").attr("class","brush").call(brush);
+
+      d3.selectAll(".tick text").attr("font-size", "1em");
+
+      
+      function updateChart({selection}){
+        console.log(selection);  //打印选中的像素点
+      }
+
 
       // g.append("g")
       //   .selectAll("circle")
@@ -142,6 +157,7 @@ export default {
       //   .attr("r", 2)
       //   .style("fill", "green");
     },
+    
   },
 };
 </script>
