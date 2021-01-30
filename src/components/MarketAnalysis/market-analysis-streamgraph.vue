@@ -1041,8 +1041,8 @@ export default {
         this.data
       );
         
-        console.log(this.data);
-        console.log(stackedData);
+        // console.log(this.data);
+        // console.log(stackedData);
 
       // create a tooltip
       let Tooltip = this.svg
@@ -1056,7 +1056,7 @@ export default {
         
       // Three function that change the tooltip when user hover / move / leave a cell
       var mouseenter = function (d,i) {
-          console.log(d);
+          // console.log(d);
           Tooltip.text(i.key);
         Tooltip.style("opacity", 1).style("fill",color(i.key));
         d3.selectAll(".streamGraph").style("opacity", 0.2);
