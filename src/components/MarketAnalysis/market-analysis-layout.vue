@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h3>基金市场的演变</h3>
+    <h4>基金市场的演变</h4>
     <MarketAnalysisCurveChart />
     <MarketAnalysisStramGraph />
   </div>
@@ -24,12 +24,12 @@ export default {
 
 <style scoped>
 .container {
-  height: 270px;
+  height: 175px;
   width: 100%;
-  border: 2px solid black;
+  border: 1px solid black;
 }
-.container h3 {
-  border-bottom: 2px solid black;
+.container h4 {
+  border-bottom: 1px solid black;
   margin-bottom: 0;
 }
 </style>
