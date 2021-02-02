@@ -1,6 +1,5 @@
-
 <template>
-  <svg id="mainsvg" width="1018" height="120"></svg>
+  <div id="market_curvechart"></div>
 </template>
 
 <script>
@@ -13,6 +12,9 @@ export default {
   data() {
     return {
       svg: null,
+      margin: { top: 10, right: 20, bottom: 20, left: 20 },
+      width: 993,
+      height: 75.2,
       data: [
         ["20190110", 224, 100, 0.1],
         ["20190111", 528, 150, 0.12],
@@ -26,7 +28,6 @@ export default {
         ["20190610", 1095, 380, 0.174],
         ["20191230", 1250, 450, 0.18],
       ],
-      idleTimeout : null,
     };
   },
 
@@ -34,130 +35,125 @@ export default {
     this.renderInit();
     this.renderUpdate();
   },
+
+  computed: {
+    innerWidth() {
+      return this.width - this.margin.left - this.margin.right;
+    },
+    innerHeight() {
+      return this.height - this.margin.top - this.margin.bottom;
+    },
+    xScale() {
+      return d3
+        .scaleBand()
+        .domain(this.data.map((d) => d[0]))
+        .range([0, this.innerWidth]);
+    },
+    yScale() {
+      return d3
+        .scaleLinear()
+        .domain(d3.extent(this.data, (d) => d[1]))
+        .range([this.innerHeight, 0])
+        .nice();
+    },
+    linePath() {
+      return d3
+        .line()
+        .curve(d3.curveCatmullRom)
+        .x((d) => this.xScale(d[0]) + 51.8513513514)
+        .y((d) => this.yScale(d[1]));
+    },
+  },
+
   methods: {
     renderInit() {
-      let width = d3.select("#mainsvg").attr("width");
-      let height = d3.select("#mainsvg").attr("height");
-      this.svg = d3.select("#mainsvg").attr("viewBox", [0, 0, width, height]);
+      this.svg = d3
+        .select("#market_curvechart")
+        .append("svg")
+        .attr("width", this.width)
+        .attr("height", this.height)
+        .attr("viewBox", [0, 0, this.width, this.height])
+        .append("g")
+        .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
     },
     renderUpdate() {
       // Remove all groups in svg
       this.svg.selectAll("g").remove();
 
-      // Configuration
-      let width = d3.select("#mainsvg").attr("width");
-      let height = d3.select("#mainsvg").attr("height");
-      let margin = { top: 10, right: 20, bottom: 20, left: 20 };
-      let innerWidth = width - margin.left - margin.right;
-      let innerHeight = height - margin.top - margin.bottom;
-      let g = this.svg
+      // Add X axis
+      this.svg
         .append("g")
-        .attr("id", "maingroup")
-        .attr("transform", `translate(${margin.left},${margin.top})`);
+        .call(d3.axisBottom(this.xScale))
+        .attr("transform", `translate(0,${this.innerHeight})`);
 
-      let xScale = d3
-        .scaleBand()
-        .domain(this.data.map((d) => d[0]))
-        .range([0, innerWidth]);
+      let brush = d3
+        .brushX()
+        .extent([
+          [0, -this.margin.top],
+          [this.innerWidth, this.innerHeight],
+        ])
+        .on("end", updateChart);
 
-      let xAxis = g //append是maingroup的函数
-        .append("g")
-        .call(d3.axisBottom(xScale))
-        .attr("transform", `translate(0,${innerHeight})`);
-
-      let yScaleSize = d3
-        .scaleLinear()
-        .domain(d3.extent(this.data, (d) => d[1]))
-        .range([innerHeight, 0])
-        .nice();
-
-      let yScaleNumber = d3
-        .scaleLinear()
-        .domain(d3.extent(this.data, (d) => d[2]))
-        .range([innerHeight, 0])
-        .nice();
-
-      let yScaleAverageIncome = d3
-        .scaleLinear()
-        .domain(d3.extent(this.data, (d) => d[3]))
-        .range([innerHeight, 0])
-        .nice();
-
-      // let yAxis = d3.axisLeft(yScaleSize);
-      // let yGroup = g.append("g").call(yAxis);
-
-
-      
-      let brush = d3.brushX()
-      .extent([[0,-margin.top],[innerWidth, innerHeight]])
-      .on("end",updateChart);
-
-      let linePathSize = d3
-        .line()
-        .curve(d3.curveCatmullRom)
-        .x((d) => xScale(d[0]) + 51.8513513514)
-        .y((d) => yScaleSize(d[1]));
-
-      let linePathNumber = d3
-        .line()
-        .curve(d3.curveCatmullRom)
-        .x((d) => xScale(d[0]) + 51.8513513514)
-        .y((d) => yScaleNumber(d[2]));
-
-      let linePathAverageIncome = d3
-        .line()
-        .curve(d3.curveCatmullRom)
-        .x((d) => xScale(d[0]) + 51.8513513514)
-        .y((d) => yScaleAverageIncome(d[3]));
-
-      
       //曲线绘制
-      let curveChart = g.append("g");
+      let curveChart = this.svg.append("g");
 
-      curveChart.append("g")
+      //fund_size
+      curveChart
+        .append("g")
         .append("path")
         .attr("class", "line-path-size")
-        .attr("d", linePathSize(this.data))
+        .attr("d", this.linePath(this.data))
         .attr("fill", "none")
         .attr("stroke-width", 2)
         .attr("stroke", "#BBE6E9");
 
-      curveChart.append("g")
+      // fund_number
+      curveChart
+        .append("g")
         .append("path")
         .attr("class", "line-path-number")
-        .attr("d", linePathNumber(this.data))
+        .attr(
+          "d",
+          this.linePath.y((d) =>
+            this.yScale.domain(d3.extent(this.data, (d) => d[2]))(d[2])
+          )(this.data)
+        )
         .attr("fill", "none")
         .attr("stroke-width", 2)
         .attr("stroke", "#FFD9DF");
 
-      curveChart.append("g")
+      // fund_return
+      curveChart
+        .append("g")
         .append("path")
-        .attr("class", "line-path-average-income")
-        .attr("d", linePathAverageIncome(this.data))
+        .attr("class", "line-path-return")
+        .attr(
+          "d",
+          this.linePath.y((d) =>
+            this.yScale.domain(d3.extent(this.data, (d) => d[3]))(d[3])
+          )(this.data)
+        )
         .attr("fill", "none")
         .attr("stroke-width", 2)
         .attr("stroke", "#CEBDED");
 
-      curveChart.append("g").attr("class","brush").call(brush);
+      curveChart.append("g").attr("class", "brush").call(brush);
 
       d3.selectAll(".tick text").attr("font-size", "1em");
 
-      
-      function updateChart({selection}){
-        console.log(selection);  //打印选中的像素点
+      function updateChart({ selection }) {
+        console.log(selection); //打印选中的像素点
       }
 
-
-      // g.append("g")
+      // this.svg.append("g")
       //   .selectAll("circle")
       //   .data(this.data) //绑定基金id
       //   .join("circle")
-      //   .attr("cx", d => xScale(d[0]) + 51.8513513514)
-      //   .attr("cy", d => yScaleSize(d[1]))
+      //   .attr("cx", d => this.xScale(d[0]) + 51.8513513514)
+      //   .attr("cy", d => this.yScale(d[1]))
       //   .attr("r", 2)
       //   .style("fill", "green");
     },
-    
   },
 };
 </script>

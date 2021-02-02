@@ -13,9 +13,10 @@ export default {
   data() {
     return {
       svg: null,
-      margin: {  top: 20, right: 20, bottom: 20, left: 20  },
-      width: 1018,
-      height: 120,
+      margin: { top: 10, right: 20, bottom: 15, left: 20 },
+      width: 993,
+      height: 75.2,
+      keys:["Amanda", "Ashley", "Betty", "Deborah"],
       data: [
         {
           year: "1880",
@@ -977,6 +978,36 @@ export default {
     this.renderInit();
     this.renderUpdate();
   },
+  computed: {
+    innerWidth() {
+      return this.width - this.margin.left - this.margin.right;
+    },
+    innerHeight() {
+      return this.height - this.margin.top - this.margin.bottom;
+    },
+    xScale() {
+      return d3
+        .scaleLinear()
+        .domain(d3.extent(this.data, (d) => d.year))
+        .range([0, this.innerWidth]);
+    },
+    yScale() {
+      return d3
+        .scaleLinear()
+        .domain([-100000, 100000])
+        .range([this.innerHeight, 0]);
+    },
+    area() {
+      return d3
+        .area()
+        .x((d) => this.xScale(d.data.year))
+        .y0((d) => this.yScale(d[0]))
+        .y1((d) => this.yScale(d[1]));
+    },
+    stackedData() {
+      return d3.stack().offset(d3.stackOffsetSilhouette).keys(this.keys)(this.data);
+    },
+  },
   methods: {
     renderInit() {
       this.svg = d3
@@ -992,26 +1023,17 @@ export default {
       // Remove all groups in svg
       this.svg.selectAll("g").remove();
 
-      // Configuration
-      let innerWidth = this.width - this.margin.left - this.margin.right;
-      let innerHeight = this.height - this.margin.top - this.margin.bottom;
-
-      var keys = ["Amanda", "Ashley", "Betty", "Deborah"];
+      // var keys = ["Amanda", "Ashley", "Betty", "Deborah"];
 
       // Add X axis
-      let xScale = d3
-        .scaleLinear()
-        .domain(d3.extent(this.data, (d) => d.year))
-        .range([0, innerWidth]);
-
       this.svg
         .append("g")
-        .attr("transform", `translate(0,${innerHeight * 0.8})`)
+        .attr("transform", `translate(0,${this.innerHeight * 0.8})`)
         .call(
           d3
-            .axisBottom(xScale)
-            .tickSize(-innerHeight * 0.7)
-            .tickValues([1900, 1925, 1975, 2000])  //只显示这几个时间点
+            .axisBottom(this.xScale)
+            .tickSize(-this.innerHeight * 0.7)
+            .tickValues([1900, 1925, 1975, 2000]) //只显示这几个时间点
         )
         .select(".domain")
         .remove();
@@ -1023,46 +1045,28 @@ export default {
       this.svg
         .append("text")
         .attr("text-anchor", "end")
-        .attr("x", innerWidth)
-        .attr("y", innerHeight )
+        .attr("x", this.innerWidth)
+        .attr("y", this.innerHeight)
         .text("Time (year)");
 
-      // Add Y axis
-      let yScale = d3
-        .scaleLinear()
-        .domain([-100000, 100000])
-        .range([innerHeight, 0]);
-
       // color palette
-      let color = d3.scaleOrdinal().domain(keys).range(d3.schemeDark2);
-
-      //stack the data?
-      let stackedData = d3.stack().offset(d3.stackOffsetSilhouette).keys(keys)(
-        this.data
-      );
-        
-        // console.log(this.data);
-        // console.log(stackedData);
+      let color = d3.scaleOrdinal().domain(this.keys).range(d3.schemeDark2);
 
       // create a tooltip
       let Tooltip = this.svg
         .append("text")
-        .attr("x", 0)
-        .attr("y", 0)
+        .attr("x", 5)
+        .attr("y", 10)
         .style("opacity", 0)
-        .style("font-size", 17)
-        .style("fill","red")
-        ;
-        
+        .style("font-size", 14);
       // Three function that change the tooltip when user hover / move / leave a cell
-      var mouseenter = function (d,i) {
-          // console.log(d);
-          Tooltip.text(i.key);
-        Tooltip.style("opacity", 1).style("fill",color(i.key));
+      var mouseenter = function (d, i) {
+        Tooltip.text(i.key);
+        Tooltip.style("opacity", 1).style("fill", color(i.key));
         d3.selectAll(".streamGraph").style("opacity", 0.2);
         d3.select(this).style("stroke", "black").style("opacity", 1);
       };
-     
+
       var mouseleave = function (d) {
         Tooltip.style("opacity", 0);
         d3.selectAll(".streamGraph")
@@ -1070,22 +1074,15 @@ export default {
           .style("stroke", "none");
       };
 
-      // Area generator
-      let area = d3
-        .area()
-        .x((d) => xScale(d.data.year))
-        .y0((d) => yScale(d[0]))
-        .y1((d) => yScale(d[1]));
-
       // Show the areas
       this.svg
         .selectAll("streamGraphLayers")
-        .data(stackedData)
+        .data(this.stackedData)
         .enter()
         .append("path")
         .attr("class", "streamGraph")
-        .style("fill",d => color(d.key))
-        .attr("d", area)
+        .style("fill", (d) => color(d.key))
+        .attr("d", this.area)
         .on("mouseenter", mouseenter)
         .on("mouseleave", mouseleave);
     },
@@ -1094,4 +1091,8 @@ export default {
 </script>
 
 <style scoped>
+#market_streamgraph {
+  height: 75.2px;
+  width: 100%;
+}
 </style>
