@@ -1023,8 +1023,6 @@ export default {
       // Remove all groups in svg
       this.svg.selectAll("g").remove();
 
-      // var keys = ["Amanda", "Ashley", "Betty", "Deborah"];
-
       // Add X axis
       this.svg
         .append("g")
