@@ -27,6 +27,7 @@ export default {
   height: 175px;
   width: 100%;
   border: 1px solid black;
+  position: absolute;
 }
 .container h4 {
   border-bottom: 1px solid black;

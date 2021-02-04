@@ -1,24 +1,26 @@
 <template>
   <a-row>
-    <a-col :span="4"> 基金控制面板 </a-col>
+    <a-col :span="4">
+      <ControlPanelLayout />
+    </a-col>
     <a-col :span="16">
-      <a-row >
+      <a-row>
         <MarketAnalysisLayout />
       </a-row>
-       <a-row >
-        具体分析
-      </a-row>
+      <a-row> 具体分析 </a-row>
     </a-col>
     <a-col :span="4"> 用户画像 </a-col>
   </a-row>
 </template>
 
 <script>
+import ControlPanelLayout from "@/components/ControlPanel/layout";
 import MarketAnalysisLayout from "@/components/MarketAnalysis/market-analysis-layout";
 
 export default {
   name: "App",
   components: {
+    ControlPanelLayout,
     MarketAnalysisLayout,
   },
   mounted() {},
