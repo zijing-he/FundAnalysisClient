@@ -144,7 +144,5 @@ export default {
 </script>
 
 <style scoped>
-#market_curvechart{
-  /* position:inherit; */
-}
+
 </style>
