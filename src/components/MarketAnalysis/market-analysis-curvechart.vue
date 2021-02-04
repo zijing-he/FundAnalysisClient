@@ -49,7 +49,7 @@ export default {
       return d3
         .line()
         .curve(d3.curveCatmullRom)
-        .x((d, i) => this.xScale(this.date[i])) //
+        .x((d, i) => this.xScale(this.date[i])) 
         .y((d) => this.yScale(d));
     },
   },
@@ -144,4 +144,5 @@ export default {
 </script>
 
 <style scoped>
+
 </style>
