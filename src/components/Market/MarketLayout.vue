@@ -6,6 +6,7 @@
 		<ReturnAvgPanel ref="ReturnAvgPanel"></ReturnAvgPanel>
         <AssetPanel ref='AssetPanel'></AssetPanel>
         <SectorPanel ref='SectorPanel'></SectorPanel>
+		<IncomePanel ref="IncomePanel"></IncomePanel>
     </div>
 </template>
 
@@ -15,6 +16,7 @@ import ReturnDistributionPanel from './MarketPanel/ReturnDistributionPanel'
 import ReturnAvgPanel from './MarketPanel/ReturnAvgPanel'
 import AssetPanel from './MarketPanel/AssetPanel'
 import SectorPanel from './MarketPanel/SectorPanel'
+import IncomePanel from './MarketPanel/IncomePanel'
 
 export default {
     name: 'marketLayout',
@@ -22,7 +24,7 @@ export default {
         return {}
     },
     components: {
-        UnitNavPanel, ReturnDistributionPanel, ReturnAvgPanel, AssetPanel, SectorPanel
+        UnitNavPanel, ReturnDistributionPanel, ReturnAvgPanel, AssetPanel, SectorPanel, IncomePanel
     }
 }
 </script>

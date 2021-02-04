@@ -39,6 +39,45 @@ export default {
     return { legendData: legendData, xData: xData, series: series };
   },
 
+  marketNav2income: (_json, start) => {
+    let legendData = []
+    let xData = []
+    let series = []
+
+    for (let sector in _json) {
+      legendData.push(sector)
+      xData = xData.concat(Object.keys(_json[sector]))
+    }
+
+    xData = [...new Set(xData.sort())]
+    let startDate = xData[parseInt((xData.length * start) / 100)]
+    for (let sector in _json) {
+      let yData = []
+      let firstNav
+      for (let datetime of xData) {
+        if (parseInt(datetime) < parseInt(startDate)) {
+          yData.push(undefined)
+          continue
+        }
+        if (_json[sector].hasOwnProperty(datetime)) {
+          if (firstNav === undefined) {
+            firstNav = _json[sector][datetime]
+          }
+          yData.push((_json[sector][datetime] / firstNav - 1) * 100)
+        } else {
+          yData.push(undefined)
+        }
+      }
+      series.push({
+        name: sector,
+        type: 'line',
+        data: [...yData]
+      })
+    }
+    return {legendData: legendData, xData: xData, series: series}
+  },
+
+
   json2echartData: _json => {
     let legendData = [];
     let xData = [];
