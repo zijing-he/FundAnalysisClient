@@ -8,7 +8,7 @@ import dataJSON from "@/data/market_data.json";
 
 export default {
   name: "ControlPanelRaderChart",
-  props: {},
+  props:['id'],
   components: {},
   data() {
     return {
@@ -22,6 +22,7 @@ export default {
   },
 
   mounted: function () {
+  
     this.renderInit();
     this.renderUpdate();
   },
@@ -54,8 +55,9 @@ export default {
 
   methods: {
     renderInit() {
+       d3.select("#market_raderchart").attr("id",this.id);
       this.svg = d3
-        .select("#market_raderchart")
+        .select(`#${this.id}`)
         .append("svg")
         .attr("width", this.width)
         .attr("height", this.height)
@@ -68,31 +70,15 @@ export default {
       this.svg.selectAll("g").remove();
 
       let textgroup = this.svg.append("g").attr("font-size", "11");
+      textgroup.append("text").attr("x", "14").attr("y", "-35").text("收益");
       textgroup
-        .append("text")
-        .attr("x", "14")
-        .attr("y", "-35")
-        .text("收益");
-        textgroup
         .append("text")
         .attr("x", "-75")
         .attr("y", "4")
         .text("最大回撤率");
-        textgroup
-        .append("text")
-        .attr("x", "-30")
-        .attr("y", "85")
-        .text("风险");
-         textgroup
-        .append("text")
-        .attr("x", "42")
-        .attr("y", "85")
-        .text("机构占比");
-        textgroup
-        .append("text")
-        .attr("x", "77")
-        .attr("y", "4")
-        .text("规模");
+      textgroup.append("text").attr("x", "-30").attr("y", "85").text("风险");
+      textgroup.append("text").attr("x", "42").attr("y", "85").text("机构占比");
+      textgroup.append("text").attr("x", "77").attr("y", "4").text("规模");
 
       // 收益
       let curveChart1 = this.svg.append("g");
@@ -104,7 +90,6 @@ export default {
 
       // fund_return——紫色
       this.yScale.domain(d3.extent(this.fund_return));
-      console.log(this.yScale(10000));
       curveChart1
         .append("g")
         .append("path")
@@ -125,7 +110,6 @@ export default {
         .attr("transform", `translate(0,${this.innerHeight})`);
 
       this.yScale.domain(d3.extent(this.fund_return));
-      console.log(this.yScale(10000));
       curveChart2
         .append("g")
         .append("path")
@@ -145,7 +129,6 @@ export default {
         .attr("transform", `translate(0,${this.innerHeight})`);
 
       this.yScale.domain(d3.extent(this.fund_return));
-      console.log(this.yScale(10000));
       curveChart3
         .append("g")
         .append("path")
@@ -165,7 +148,6 @@ export default {
         .attr("transform", `translate(0,${this.innerHeight})`);
 
       this.yScale.domain(d3.extent(this.fund_return));
-      console.log(this.yScale(10000));
       curveChart4
         .append("g")
         .append("path")
@@ -185,7 +167,6 @@ export default {
         .attr("transform", `translate(0,${this.innerHeight})`);
 
       this.yScale.domain(d3.extent(this.fund_return));
-      console.log(this.yScale(10000));
       curveChart5
         .append("g")
         .append("path")

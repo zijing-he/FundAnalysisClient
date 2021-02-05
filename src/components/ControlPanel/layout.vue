@@ -1,9 +1,12 @@
 <template>
   <div class="container">
     <h4>基金控制面板</h4>
-    <ControlPanelRaderChart />
-    <ControlPanelRaderChart />
-    <ControlPanelRaderChart />
+    <a-button size="small" style="margin-top:10px">积极型</a-button>
+    <ControlPanelRaderChart :id="svg_id1"/>
+    <a-button type="primary" size="small">保守型</a-button>
+    <ControlPanelRaderChart :id="svg_id2"/>
+    <a-button size="small">稳健型</a-button>
+    <ControlPanelRaderChart :id="svg_id3"/>
   </div>
 </template>
 <script>
@@ -11,7 +14,11 @@ import ControlPanelRaderChart from "@/components/ControlPanel/rader-chart";
 export default {
   name: "ControlPanelLayout",
   data() {
-    return {};
+    return {
+      svg_id1:"market_raderchart1",
+      svg_id2:"market_raderchart2",
+      svg_id3:"market_raderchart3",
+    };
   },
   components: {
     ControlPanelRaderChart,

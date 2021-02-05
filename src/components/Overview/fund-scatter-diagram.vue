@@ -1,26 +1,26 @@
 
 <template>
-  <svg id="mainsvg" width="1069" height="596"></svg>
-  <a-row>
+  <svg id="mainsvg" width="993" height="150"></svg>
+  <!-- <a-row>
     <a-col :span="24">
       <temporalView :time-interval="timeInterval" @updateDate="debounceZoom" />
     </a-col>
-  </a-row>
+  </a-row> -->
 </template>
 
 <script>
 import _ from "lodash";
 import * as d3 from "d3";
 import dataJSON from "@/data/tsne_date_loc.json";
-import temporalView from "@/components/Overview/temporalView";
+// import temporalView from "@/components/Overview/temporalView";
 export default {
-  name: "fundStarlitSky",
+  name: "fundScatterDiagram",
   props: {
     loadData: Object,
     threshold: Number,
   },
   components: {
-    temporalView,
+    // temporalView,
   },
   data() {
     return {
