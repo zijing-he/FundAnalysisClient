@@ -123,7 +123,6 @@ export default {
 
       // fund_return——紫色
       this.yScale.domain(d3.extent(this.fund_return));
-      console.log(this.yScale(10000));
       curveChart
         .append("g")
         .append("path")

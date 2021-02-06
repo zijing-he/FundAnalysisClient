@@ -7,7 +7,10 @@
       <a-row>
         <MarketAnalysisLayout />
       </a-row>
-      <a-row> 具体分析 </a-row>
+      <a-row>
+        
+        <OverViewLayout />
+      </a-row>
     </a-col>
     <a-col :span="4"> 用户画像 </a-col>
   </a-row>
@@ -15,13 +18,15 @@
 
 <script>
 import ControlPanelLayout from "@/components/ControlPanel/layout";
-import MarketAnalysisLayout from "@/components/MarketAnalysis/market-analysis-layout";
+import MarketAnalysisLayout from "@/components/MarketAnalysis/layout";
+import OverViewLayout from "@/components/Overview/layout";
 
 export default {
   name: "App",
   components: {
     ControlPanelLayout,
     MarketAnalysisLayout,
+    OverViewLayout,
   },
   mounted() {},
 };
