@@ -1,20 +1,34 @@
 <template>
-  <div>
+  <div class="container">
     <h4>基金详细对比</h4>
     <a-row>
-      <!-- <div style="width: 20px; height: 600px">
-        <div style="display: inline-block; height: 300px; margin-top: 60px">
-          <a-slider
-            vertical
-            v-model:value="threshold"
-            :min="0"
-            :max="10"
-            :step="0.001"
-          />
-        </div>
-      </div> -->
       <a-col>
-        <fundScatterDiagram :threshold="threshold" />
+        <fundScatterDiagram
+          :id="svg_id1"
+          :date="date1"
+          :threshold="threshold"
+        />
+      </a-col>
+      <a-col>
+        <fundScatterDiagram
+          :id="svg_id2"
+          :date="date2"
+          :threshold="threshold"
+        />
+      </a-col>
+      <a-col>
+        <fundScatterDiagram
+          :id="svg_id3"
+          :date="date3"
+          :threshold="threshold"
+        />
+      </a-col>
+      <a-col>
+        <fundScatterDiagram
+          :id="svg_id4"
+          :date="date4"
+          :threshold="threshold"
+        />
       </a-col>
     </a-row>
   </div>
@@ -27,27 +41,33 @@ export default {
   name: "OverViewLayout",
   data() {
     return {
-      value: 510310,
       threshold: 0,
+      svg_id1: "fund_scatter_diagram1",
+      svg_id2: "fund_scatter_diagram2",
+      svg_id3: "fund_scatter_diagram3",
+      svg_id4: "fund_scatter_diagram4",
+      date1: "20190331",
+      date2: "20190630",
+      date3: "20190930",
+      date4: "20191231",
     };
   },
   components: {
     fundScatterDiagram,
   },
-  methods: {
-    onClickFundType({ key }) {
-      console.log(`Click on item ${key}`);
-    },
-    onClickIndustryType({ key }) {
-      console.log(`Click on item ${key}`);
-    },
-  },
+  methods: {},
   mounted() {},
 };
 </script>
 
-<style>
-.ant-col .ant-input {
-  width: 100px;
+<style scoped>
+.container {
+  height: 175px;
+  width: 100%;
+  border: 1px solid black;
+}
+.container h4 {
+  border-bottom: 1px solid black;
+  margin-bottom: 0;
 }
 </style>

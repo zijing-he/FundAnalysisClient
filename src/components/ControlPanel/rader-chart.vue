@@ -8,7 +8,9 @@ import dataJSON from "@/data/market_data.json";
 
 export default {
   name: "ControlPanelRaderChart",
-  props:['id'],
+  props: {
+    id: String,
+  },
   components: {},
   data() {
     return {
@@ -22,7 +24,6 @@ export default {
   },
 
   mounted: function () {
-  
     this.renderInit();
     this.renderUpdate();
   },
@@ -55,7 +56,7 @@ export default {
 
   methods: {
     renderInit() {
-       d3.select("#market_raderchart").attr("id",this.id);
+      d3.select("#market_raderchart").attr("id", this.id);
       this.svg = d3
         .select(`#${this.id}`)
         .append("svg")

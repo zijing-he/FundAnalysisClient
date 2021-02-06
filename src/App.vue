@@ -18,7 +18,7 @@
 
 <script>
 import ControlPanelLayout from "@/components/ControlPanel/layout";
-import MarketAnalysisLayout from "@/components/MarketAnalysis/market-analysis-layout";
+import MarketAnalysisLayout from "@/components/MarketAnalysis/layout";
 import OverViewLayout from "@/components/Overview/layout";
 
 export default {

@@ -6,8 +6,8 @@
   </div>
 </template>
 <script>
-import MarketAnalysisCurveChart from "@/components/MarketAnalysis/market-analysis-curvechart";
-import MarketAnalysisStramGraph from "@/components/MarketAnalysis/market-analysis-streamgraph";
+import MarketAnalysisCurveChart from "@/components/MarketAnalysis/curvechart";
+import MarketAnalysisStramGraph from "@/components/MarketAnalysis/streamgraph";
 export default {
   name: "MarketAnalysisLayout",
   data() {
