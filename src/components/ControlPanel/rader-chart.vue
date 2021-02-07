@@ -67,8 +67,6 @@ export default {
         .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
     },
     renderUpdate() {
-      // Remove all groups in svg
-      this.svg.selectAll("g").remove();
 
       let textgroup = this.svg.append("g").attr("font-size", "11");
       textgroup.append("text").attr("x", "14").attr("y", "-35").text("收益");
