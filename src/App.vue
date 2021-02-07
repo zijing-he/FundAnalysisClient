@@ -5,8 +5,8 @@
       <a-row >
         <MarketAnalysisLayout />
       </a-row>
-       <a-row >
-        具体分析
+      <a-row >
+        <FundProfileLayout />
       </a-row>
     </a-col>
     <a-col :span="4"> 用户画像 </a-col>
@@ -15,11 +15,13 @@
 
 <script>
 import MarketAnalysisLayout from "@/components/MarketAnalysis/market-analysis-layout";
+import FundProfileLayout from "@/components/FundProfile/FundProfileLayout";
 
 export default {
   name: "App",
   components: {
     MarketAnalysisLayout,
+    FundProfileLayout,
   },
   mounted() {},
 };
