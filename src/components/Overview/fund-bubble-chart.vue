@@ -1,7 +1,7 @@
 
 <template>
-  <h5>{{date}}</h5>
-  <div id="fund_scatter_diagram"></div>
+  <h5>{{ date }}</h5>
+  <div id="fund_bubble_chart"></div>
   <!-- <a-row>
     <a-col :span="24">
       <temporalView :time-interval="timeInterval" @updateDate="debounceZoom" />
@@ -10,12 +10,13 @@
 </template>
 
 <script>
-import _ from "lodash";
+// import _ from "lodash";
 import * as d3 from "d3";
 import dataJSON from "@/data/tsne_date_loc.json";
 // import temporalView from "@/components/Overview/temporalView";
 export default {
-  name: "fundScatterDiagram",
+  name: "fundBubbleChart",
+
   props: {
     id: String,
     date: String,
@@ -41,7 +42,6 @@ export default {
     },
   },
   mounted: function () {
-    console.log(this.date);
     this.renderInit();
     this.renderUpdate();
   },
@@ -58,33 +58,32 @@ export default {
     innerHeight() {
       return this.height - this.margin.top - this.margin.bottom;
     },
-    xScale(){
+    xScale() {
       return d3
         .scaleLinear()
         .domain(d3.extent(Object.keys(this.data), (d) => this.data[d].x))
         .range([0, this.innerWidth])
         .nice();
     },
-    yScale(){
+    yScale() {
       return d3
         .scaleLinear()
         .domain(d3.extent(Object.keys(this.data), (d) => this.data[d].y))
         .range([this.innerHeight, 0])
         .nice();
     },
-    colorScaleRed(){
+    colorScaleRed() {
       return d3
         .scaleOrdinal()
         .domain(d3.extent(Object.keys(this.data), (d) => this.data[d].nav))
         .range(d3.schemeReds[9]);
     },
-    colorScaleGreen(){
+    colorScaleGreen() {
       return d3
         .scaleOrdinal()
         .domain(d3.extent(Object.keys(this.data), (d) => this.data[d].nav))
         .range(d3.schemeGreens[9]);
-    }
-
+    },
   },
   methods: {
     // handleupdateDate(interval) {
@@ -93,7 +92,7 @@ export default {
     //   this.renderUpdate();
     // },
     renderInit() {
-      d3.select("#fund_scatter_diagram").attr("id", this.id);
+      d3.select("#fund_bubble_chart").attr("id", this.id);
       this.svg = d3
         .select(`#${this.id}`)
         .append("svg")
@@ -104,8 +103,6 @@ export default {
         .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
     },
     renderUpdate() {
-      this.svg.selectAll("g").remove();
-
       // let timeScale = d3.scaleLinear().domain([0, 100]).range([0, 28]);
 
       // let timeStart = Math.round(timeScale(this.timeInterval[0]));
@@ -132,7 +129,7 @@ export default {
 </script>
 
 <style scoped>
-h5{
-   margin-bottom: 0;
+h5 {
+  margin-bottom: 0;
 }
 </style>
