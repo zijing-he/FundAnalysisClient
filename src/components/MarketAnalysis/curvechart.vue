@@ -141,5 +141,8 @@ export default {
 </script>
 
 <style scoped>
-
+#market_curvechart {
+  height: 75.2px;
+  width: 100%;
+}
 </style>

@@ -8,8 +8,10 @@
         <MarketAnalysisLayout />
       </a-row>
       <a-row>
-        
         <OverViewLayout />
+      </a-row>
+      <a-row >
+        <FundProfileLayout />
       </a-row>
     </a-col>
     <a-col :span="4"> 用户画像 </a-col>
@@ -17,6 +19,7 @@
 </template>
 
 <script>
+import FundProfileLayout from "@/components/FundProfile/FundProfileLayout";
 import ControlPanelLayout from "@/components/ControlPanel/layout";
 import MarketAnalysisLayout from "@/components/MarketAnalysis/layout";
 import OverViewLayout from "@/components/Overview/layout";
@@ -26,6 +29,7 @@ export default {
   components: {
     ControlPanelLayout,
     MarketAnalysisLayout,
+    FundProfileLayout,
     OverViewLayout,
   },
   mounted() {},
