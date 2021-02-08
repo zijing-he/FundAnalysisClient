@@ -1,6 +1,6 @@
 <template>
   <div id="fund_profile">
-    <div id="invest_style_boxes">
+    <div id="invest_style_boxes" ref="topElement" @scroll="topHandleScroll()" >
       <InvestStyleBox :boxId="boxIds[0]" :boxText="boxTexts[0]" />
       <InvestStyleBox :boxId="boxIds[1]" :boxText="boxTexts[1]" />
       <InvestStyleBox :boxId="boxIds[2]" :boxText="boxTexts[2]" />
@@ -10,7 +10,7 @@
       <InvestStyleBox :boxId="boxIds[6]" :boxText="boxTexts[6]" />
       <InvestStyleBox :boxId="boxIds[7]" :boxText="boxTexts[7]" />
     </div>
-    <div id="curve"></div>
+    <div id="curve"  ref="bottomElement" @scroll="bottomHandleScroll()" ></div>
   </div>
 </template>
 
@@ -34,8 +34,9 @@ export default {
       data: fakeDataJson,
       boxIds: [..."abcdefghijk"],
       boxTexts: ['2008-03-24', '2008-06-24', '2008-09-24', '2008-12-24', '2009-03-24', '2009-06-24', '2009-09-24', '2009-12-24'],
-      isSyncTop: false,
-      isSyncBottom: false,
+      // isSyncTop: false,
+      // isSyncBottom: false,
+      flag:false,
     };
   },
 
@@ -73,6 +74,12 @@ export default {
   },
 
   methods: {
+    topHandleScroll(){
+        this.$refs.bottomElement.scrollLeft = this.$refs.topElement.scrollLeft;
+    },
+    bottomHandleScroll(){
+      this.$refs.topElement.scrollLeft = this.$refs.bottomElement.scrollLeft;
+    },
     renderInit() {
       // this.width = document.getElementById("invest_style_boxes").scrollWidth;
       this.width = 2500;
@@ -84,22 +91,22 @@ export default {
         .attr("viewBox", [0, 0, this.width, this.height]);
 
       // 同步滚动
-      const topElement = document.getElementById("invest_style_boxes");
-      const bottomElement = document.getElementById("curve");
-      topElement.onscroll = function() {
-        if (!this.isSyncTop) {
-          this.isSyncBottom = true;
-          bottomElement.scrollLeft = this.scrollLeft;
-        }
-        this.isSyncTop = false;
-      }
-      bottomElement.onscroll = function() {
-        if (!this.isSyncBottom) {
-          this.isSyncTop = true;
-          topElement.scrollLeft = this.scrollLeft;
-        }
-        this.isSyncBottom = false;
-      }
+      // const topElement = document.getElementById("invest_style_boxes");
+      // const bottomElement = document.getElementById("curve");
+      // topElement.onscroll = function() {
+      //   if (!this.isSyncTop) {
+      //     this.isSyncBottom = true;
+      //     bottomElement.scrollLeft = this.scrollLeft;
+      //   }
+      //   this.isSyncTop = false;
+      // }
+      // bottomElement.onscroll = function() {
+      //   if (!this.isSyncBottom) {
+      //     this.isSyncTop = true;
+      //     topElement.scrollLeft = this.scrollLeft;
+      //   }
+      //   this.isSyncBottom = false;
+      // }
     },
     renderUpdate() {
       // Remove all groups in svg
@@ -117,7 +124,7 @@ export default {
         })
         .tickSizeOuter(0);
       this.svg.append("g")
-        .attr("transform", `translate(0, ${this.height})`)
+        .attr("transform", `translate(0, ${this.height-20})`)
         .call(xAxis);
 
       this.svg.append("path")
@@ -135,7 +142,7 @@ export default {
           .style("margin-left", this.xScale(new Date(this.boxTexts[i]))- 90 - (lastPos + 90) + 'px');
         lastPos = this.xScale(new Date(this.boxTexts[i]));
       });
-      console.log(document.getElementById("invest_style_boxes").scrollWidth);
+      // console.log(document.getElementById("invest_style_boxes").scrollWidth);
     },
   },
 };
@@ -155,7 +162,7 @@ export default {
   display: flex;
   height: 100%;
   width: 100%;
-  overflow-x: auto;
+  overflow: hidden;
 }
 
 #curve {
@@ -164,11 +171,7 @@ export default {
   width: 100%;
   z-index: 1;
   overflow-x: auto;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE 10+ */
+  overflow-y: hidden;
 }
 
-#curve::-webkit-scrollbar {
-  display: none; /* Chrome Safari */
-}
 </style>
