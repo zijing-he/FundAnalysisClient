@@ -4,6 +4,7 @@
 
 <script>
 import * as d3 from "d3";
+import dataJSON from "@/data/market_data.json";
 
 export default {
   name: "MarketAnalysisCurveChart",
@@ -12,22 +13,13 @@ export default {
   data() {
     return {
       svg: null,
-      margin: { top: 10, right: 20, bottom: 20, left: 20 },
+      margin: { top: 10, right: 30, bottom: 20, left: 30 },
       width: 993,
       height: 75.2,
-      data: [
-        ["20190110", 224, 100, 0.1],
-        ["20190111", 528, 150, 0.12],
-        ["20190114", 756, 200, 0.14],
-        ["20190322", 632, 250, 0.15],
-        ["20190331", 582, 180, 0.13],
-        ["20190423", 704, 190, 0.138],
-        ["20190509", 766, 250, 0.16],
-        ["20190515", 804, 300, 0.165],
-        ["20190604", 960, 350, 0.168],
-        ["20190610", 1095, 380, 0.174],
-        ["20191230", 1250, 450, 0.18],
-      ],
+      date: Object.keys(dataJSON["fund_size"]),
+      fund_size: Object.values(dataJSON["fund_size"]),
+      fund_number: Object.values(dataJSON["fund_number"]),
+      fund_return: Object.values(dataJSON["fund_return"]),
     };
   },
 
@@ -46,22 +38,19 @@ export default {
     xScale() {
       return d3
         .scaleBand()
-        .domain(this.data.map((d) => d[0]))
-        .range([0, this.innerWidth]);
+        .domain(this.date)
+        .range([0, this.innerWidth])
+        .paddingInner(1);
     },
     yScale() {
-      return d3
-        .scaleLinear()
-        .domain(d3.extent(this.data, (d) => d[1]))
-        .range([this.innerHeight, 0])
-        .nice();
+      return d3.scaleLinear().range([this.innerHeight, 0]).nice();
     },
     linePath() {
       return d3
         .line()
         .curve(d3.curveCatmullRom)
-        .x((d) => this.xScale(d[0]) + 51.8513513514)
-        .y((d) => this.yScale(d[1]));
+        .x((d, i) => this.xScale(this.date[i])) 
+        .y((d) => this.yScale(d));
     },
   },
 
@@ -77,13 +66,24 @@ export default {
         .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
     },
     renderUpdate() {
-      // Remove all groups in svg
-      this.svg.selectAll("g").remove();
 
       // Add X axis
       this.svg
         .append("g")
-        .call(d3.axisBottom(this.xScale))
+        .call(
+          d3
+            .axisBottom(this.xScale)
+            .tickSize(10)
+            .tickValues([
+              200001,
+              200501,
+              200901,
+              201001,
+              201501,
+              201901,
+              201912,
+            ])
+        )
         .attr("transform", `translate(0,${this.innerHeight})`);
 
       let brush = d3
@@ -94,65 +94,47 @@ export default {
         ])
         .on("end", updateChart);
 
-      //曲线绘制
+  
       let curveChart = this.svg.append("g");
 
-      //fund_size
+      //fund_size 蓝色
+      this.yScale.domain(d3.extent(this.fund_size));
       curveChart
         .append("g")
         .append("path")
         .attr("class", "line-path-size")
-        .attr("d", this.linePath(this.data))
+        .attr("d", this.linePath(this.fund_size))
         .attr("fill", "none")
-        .attr("stroke-width", 2)
+        .attr("stroke-width", 1.5)
         .attr("stroke", "#BBE6E9");
 
-      // fund_number
+      // fund_number 橙黄
+      this.yScale.domain(d3.extent(this.fund_number));
       curveChart
         .append("g")
         .append("path")
         .attr("class", "line-path-number")
-        .attr(
-          "d",
-          this.linePath.y((d) =>
-            this.yScale.domain(d3.extent(this.data, (d) => d[2]))(d[2])
-          )(this.data)
-        )
+        .attr("d", this.linePath(this.fund_number))
         .attr("fill", "none")
         .attr("stroke-width", 2)
         .attr("stroke", "#FFD9DF");
 
-      // fund_return
+      // fund_return——紫色
+      this.yScale.domain(d3.extent(this.fund_return));
       curveChart
         .append("g")
         .append("path")
         .attr("class", "line-path-return")
-        .attr(
-          "d",
-          this.linePath.y((d) =>
-            this.yScale.domain(d3.extent(this.data, (d) => d[3]))(d[3])
-          )(this.data)
-        )
+        .attr("d", this.linePath(this.fund_return))
         .attr("fill", "none")
         .attr("stroke-width", 2)
         .attr("stroke", "#CEBDED");
 
       curveChart.append("g").attr("class", "brush").call(brush);
 
-      d3.selectAll(".tick text").attr("font-size", "1em");
-
       function updateChart({ selection }) {
         console.log(selection); //打印选中的像素点
       }
-
-      // this.svg.append("g")
-      //   .selectAll("circle")
-      //   .data(this.data) //绑定基金id
-      //   .join("circle")
-      //   .attr("cx", d => this.xScale(d[0]) + 51.8513513514)
-      //   .attr("cy", d => this.yScale(d[1]))
-      //   .attr("r", 2)
-      //   .style("fill", "green");
     },
   },
 };

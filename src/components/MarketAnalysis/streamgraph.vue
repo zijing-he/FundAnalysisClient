@@ -1020,10 +1020,6 @@ export default {
         .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
     },
     renderUpdate() {
-      // Remove all groups in svg
-      this.svg.selectAll("g").remove();
-
-      // var keys = ["Amanda", "Ashley", "Betty", "Deborah"];
 
       // Add X axis
       this.svg

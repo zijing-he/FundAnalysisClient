@@ -1,9 +1,14 @@
 <template>
   <a-row>
-    <a-col :span="4"> 基金控制面板 </a-col>
+    <a-col :span="4">
+      <ControlPanelLayout />
+    </a-col>
     <a-col :span="16">
-      <a-row >
+      <a-row>
         <MarketAnalysisLayout />
+      </a-row>
+      <a-row>
+        <OverViewLayout />
       </a-row>
       <a-row >
         <FundProfileLayout />
@@ -14,14 +19,18 @@
 </template>
 
 <script>
-import MarketAnalysisLayout from "@/components/MarketAnalysis/market-analysis-layout";
 import FundProfileLayout from "@/components/FundProfile/FundProfileLayout";
+import ControlPanelLayout from "@/components/ControlPanel/layout";
+import MarketAnalysisLayout from "@/components/MarketAnalysis/layout";
+import OverViewLayout from "@/components/Overview/layout";
 
 export default {
   name: "App",
   components: {
+    ControlPanelLayout,
     MarketAnalysisLayout,
     FundProfileLayout,
+    OverViewLayout,
   },
   mounted() {},
 };
