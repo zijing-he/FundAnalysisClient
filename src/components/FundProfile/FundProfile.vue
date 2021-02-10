@@ -1,6 +1,6 @@
 <template>
   <div id="fund_profile">
-    <div id="invest_style_boxes" ref="topElement" @scroll="topHandleScroll()" >
+    <div id="invest_style_boxes" ref="topElement" @scroll="topHandleScroll()">
       <InvestStyleBox :boxId="boxIds[0]" :boxText="boxTexts[0]" />
       <InvestStyleBox :boxId="boxIds[1]" :boxText="boxTexts[1]" />
       <InvestStyleBox :boxId="boxIds[2]" :boxText="boxTexts[2]" />
@@ -10,7 +10,7 @@
       <InvestStyleBox :boxId="boxIds[6]" :boxText="boxTexts[6]" />
       <InvestStyleBox :boxId="boxIds[7]" :boxText="boxTexts[7]" />
     </div>
-    <div id="curve"  ref="bottomElement" @scroll="bottomHandleScroll()" ></div>
+    <div id="curve"  ref="bottomElement" @scroll="bottomHandleScroll()"></div>
   </div>
 </template>
 
