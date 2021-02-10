@@ -1,8 +1,6 @@
 <template>
   <div class="container">
-    <h4>基金详细对比</h4>
     <FundProfile />
-    <!-- <FundProfile /> -->
   </div>
 </template>
 <script>
@@ -25,9 +23,5 @@ export default {
   margin-top: 5px;
   width: 100%;
   border: 1px solid black;
-}
-.container h4 {
-  border-bottom: 1px solid black;
-  margin-bottom: 0;
 }
 </style>
