@@ -1,12 +1,18 @@
 <template>
   <div class="container">
     <h4>基金控制面板</h4>
-    <a-button size="small" style="margin-top:10px">积极型</a-button>
-    <ControlPanelRaderChart :id="svg_id1"/>
-    <a-button type="primary" size="small">保守型</a-button>
-    <ControlPanelRaderChart :id="svg_id2"/>
-    <a-button size="small">稳健型</a-button>
-    <ControlPanelRaderChart :id="svg_id3"/>
+    
+    <a-row>
+      <a-col :span="10">
+        <ControlPanelRaderChart />
+      </a-col>
+      <a-col :span="4">
+        <a-button type="primary" size="small" style="margin-top: 80px">
+          保守型
+          </a-button>
+      </a-col>
+      <a-col :span="10"> 雷达图 </a-col>
+    </a-row>
   </div>
 </template>
 <script>
@@ -15,9 +21,9 @@ export default {
   name: "ControlPanelLayout",
   data() {
     return {
-      svg_id1:"market_raderchart1",
-      svg_id2:"market_raderchart2",
-      svg_id3:"market_raderchart3",
+      svg_id1: "market_raderchart1",
+      svg_id2: "market_raderchart2",
+      svg_id3: "market_raderchart3",
     };
   },
   components: {
