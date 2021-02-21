@@ -1,6 +1,6 @@
 <template>
   <a-row>
-    <a-col :span="4">
+    <a-col :span="8">
       <ControlPanelLayout />
     </a-col>
     <a-col :span="16">
@@ -14,7 +14,6 @@
         <FundProfileLayout />
       </a-row>
     </a-col>
-    <a-col :span="4"> 用户画像 </a-col>
   </a-row>
 </template>
 
