@@ -1,5 +1,5 @@
 <template>
-  <div id="market_raderchart"></div>
+  <div id="market_raderchart1"></div>
 </template>
 
 <script>
@@ -11,7 +11,7 @@ import risk from "@/data/RaderChart/risk.json";
 import size from "@/data/RaderChart/size.json";
 
 export default {
-  name: "ControlPanelRaderChart",
+  name: "ControlPanelRaderChart1",
   components: {},
   data() {
     return {
@@ -28,8 +28,6 @@ export default {
   },
 
   mounted: function () {
-    console.log(this.holderValue);
-    console.log(d3.max(this.riskValue, (d) => d.length));
     this.renderInit();
     this.renderUpdate();
   },
@@ -63,7 +61,7 @@ export default {
   methods: {
     renderInit() {
       this.svg = d3
-        .select("#market_raderchart")
+        .select("#market_raderchart1")
         .append("svg")
         .attr("width", this.width)
         .attr("height", this.height)
@@ -72,7 +70,7 @@ export default {
         .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
     },
     renderUpdate() {
-      let textgroup = this.svg.append("g").attr("font-size", "11");
+      let textgroup = this.svg.append("g").attr("font-size", "11px");
       textgroup.append("text").attr("x", "14").attr("y", "-35").text("收益");
       textgroup
         .append("text")
