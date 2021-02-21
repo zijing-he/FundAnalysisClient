@@ -35,8 +35,6 @@ export default {
 
   mounted: function () {
     this.renderInit();
-    console.log(this.data);
-    console.log(this.allAxis);
     this.renderUpdate();
   },
 

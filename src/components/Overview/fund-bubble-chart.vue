@@ -12,8 +12,8 @@
 <script>
 // import _ from "lodash";
 import * as d3 from "d3";
-import dataJSON from "@/data/tsne_date_loc.json";
 // import temporalView from "@/components/Overview/temporalView";
+import dataJSON from "@/data/funds_tsne.json";
 export default {
   name: "fundBubbleChart",
 
@@ -32,6 +32,8 @@ export default {
       height: 134,
       margin: { top: 20, right: 20, bottom: 20, left: 20 },
       data: dataJSON[this.date],
+      data_values: [],
+      managers: [],
       // timeInterval: [0, 50],
     };
   },
@@ -42,6 +44,8 @@ export default {
     },
   },
   mounted: function () {
+    // console.log(this.data);
+    // console.log(Object.values(this.data));
     this.renderInit();
     this.renderUpdate();
   },
@@ -61,29 +65,21 @@ export default {
     xScale() {
       return d3
         .scaleLinear()
-        .domain(d3.extent(Object.keys(this.data), (d) => this.data[d].x))
+        .domain(d3.extent(this.data_values, (d) => d.loc[0]))
         .range([0, this.innerWidth])
         .nice();
     },
     yScale() {
       return d3
         .scaleLinear()
-        .domain(d3.extent(Object.keys(this.data), (d) => this.data[d].y))
+        .domain(d3.extent(this.data_values, (d) => d.loc[1]))
         .range([this.innerHeight, 0])
         .nice();
     },
-    colorScaleRed() {
-      return d3
-        .scaleOrdinal()
-        .domain(d3.extent(Object.keys(this.data), (d) => this.data[d].nav))
-        .range(d3.schemeReds[9]);
+    colorScale() {
+      return d3.scaleOrdinal().domain(this.managers).range(d3.chemeSet1);
     },
-    colorScaleGreen() {
-      return d3
-        .scaleOrdinal()
-        .domain(d3.extent(Object.keys(this.data), (d) => this.data[d].nav))
-        .range(d3.schemeGreens[9]);
-    },
+    
   },
   methods: {
     // handleupdateDate(interval) {
@@ -92,6 +88,14 @@ export default {
     //   this.renderUpdate();
     // },
     renderInit() {
+      this.data_values = Object.values(this.data);
+      this.data_values.forEach((d) => {
+        d.manager_id[0].forEach((dd) => {
+          this.managers.push(dd);
+        });
+      });
+      console.log(this.managers);
+
       d3.select("#fund_bubble_chart").attr("id", this.id);
       this.svg = d3
         .select(`#${this.id}`)
@@ -113,16 +117,18 @@ export default {
       this.svg
         .append("g")
         .selectAll("circle")
-        .data(
-          Object.keys(this.data).filter(
-            (d) => this.data[d].nav >= this.threshold
-          )
-        )
+        .data(this.data_values)
         .join("circle")
-        .attr("cx", (d) => this.xScale(this.data[d].x))
-        .attr("cy", (d) => this.yScale(this.data[d].y))
-        .attr("r", (d) => this.data[d].size + 1)
-        .style("fill", (d) => this.colorScaleRed(this.data[d].nav));
+        .attr("cx", (d) => this.xScale(d.loc[0]))
+        .attr("cy", (d) => {
+          return this.yScale(d.loc[1]);
+        })
+        .attr("r", 4)
+        .style("fill", d =>{
+          //  this.colorScale(d.manager_id[0][0]);
+          console.log(d.manager_id[0][0]);
+          return "red";
+        });  //颜色填充colorScale有问题，明天看
     },
   },
 };
