@@ -13,13 +13,14 @@ export default {
   data() {
     return {
       svg: null,
-      margin: { top: 10, right: 30, bottom: 20, left: 30 },
+      margin: { top: 10, right: 115, bottom: 20, left: 30 },
       width: 993,
       height: 75.2,
       date: Object.keys(dataJSON["fund_size"]),
       fund_size: Object.values(dataJSON["fund_size"]),
       fund_number: Object.values(dataJSON["fund_number"]),
       fund_return: Object.values(dataJSON["fund_return"]),
+      keys: ["基金数量", "基金规模", "基金平均收益"],
     };
   },
 
@@ -49,8 +50,14 @@ export default {
       return d3
         .line()
         .curve(d3.curveCatmullRom)
-        .x((d, i) => this.xScale(this.date[i])) 
+        .x((d, i) => this.xScale(this.date[i]))
         .y((d) => this.yScale(d));
+    },
+    colorScale() {
+      return d3
+        .scaleOrdinal()
+        .domain(this.keys)
+        .range(["#BBE6E9", "#FFD9DF", "#CEBDED"]);
     },
   },
 
@@ -66,7 +73,6 @@ export default {
         .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
     },
     renderUpdate() {
-
       // Add X axis
       this.svg
         .append("g")
@@ -94,7 +100,6 @@ export default {
         ])
         .on("end", updateChart);
 
-  
       let curveChart = this.svg.append("g");
 
       //fund_size 蓝色
@@ -135,6 +140,27 @@ export default {
       function updateChart({ selection }) {
         console.log(selection); //打印选中的像素点
       }
+
+      //legend
+      this.svg
+        .selectAll(".legend")
+        .data(this.keys)
+        .enter()
+        .append("circle")
+        .attr("cx", this.innerWidth + 15)
+        .attr("cy", (d, i) => 5 + i * 18)
+        .attr("r", 3)
+        .style("fill", (d) => this.colorScale(d));
+      this.svg.selectAll(".labels")
+        .data(this.keys)
+        .enter()
+        .append("text")
+        .attr("x", this.innerWidth + 25)
+        .attr("y", (d, i) => 5 + i * 18)
+        .style("fill", (d) => this.colorScale(d))
+        .text(d => d)
+        .attr("text-anchor", "left")
+        .style("alignment-baseline", "middle");
     },
   },
 };

@@ -47,6 +47,7 @@ export default {
     // console.log(this.data);
     // console.log(Object.values(this.data));
     this.renderInit();
+    // console.log(this.colorScale(101001090));
     this.renderUpdate();
   },
   // created() {
@@ -77,9 +78,8 @@ export default {
         .nice();
     },
     colorScale() {
-      return d3.scaleOrdinal().domain(this.managers).range(d3.chemeSet1);
+      return d3.scaleOrdinal().domain(this.managers).range(d3.schemeTableau10);
     },
-    
   },
   methods: {
     // handleupdateDate(interval) {
@@ -94,7 +94,6 @@ export default {
           this.managers.push(dd);
         });
       });
-      console.log(this.managers);
 
       d3.select("#fund_bubble_chart").attr("id", this.id);
       this.svg = d3
@@ -124,11 +123,7 @@ export default {
           return this.yScale(d.loc[1]);
         })
         .attr("r", 4)
-        .style("fill", d =>{
-          //  this.colorScale(d.manager_id[0][0]);
-          console.log(d.manager_id[0][0]);
-          return "red";
-        });  //颜色填充colorScale有问题，明天看
+        .style("fill", (d) => this.colorScale(d.manager_id[0][0]));
     },
   },
 };

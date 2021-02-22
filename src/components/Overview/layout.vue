@@ -9,7 +9,7 @@
           :threshold="threshold"
         />
       </a-col>
-      <!-- <a-col>
+      <a-col>
         <fundBubbleChart
           :id="svg_id2"
           :date="date2"
@@ -29,7 +29,7 @@
           :date="date4"
           :threshold="threshold"
         />
-      </a-col> -->
+      </a-col>
       <a-col>
         <managerBubbleChart />
       </a-col>
