@@ -28,7 +28,7 @@ export default {
   data() {
     return {
       svg: null,
-      width: 198.6,
+      width: 251.866,
       height: 134,
       margin: { top: 20, right: 20, bottom: 20, left: 20 },
       data: dataJSON[this.date],

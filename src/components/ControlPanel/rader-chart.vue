@@ -7,24 +7,29 @@ import * as d3 from "d3";
 
 export default {
   name: "ControlPanelRaderChart2",
+  props: {
+    value: Number,
+    axis: String,
+  },
   components: {},
   data() {
     return {
       svg: null,
+      raderChart: null,
       margin: { top: 75, right: 120, bottom: 120, left: 65 },
       width: 80,
       height: 80,
       factor: 1,
       levels: 5,
-      maxValue: 10,
+      maxValue: 1,
       radians: 2 * Math.PI,
       color: d3.scaleLinear().domain([0, 1]).range(d3.schemeCategory10),
       data: [
-        { axis: "收益", value: "6.5" },
-        { axis: "最大回撤率", value: "4" },
-        { axis: "风险", value: "3" },
-        { axis: "机构占比", value: "4" },
-        { axis: "规模", value: "5" },
+        { axis: "收益", value: 0 },
+        { axis: "最大回撤率", value: 0 },
+        { axis: "风险", value: 0 },
+        { axis: "机构占比", value: 0 },
+        { axis: "规模", value: 0 },
       ],
       dataValues: [],
       allAxis: [],
@@ -32,7 +37,18 @@ export default {
       radius: 0,
     };
   },
-
+  watch: {
+    value: function () {
+      this.data.forEach((d) => {
+        if (d.axis === this.axis) {
+          d.value = this.value;
+        }
+      });
+      this.svg.selectAll("polygon").remove();
+      this.svg.selectAll(".nodes").remove();
+      this.renderUpdate();
+    },
+  },
   mounted: function () {
     this.renderInit();
     this.renderUpdate();
@@ -64,12 +80,12 @@ export default {
         .attr("height", this.height + this.margin.bottom)
         .append("g")
         .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
-    },
-    renderUpdate() {
-      let raderChart = this.svg.append("g");
+
+      this.raderChart = this.svg.append("g");
+
       for (let i = 0; i < this.levels; i++) {
         let levelFactor = this.factor * this.radius * ((i + 1) / this.levels);
-        raderChart
+        this.raderChart
           .selectAll(".levels")
           .data(this.allAxis)
           .enter()
@@ -111,7 +127,7 @@ export default {
             })`
           );
       }
-      let axis = raderChart
+      let axis = this.raderChart
         .selectAll(".axis")
         .data(this.allAxis)
         .enter()
@@ -135,29 +151,6 @@ export default {
         .style("stroke", "#D5D5D5")
         .style("stroke-width", "1px");
 
-      //   axis
-      //     .append("text")
-      //     .text((d) => d)
-      //     .style("font-family", "sans-serif")
-      //     .attr("text-anchor", "middle")
-      //     .attr("font-size", "11px")
-      //     .attr("dy", "0.5em")
-      //     .attr("dx", "-1px")
-      //     .attr(
-      //       "x",
-      //       (d, i) =>
-      //         (this.width / 2) *
-      //           (1 - 0.2 * Math.sin((i * this.radians) / this.total)) -
-      //         60 * Math.sin((i * this.radians) / this.total)
-      //     )
-      //     .attr(
-      //       "y",
-      //       (d, i) =>
-      //         (this.height / 2) *
-      //           (1 - 0.8 * Math.cos((i * this.radians) / this.total)) -
-      //         20 * Math.cos((i * this.radians) / this.total)
-      //     );
-
       let textgroup = this.svg.append("g").attr("font-size", "11px");
       textgroup.append("text").attr("x", "23").attr("y", "-35").text("收益");
       textgroup
@@ -168,6 +161,11 @@ export default {
       textgroup.append("text").attr("x", "-20").attr("y", "85").text("风险");
       textgroup.append("text").attr("x", "52").attr("y", "85").text("机构占比");
       textgroup.append("text").attr("x", "87").attr("y", "4").text("规模");
+
+      this.raderChart.attr("transform", "translate(-6,-16)");
+    },
+    renderUpdate() {
+      //计算value的坐标
       this.data.forEach((d, i) => {
         this.dataValues.push([
           (this.width / 2) *
@@ -187,22 +185,27 @@ export default {
       for (let i = 0; i < this.dataValues.length; i++) {
         str = str + this.dataValues[i][0] + "," + this.dataValues[i][1] + " ";
       }
-      raderChart
+
+      this.raderChart
         .selectAll(".area")
         .data([this.dataValues])
         .enter()
         .append("polygon")
+        .attr("class", "area")
         .style("stroke-width", "1.5px")
         .style("stroke", "#5ABDB8")
-        .attr("points", str)
         .style("fill", "#5ABDB8")
-        .style("fill-opacity", 0.5);
+        .style("fill-opacity", 0.5)
+        // .transition()
+        // .duration(2000)
+        .attr("points", str);
 
-      raderChart
+      this.raderChart
         .selectAll(".nodes")
         .data(this.data)
         .enter()
         .append("circle")
+        .attr("class", "nodes")
         .attr("r", 2)
         .attr(
           "cx",
@@ -225,8 +228,6 @@ export default {
         .attr("data-id", (d) => d.axis)
         .style("fill", this.color(0))
         .style("fill-opacity", 0.8);
-    
-     raderChart.attr("transform","translate(-6,-16)")
     },
   },
 };

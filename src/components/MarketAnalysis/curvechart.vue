@@ -13,9 +13,9 @@ export default {
   data() {
     return {
       svg: null,
-      margin: { top: 10, right: 115, bottom: 20, left: 30 },
-      width: 993,
-      height: 75.2,
+      margin: { top: 10, right: 125, bottom: 20, left: 30 },
+      width: 1261.98,
+      height: 100,
       date: Object.keys(dataJSON["fund_size"]),
       fund_size: Object.values(dataJSON["fund_size"]),
       fund_number: Object.values(dataJSON["fund_number"]),
@@ -80,15 +80,7 @@ export default {
           d3
             .axisBottom(this.xScale)
             .tickSize(10)
-            .tickValues([
-              200001,
-              200501,
-              200901,
-              201001,
-              201501,
-              201901,
-              201912,
-            ])
+            .tickValues([200001, 200502, 201001, 201501, 201901])
         )
         .attr("transform", `translate(0,${this.innerHeight})`);
 
@@ -168,7 +160,7 @@ export default {
 
 <style scoped>
 #market_curvechart {
-  height: 75.2px;
+  height: 110px;
   width: 100%;
 }
 </style>

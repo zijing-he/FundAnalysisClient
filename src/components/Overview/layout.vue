@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h4>基金详细对比</h4>
+    <h4>历史数据对比</h4>
     <a-row>
       <a-col>
         <fundBubbleChart
@@ -69,10 +69,12 @@ export default {
 .container {
   height: 175px;
   width: 100%;
+  margin-top:3px;
   border: 1px solid black;
 }
 .container h4 {
   border-bottom: 1px solid black;
   margin-bottom: 0;
+  font-weight: bold;
 }
 </style>

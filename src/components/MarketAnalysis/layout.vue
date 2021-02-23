@@ -24,12 +24,13 @@ export default {
 
 <style scoped>
 .container {
-  height: 175px;
+  height: 35%;
   width: 100%;
   border: 1px solid black;
 }
 .container h4 {
   border-bottom: 1px solid black;
   margin-bottom: 0;
+  font-weight: bold;
 }
 </style>
