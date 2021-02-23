@@ -5,7 +5,7 @@
 
 <script>
 import * as d3 from "d3";
-import dataJSON from "@/data/market_sector.json";
+import dataJSON from "@/data/market_sector_new.json";
 export default {
   name: "MarketAnalysisStramGraph",
   props: {},
@@ -13,9 +13,9 @@ export default {
   data() {
     return {
       svg: null,
-      margin: { top: 30, right: 20, bottom: 5, left: 20 },
-      width: 993,
-      height: 75.2,
+      margin: { top: 30, right: 125, bottom: 0, left: 0 },
+      width: 1261.98,
+      height: 100,
       date: Object.keys(dataJSON),
       keys: [],
       data: dataJSON,
@@ -138,7 +138,8 @@ export default {
 
 <style scoped>
 #market_streamgraph {
-  height: 75.2px;
+  margin-top:10px;
+  height: 110px;
   width: 100%;
 }
 </style>

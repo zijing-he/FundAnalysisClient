@@ -15,7 +15,7 @@ export default {
   data() {
     return {
       svg: null,
-      width: 198.6,
+      width: 230.866,
       height: 134,
       margin: { top: 20, right: 20, bottom: 20, left: 20 },
       data: {
@@ -209,13 +209,13 @@ export default {
         tooltip
           .style("opacity", 1)
           .html("基金经理：" + d + "<br /> 掌管基金：" + this.data[d].number)
-          .style("left", (event.pageX-1050)  + "px")
+          .style("left", (event.pageX-1300)  + "px")
           .style("top", (event.pageY - 190) + "px");
       };
 
       let moveTooltip = (event) => {
         tooltip
-          .style("left", (event.pageX-1050) + "px")
+          .style("left", (event.pageX-1300) + "px")
           .style("top", (event.pageY - 190) + "px");
       };
 

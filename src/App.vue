@@ -1,16 +1,16 @@
 <template>
-  <a-row>
+  <a-row :gutter="[8,8]">
     <a-col :span="8">
       <ControlPanelLayout />
     </a-col>
     <a-col :span="16">
-      <a-row>
+      <a-row >
         <MarketAnalysisLayout />
       </a-row>
-      <a-row>
+      <a-row >
         <OverViewLayout />
       </a-row>
-      <a-row >
+      <a-row>
         <FundProfileLayout />
       </a-row>
     </a-col>
@@ -41,9 +41,9 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  width: 1500px;
-  height: 700px;
-  margin: 10px;
+  width: 100%;
+  height: 100%;
+  padding: 10px;
   border: 2px solid lightblue;
 }
 </style>
