@@ -1,112 +1,198 @@
 <template>
-  <div id="fund_profile">
-    <div id="invest_style_boxes" ref="topElement" @scroll="topHandleScroll()">
-      <InvestStyleBox :boxId="boxIds[0]" :boxText="boxTexts[0]" />
-      <InvestStyleBox :boxId="boxIds[1]" :boxText="boxTexts[1]" />
-      <InvestStyleBox :boxId="boxIds[2]" :boxText="boxTexts[2]" />
-      <InvestStyleBox :boxId="boxIds[3]" :boxText="boxTexts[3]" />
-      <InvestStyleBox :boxId="boxIds[4]" :boxText="boxTexts[4]" />
-      <InvestStyleBox :boxId="boxIds[5]" :boxText="boxTexts[5]" />
-      <InvestStyleBox :boxId="boxIds[6]" :boxText="boxTexts[6]" />
-      <InvestStyleBox :boxId="boxIds[7]" :boxText="boxTexts[7]" />
+  <div class="fund_profile">
+    <div class="invest_style_boxes" ref="topElement" @scroll="topHandleScroll()">
+      <component :is="componentName"
+        :boxId="item.boxId"
+        :boxText="item.boxText"
+        :innerRadius="item.innerRadius"
+        :outerRadius="item.outerRadius"
+        :datum="item.datum"
+        :holdingDataKeys="item.holdingDataKeys"
+        :holdingDataSorted="item.holdingDataSorted"
+        :key="item.boxId"
+        v-for="item in investStyleBoxes">
+      </component>
     </div>
-    <div id="curve"  ref="bottomElement" @scroll="bottomHandleScroll()"></div>
+    <div class="curve" id="curve" ref="bottomElement" @scroll="bottomHandleScroll()"></div>
+    <div class="rects" id="rects"></div>
   </div>
 </template>
 
 <script>
 import * as d3 from "d3";
 import InvestStyleBox from "./InvestStyleBox";
-import fakeDataJson from "@/data/test.json";
 
 export default {
   name: "FundProfile",
-  props: {},
+  props: {
+    fundId: String,
+    alphaData: Object,
+    betaData: Object,
+    sharpData: Object,
+  },
   components: {
     InvestStyleBox,
   },
   data() {
     return {
+      componentName: "invest-style-box",
       svg: null,
-      margin: { top: 10, right: 65, bottom: 10, left: 20 },
+      rectSvg: null,
+      margin: { top: 10, right: 80, bottom: 100, left: 20 },
       width: 900,
       height: 200,
-      data: fakeDataJson,
-      boxIds: [..."abcdefghijk"],
-      boxTexts: ['2008-03-24', '2008-06-24', '2008-09-24', '2008-12-24', '2009-03-24', '2009-06-24', '2009-09-24', '2009-12-24'],
-      // isSyncTop: false,
-      // isSyncBottom: false,
-      flag:false,
+      isSyncTop: false,
+      isSyncBottom: false,
+      dateData: [],
+      riskData: [],
+      navData: [],
+      sizeData: [],
+      investStyleBoxes: [],
+      maxOuterRadius: 70,
+      minOuterRadius: 55,
+      rectColors: ["rgb(227, 247, 219)", "rgb(194, 173, 232)", "rgb(70, 174, 227)"],
+      thisAlphaData: 0,
+      thisBetaData: 0,
+      thisSharpData: 0,
+      allAlphaData: this.alphaData,
+      allBetaData: this.betaData,
+      allSharpData: this.sharpData,
+      rectMarginRight: 30,
     };
   },
 
   mounted: function() {
+    const fundData = require(`@/data/FundProfile/${this.fundId}.json`);
+
+    for (let i in fundData) {
+      let tmpNavData = fundData[i]["navs"];
+      let tmpRiskData = fundData[i]["risks"];
+      let tmpDateData = Object.keys(tmpNavData);
+      tmpDateData = tmpDateData.map(d => `${d.substring(0, 4)}-${d.substring(4, 6)}-${d.substring(6)}`);
+      this.sizeData.push(fundData[i]["size"]);
+      this.dateData = [...this.dateData, ...tmpDateData];
+      this.riskData = [...this.riskData, ...Object.values(tmpRiskData)];
+      this.navData = [...this.navData, ...Object.values(tmpNavData)];
+      let holdingData = fundData[i]["holding"];
+      let holdingDataKeys = Object.keys(holdingData).sort((a, b) => holdingData[b] - holdingData[a]).slice(0, 8);
+      let holdingDataSorted = [];
+      holdingDataKeys.forEach(d => {
+        holdingDataSorted.push(holdingData[d]);
+      });
+      this.investStyleBoxes.push({
+        boxId: this.fundId + "_" + tmpDateData[tmpDateData.length - 1],
+        boxText: tmpDateData[tmpDateData.length - 1],
+        datum: fundData[i],
+        holdingDataKeys: holdingDataKeys,
+        holdingDataSorted: holdingDataSorted,
+      });
+    }
+
+    const keys = Object.keys(fundData);
+    this.thisAlphaData = fundData[keys[keys.length - 1]]["alpha"];
+    this.thisBetaData = fundData[keys[keys.length - 1]]["beta"];
+    this.thisSharpData = fundData[keys[keys.length - 1]]["sharp_ratio"];
+
+    let maxSize = Math.max(...this.sizeData);
+    let minSize = Math.min(...this.sizeData);
+    let kOuter = (this.maxOuterRadius - this.minOuterRadius) / (maxSize - minSize);
+    let bOuter = this.maxOuterRadius - kOuter * maxSize;
+    this.investStyleBoxes.map((d, i) => {
+      d.outerRadius = kOuter * this.sizeData[i] + bOuter;
+      d.innerRadius = d.outerRadius * 0.8;
+      return d;
+    });
     this.renderInit();
     this.renderUpdate();
   },
 
+  updated: function() {
+    this.updateMargin();
+    this.updateRects();
+  },
+
+  watch: {
+    alphaData: function(newVal, oldVal) {
+      this.allAlphaData = newVal;
+    },
+    betaData: function(newVal, oldVal) {
+      this.allBetaData = newVal;
+    },
+    sharpData: function(newVal, oldVal) {
+      this.allSharpData = newVal;
+    },
+  },
+
   computed: {
-    innerWidth() {
-      return this.width - this.margin.left - this.margin.right;
-    },
-    innerHeight() {
-      return this.height - this.margin.top - this.margin.bottom;
-    },
     xScale() {
       return d3
         .scaleTime()
-        .domain([new Date(this.data[0].date), new Date(this.data[510].date)]).nice()
+        .domain([new Date(this.dateData[0]), new Date(this.dateData[this.dateData.length - 1])])
         .range([this.margin.left, this.width - this.margin.right]);
     },
     yScale() {
       return d3
         .scaleLinear()
-        .domain([0, d3.max(this.data, d => d.value)]).nice()
+        .domain([0, d3.max(this.riskData)]).nice()
         .range([this.height - this.margin.bottom, this.margin.top]);
     },
     line() {
       return d3
         .line()
-        .defined(d => !isNaN(d.value))
-        .x(d => this.xScale(new Date(d.date)))
-        .y(d => this.yScale(d.value));
-    }
+        .x((d, i) => this.xScale(new Date(this.dateData[i])))
+        .y(d => this.yScale(d));
+    },
+    alphaXScale() {
+      return d3
+        .scaleLinear()
+        .domain([0, d3.max(this.allAlphaData)])
+        .range([0, document.getElementById(`rects_${this.fundId}`).clientWidth - this.rectMarginRight]);
+    },
+    betaXScale() {
+      return d3
+        .scaleLinear()
+        .domain([0, d3.max(this.allBetaData)])
+        .range([0, document.getElementById(`rects_${this.fundId}`).clientWidth - this.rectMarginRight]);
+    },
+    sharpXScale() {
+      return d3
+        .scaleLinear()
+        .domain([0, d3.max(this.allSharpData)])
+        .range([0, document.getElementById(`rects_${this.fundId}`).clientWidth - this.rectMarginRight]);
+    },
   },
 
   methods: {
-    topHandleScroll(){
+    topHandleScroll() {
+      if (!this.isSyncTop) {
+        this.isSyncBottom = true;
         this.$refs.bottomElement.scrollLeft = this.$refs.topElement.scrollLeft;
+      }
+      this.isSyncTop = false;
     },
-    bottomHandleScroll(){
-      this.$refs.topElement.scrollLeft = this.$refs.bottomElement.scrollLeft;
+    bottomHandleScroll() {
+      if (!this.isSyncBottom) {
+        this.isSyncTop = true;
+        this.$refs.topElement.scrollLeft = this.$refs.bottomElement.scrollLeft;
+      }
+      this.isSyncBottom = false;
     },
     renderInit() {
-      // this.width = document.getElementById("invest_style_boxes").scrollWidth;
-      this.width = 2500;
+      this.width = (156 + 60) * this.sizeData.length + this.margin.left + this.margin.right - 78;
+      d3.select("#curve").attr("id", `curve_${this.fundId}`);
+      d3.select("#rects").attr("id", `rects_${this.fundId}`);
       this.svg = d3
-        .select("#curve")
+        .select(`#curve_${this.fundId}`)
         .append("svg")
         .attr("width", this.width)
         .attr("height", this.height)
         .attr("viewBox", [0, 0, this.width, this.height]);
-
-      // 同步滚动
-      // const topElement = document.getElementById("invest_style_boxes");
-      // const bottomElement = document.getElementById("curve");
-      // topElement.onscroll = function() {
-      //   if (!this.isSyncTop) {
-      //     this.isSyncBottom = true;
-      //     bottomElement.scrollLeft = this.scrollLeft;
-      //   }
-      //   this.isSyncTop = false;
-      // }
-      // bottomElement.onscroll = function() {
-      //   if (!this.isSyncBottom) {
-      //     this.isSyncTop = true;
-      //     topElement.scrollLeft = this.scrollLeft;
-      //   }
-      //   this.isSyncBottom = false;
-      // }
+      this.rectSvg = d3
+        .select(`#rects_${this.fundId}`)
+        .append("svg")
+        .attr("width", document.getElementById(`rects_${this.fundId}`).clientWidth)
+        .attr("height", this.height)
+        .attr("viewBox", [0, 0, document.getElementById(`rects_${this.fundId}`).clientWidth, this.height]);
     },
     renderUpdate() {
       // Remove all groups in svg
@@ -124,54 +210,108 @@ export default {
         })
         .tickSizeOuter(0);
       this.svg.append("g")
-        .attr("transform", `translate(0, ${this.height-20})`)
+        .attr("transform", `translate(0, ${this.height})`)
         .call(xAxis);
 
       this.svg.append("path")
         .attr("fill", "none")
         .attr("stroke", "red")
-        .attr("stroke-width", 2)
+        .attr("stroke-width", 10)
         .attr("stroke-linejoin", "round")
         .attr("stroke-linecap", "round")
-        .attr("d", this.line(this.data));
-
-      let lastPos = -90;
-      this.boxIds.forEach((d, i) => {
+        .attr("d", this.line(this.riskData));
+      
+      for (let i = 0; i < this.navData.length - 1; i++) {
+        if (this.navData[i] < 1) {
+          let path = `M${this.xScale(new Date(this.dateData[i]))}, ${this.yScale(this.riskData[i])}`;
+          path += `L${this.xScale(new Date(this.dateData[i + 1]))}, ${this.yScale(this.riskData[i + 1])}`;
+          this.svg.append("path")
+            .attr("fill", "none")
+            .attr("stroke", "green")
+            .attr("stroke-width", 10)
+            .attr("stroke-linejoin", "round")
+            .attr("d", path);
+        }
+      }
+    },
+    updateMargin() {
+      let lastPos = -78;
+      this.investStyleBoxes.forEach(d => {
         d3
-          .select("#invest_style_box_" + d)
-          .style("margin-left", this.xScale(new Date(this.boxTexts[i]))- 90 - (lastPos + 90) + 'px');
-        lastPos = this.xScale(new Date(this.boxTexts[i]));
+          .select("#invest_style_box_" + d.boxId)
+          .style("margin-left", this.xScale(new Date(d.boxText)) - 78 - (lastPos + 78) + 'px');
+        lastPos = this.xScale(new Date(d.boxText));
       });
-      // console.log(document.getElementById("invest_style_boxes").scrollWidth);
+    },
+    updateRects() {
+      const gRects = this.rectSvg.append("g").attr("transform", "translate(0, 40)");
+      gRects
+        .append("rect")
+        .attr("fill", this.rectColors[0])
+        .attr("stroke", "black")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", this.alphaXScale(this.thisAlphaData) - this.alphaXScale(0))
+        .attr("height", 40);
+      gRects
+        .append("rect")
+        .attr("fill", this.rectColors[1])
+        .attr("stroke", "black")
+        .attr("x", 0)
+        .attr("y", 40)
+        .attr("width", this.betaXScale(this.thisBetaData) - this.betaXScale(0))
+        .attr("height", 40);
+      gRects
+        .append("rect")
+        .attr("fill", this.rectColors[2])
+        .attr("stroke", "black")
+        .attr("x", 0)
+        .attr("y", 80)
+        .attr("width", this.sharpXScale(this.thisSharpData) - this.sharpXScale(0))
+        .attr("height", 40);
     },
   },
 };
 </script>
 
 <style scoped>
-#fund_profile {
+.fund_profile {
   position: relative;
   height: 200px;
-  width: 900px;
-  border: 1px solid black;
-  margin: 5px;
+  width: 100%;
+  /* border: 1px solid black; */
+  /* margin: 5px 0; */
 }
 
-#invest_style_boxes {
+.invest_style_boxes {
   position: absolute;
   display: flex;
   height: 100%;
-  width: 100%;
-  overflow: hidden;
-}
-
-#curve {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  z-index: 1;
+  width: 80%;
+  border: 1px solid black;
   overflow-x: auto;
   overflow-y: hidden;
 }
 
+.curve {
+  position: absolute;
+  height: 100%;
+  width: 80%;
+  z-index: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
+.curve::-webkit-scrollbar {
+  display: none; /* Chrome Safari */
+}
+
+.rects {
+  position: absolute;
+  height: 100%;
+  width: 20%;
+  left: 80%;
+}
 </style>
