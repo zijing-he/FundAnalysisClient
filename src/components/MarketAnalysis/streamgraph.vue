@@ -13,16 +13,26 @@ export default {
   data() {
     return {
       svg: null,
-      margin: { top: 30, right: 125, bottom: 0, left: 0 },
+      margin: { top: 54, right: 125, bottom: 35, left: 30 },
       width: 1261.98,
       height: 100,
       date: Object.keys(dataJSON),
+      new_date: Object.keys(dataJSON),
       keys: [],
       data: dataJSON,
     };
   },
 
   mounted: function () {
+    // console.log(this.data);
+    // for(let year in this.data){
+    //   let sum = 0;
+    //   for(let sector in this.data[year]){
+    //     // console.log(year,sector);
+    //     sum += this.data[year][sector];
+    //   }
+    //   console.log(year,sum);
+    // }
     this.renderInit();
     this.renderUpdate();
   },
@@ -35,9 +45,10 @@ export default {
     },
     xScale() {
       return d3
-        .scaleLinear()
-        .domain(d3.extent(this.date))
-        .range([0, this.innerWidth]);
+        .scaleTime()
+        .domain([this.new_date[0], this.new_date[this.new_date.length - 1]])
+        .range([0, this.innerWidth])
+        .nice();
     },
     yScale() {
       return d3
@@ -51,9 +62,9 @@ export default {
     area() {
       return d3
         .area()
-        .x((d, index) => this.xScale(this.date[index]))
-        .y0((d) => this.yScale(d[0])*0.2)
-        .y1((d) => this.yScale(d[1])*0.2);
+        .x((d, index) => this.xScale(this.new_date[index]))
+        .y0((d) => this.yScale(d[0]))
+        .y1((d) => this.yScale(d[1]));
     },
     stackedData() {
       return d3.stack().offset(d3.stackOffsetSilhouette).keys(this.keys)(
@@ -64,12 +75,15 @@ export default {
   methods: {
     renderInit() {
       this.keys = Object.keys(dataJSON[this.date[0]]);
+      this.new_date = this.new_date.map(
+        (d) => new Date(d.substring(0, 4) + "-" + d.substring(4))
+      );
       this.svg = d3
         .select("#market_streamgraph")
         .append("svg")
         .attr("width", this.width)
         .attr("height", this.height)
-        .attr("viewBox", [0, 0, this.width, this.height])
+        // .attr("viewBox", [0, 0, this.width, this.height])
         .append("g")
         .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
     },
@@ -77,17 +91,18 @@ export default {
       // Add X axis
       this.svg
         .append("g")
-        .attr("transform", `translate(0,${this.innerHeight * 0.8})`)
+        .attr("transform", `translate(0,${this.innerHeight})`)
         .call(
           d3
             .axisBottom(this.xScale)
-            .tickSize(-this.innerHeight * 0.7)
-            .tickValues([200003, 200502, 201001, 201501, 201901]) //只显示这几个时间点
+            .ticks(d3.timeYear.every(1))
+            .tickValues([])
+          // .tickSize(this.innerHeight+10)
         )
         .select(".domain")
         .remove();
       // Customization
-      this.svg.selectAll(".tick line").attr("stroke", "#b8b8b8");
+      this.svg.selectAll(".tick line").attr("stroke", "black");
       // Add X axis label:
       // this.svg
       //   .append("text")
@@ -99,7 +114,7 @@ export default {
       let color = d3
         .scaleOrdinal()
         .domain(this.keys)
-        .range([...d3.schemeCategory10,...d3.schemePaired,...d3.schemeSet1]);
+        .range([...d3.schemeCategory10, ...d3.schemePaired, ...d3.schemeSet1]);
       // create a tooltip
       // let Tooltip = this.svg
       //   .append("text")
@@ -127,10 +142,34 @@ export default {
         .enter()
         .append("path")
         .attr("class", "streamGraph")
-        .style("fill", (d) => color(d.key))
+        .style("fill", "black")
         .attr("d", this.area);
       //   .on("mouseenter", mouseenter)
       //   .on("mouseleave", mouseleave);
+
+      // this.svg
+      //   .selectAll(".colorLegend")
+      //   .data(this.keys)
+      //   .enter()
+      //   .append("rect")
+      //   .attr("x", this.innerWidth + 20)
+      //   .attr("y", (d, i) => -25 + i * 10)
+      //   .attr("width", 5)
+      //   .attr("height", 5)
+      //   .attr("fill", (d) => color(d));
+
+      // this.svg
+      //   .selectAll(".textLegend")
+      //   .data(this.keys)
+      //   .enter()
+      //   .append("text")
+      //   .attr("x", this.innerWidth + 30)
+      //   .attr("y", (d, i) => -22 + i * 10)
+      //   .text((d) => d)
+      //   .style("font-size", 8)
+      //   .attr("text-anchor", "left")
+      //   .style("alignment-baseline", "middle");
+      // this.svg.selectAll(".tick text").attr("transform", "translate(0,15)");
     },
   },
 };
@@ -138,7 +177,7 @@ export default {
 
 <style scoped>
 #market_streamgraph {
-  margin-top:10px;
+  margin-top: 10px;
   height: 110px;
   width: 100%;
 }
