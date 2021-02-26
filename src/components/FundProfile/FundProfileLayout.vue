@@ -17,7 +17,7 @@ export default {
   data() {
     return {
       componentName: "FundProfile",
-      fundIds: ["000001", "000006", "000011", "000020"],
+      fundIds: ["000001", "000011", "000020"],
       alphaData: [],
       betaData: [],
       sharpData: [],

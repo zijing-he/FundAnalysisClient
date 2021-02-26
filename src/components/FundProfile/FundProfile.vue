@@ -9,6 +9,18 @@
         :datum="item.datum"
         :holdingDataKeys="item.holdingDataKeys"
         :holdingDataSorted="item.holdingDataSorted"
+        :navData="item.navData"
+        :riskData="item.riskData"
+        :stockData="item.stockData"
+        :bondData="item.bondData"
+        :cashData="item.cashData"
+        :otherData="item.otherData"
+        :sizeData="item.sizeData"
+        :alphaData="item.alphaData"
+        :betaData="item.betaData"
+        :sharpData="item.sharpData"
+        :infoData="item.infoData"
+        :index="item.index"
         :key="item.boxId"
         v-for="item in investStyleBoxes">
       </component>
@@ -38,7 +50,9 @@ export default {
       componentName: "invest-style-box",
       svg: null,
       rectSvg: null,
-      margin: { top: 10, right: 80, bottom: 100, left: 20 },
+      // margin: { top: 10, right: 80, bottom: 100, left: 20 },
+      // 2.26
+      margin: { top: 10, right: 160, bottom: 100, left: 20 },
       width: 900,
       height: 200,
       isSyncTop: false,
@@ -58,6 +72,17 @@ export default {
       allBetaData: this.betaData,
       allSharpData: this.sharpData,
       rectMarginRight: 30,
+      // 2.26
+      navData_n: [],
+      riskData_n: [],
+      stockData_n: [],
+      bondData_n: [],
+      cashData_n: [],
+      otherData_n: [],
+      alphaData_n: [],
+      betaData_n: [],
+      sharpData_n: [],
+      infoData_n: [],
     };
   },
 
@@ -79,6 +104,19 @@ export default {
       holdingDataKeys.forEach(d => {
         holdingDataSorted.push(holdingData[d]);
       });
+
+      // 2.26
+      this.navData_n.push(fundData[i]["nav"]);
+      this.riskData_n.push(fundData[i]["risk"]);
+      this.stockData_n.push(fundData[i]["stock"]);
+      this.bondData_n.push(fundData[i]["bond"]);
+      this.cashData_n.push(fundData[i]["cash"]);
+      this.otherData_n.push(fundData[i]["other"]);
+      this.alphaData_n.push(fundData[i]["alpha"]);
+      this.betaData_n.push(fundData[i]["beta"]);
+      this.sharpData_n.push(fundData[i]["sharp_ratio"]);
+      this.infoData_n.push(fundData[i]["information_ratio"]);
+
       this.investStyleBoxes.push({
         boxId: this.fundId + "_" + tmpDateData[tmpDateData.length - 1],
         boxText: tmpDateData[tmpDateData.length - 1],
@@ -100,6 +138,19 @@ export default {
     this.investStyleBoxes.map((d, i) => {
       d.outerRadius = kOuter * this.sizeData[i] + bOuter;
       d.innerRadius = d.outerRadius * 0.8;
+      // 2.26
+      d.navData = this.navData_n;
+      d.riskData = this.riskData_n;
+      d.stockData = this.stockData_n;
+      d.bondData = this.bondData_n;
+      d.cashData = this.cashData_n;
+      d.otherData = this.otherData_n;
+      d.sizeData = this.sizeData;
+      d.alphaData = this.alphaData_n;
+      d.betaData = this.betaData_n;
+      d.sharpData = this.sharpData_n;
+      d.infoData = this.infoData_n;
+      d.index = i;
       return d;
     });
     this.renderInit();
@@ -178,7 +229,9 @@ export default {
       this.isSyncBottom = false;
     },
     renderInit() {
-      this.width = (156 + 60) * this.sizeData.length + this.margin.left + this.margin.right - 78;
+      // this.width = (156 + 60) * this.sizeData.length + this.margin.left + this.margin.right - 78;
+      // 2.26
+      this.width = (312 + 60) * this.sizeData.length + this.margin.left + this.margin.right - 156;
       d3.select("#curve").attr("id", `curve_${this.fundId}`);
       d3.select("#rects").attr("id", `rects_${this.fundId}`);
       this.svg = d3
@@ -235,11 +288,16 @@ export default {
       }
     },
     updateMargin() {
-      let lastPos = -78;
+      // let lastPos = -78;
+      let lastPos = -156;
       this.investStyleBoxes.forEach(d => {
+        // d3
+        //   .select("#invest_style_box_" + d.boxId)
+        //   .style("margin-left", this.xScale(new Date(d.boxText)) - 78 - (lastPos + 78) + 'px');
+        // 2.26
         d3
           .select("#invest_style_box_" + d.boxId)
-          .style("margin-left", this.xScale(new Date(d.boxText)) - 78 - (lastPos + 78) + 'px');
+          .style("margin-left", this.xScale(new Date(d.boxText)) - 156 - (lastPos + 156) + 'px');
         lastPos = this.xScale(new Date(d.boxText));
       });
     },
