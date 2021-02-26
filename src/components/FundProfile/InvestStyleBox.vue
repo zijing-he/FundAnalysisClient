@@ -4,7 +4,9 @@
     <div class="content" id="content">
       <div class="icons" id="icons">
         <div :key="index" :style="icon.style" v-for="(icon, index) in icons">
-          <img :src="icon.path" style="max-width: 100%; max-height: 100%;" />
+          <svg class="icon" aria-hidden="true">
+            <use :xlink:href="icon.id"></use>
+          </svg>
         </div>
       </div>
     </div>
@@ -13,6 +15,38 @@
 
 <script>
 import * as d3 from "d3";
+
+const iconMap = {
+  有色金属: "#iconyousejinshu",
+  汽车: "#iconche1-copy",
+  医药生物: "#iconyiyao",
+  交通运输: "#iconjiaotongyunshu",
+  传媒: "#iconmediatb",
+  化工: "#iconhuagong",
+  银行: "#iconyinhang1",
+  非银金融: "#iconfeiyinjinrong",
+  机械设备: "#iconjixieshebei",
+  建筑装饰: "#iconjianzhuzhuangshi",
+  纺织服装: "#iconfangzhifuzhuang",
+  食品饮料: "#iconshipinyinliao",
+  电子: "#icondianzi",
+  计算机: "#iconjisuanjicomputer160",
+  钢铁: "#icongangtie",
+  电气设备: "#icondianqishebei",
+  采掘: "#iconcaijue",
+  国防军工: "#iconguofangjungong",
+  农林牧渔: "#iconnonglinmuyu",
+  综合: "#iconzonghe",
+  轻工制造: "#iconqinggongzhizao",
+  公用事业: "#icongongyongshiye",
+  通信: "#icontongxin-copy",
+  家用电器: "#iconappliances",
+  房地产: "#iconreal-estate",
+  商业贸易: "#iconshangyemaoyi",
+  休闲服务: "#iconxiuxianfuwu",
+  未知: "#iconweizhi",
+  建筑材料: "#iconjianzhucailiao",
+};
 
 export default {
   name: "InvestStyleBox",
@@ -156,7 +190,7 @@ export default {
           height: boxWidth + "px",
         };
         this.icons.push({
-          path: require(`@/assets/FundProfileIcons/${this.holdingDataKeys[i]}.jpg`),
+          id: iconMap[this.holdingDataKeys[i]],
           style: styleObject,
         });
       });
@@ -285,5 +319,12 @@ export default {
   height: 151px;
   width: 76px;
   left: 76px;
+}
+
+.icon {
+  width: 1em; height: 1em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
 }
 </style>
