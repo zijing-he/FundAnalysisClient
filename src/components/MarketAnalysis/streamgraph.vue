@@ -16,7 +16,6 @@ export default {
       margin: { top: 54, right: 125, bottom: 35, left: 30 },
       width: 1261.98,
       height: 100,
-      date: Object.keys(dataJSON),
       new_date: Object.keys(dataJSON),
       keys: [],
       data: dataJSON,
@@ -74,7 +73,7 @@ export default {
   },
   methods: {
     renderInit() {
-      this.keys = Object.keys(dataJSON[this.date[0]]);
+      this.keys = Object.keys(dataJSON[this.new_date[0]]);
       this.new_date = this.new_date.map(
         (d) => new Date(d.substring(0, 4) + "-" + d.substring(4))
       );

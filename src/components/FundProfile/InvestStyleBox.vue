@@ -246,7 +246,7 @@ export default {
       const gRects = this.svg.append("g");
       dataNames.forEach((d, i) => {
         this.yScale.domain(d3.extent(this.rectData[d]));
-        console.log(d3.min(this.rectData[d]));
+        // console.log(d3.min(this.rectData[d]));
         gRects
           .append("rect")
           .attr("x", this.xScale(i))
