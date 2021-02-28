@@ -13,14 +13,14 @@
 // import _ from "lodash";
 import * as d3 from "d3";
 // import temporalView from "@/components/Overview/temporalView";
-import dataJSON from "@/data/funds_tsne.json";
+// import dataJSON from "@/data/funds_tsne.json";
 export default {
   name: "fundBubbleChart",
 
   props: {
     id: String,
     date: String,
-    threshold: Number,
+    fundData: Object,
   },
   components: {
     // temporalView,
@@ -31,23 +31,15 @@ export default {
       width: 251.866,
       height: 134,
       margin: { top: 20, right: 20, bottom: 20, left: 20 },
-      data: dataJSON[this.date],
+      data: this.fundData[this.date],
       data_values: [],
       managers: [],
       // timeInterval: [0, 50],
     };
   },
-  watch: {
-    threshold: function () {
-      // When data is changed in parent, render this component
-      this.renderUpdate();
-    },
-  },
+
   mounted: function () {
-    // console.log(this.data);
-    // console.log(Object.values(this.data));
     this.renderInit();
-    // console.log(this.colorScale(101001090));
     this.renderUpdate();
   },
   // created() {
@@ -90,9 +82,10 @@ export default {
     renderInit() {
       this.data_values = Object.values(this.data);
       this.data_values.forEach((d) => {
-        d.manager_id[0].forEach((dd) => {
-          this.managers.push(dd);
-        });
+        // d.manager_id[0].forEach((dd) => {
+        //   this.managers.push(dd);
+        // });
+        this.managers.push(d.manager_id[0]);
       });
 
       d3.select("#fund_bubble_chart").attr("id", this.id);
@@ -119,11 +112,9 @@ export default {
         .data(this.data_values)
         .join("circle")
         .attr("cx", (d) => this.xScale(d.loc[0]))
-        .attr("cy", (d) => {
-          return this.yScale(d.loc[1]);
-        })
+        .attr("cy", (d) => this.yScale(d.loc[1]))
         .attr("r", 4)
-        .style("fill", (d) => this.colorScale(d.manager_id[0][0]));
+        .style("fill", (d) => this.colorScale(d.manager_id[0]));
     },
   },
 };

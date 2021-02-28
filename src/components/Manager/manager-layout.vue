@@ -64,7 +64,7 @@ export default {
   },
   methods: {
     drawManager () {
-      DataService.post('get_manager_nav', {'m_ids': [this.managerID]},
+      DataService.post('get_fund_ids', {'f_ids': [this.managerID]}, //
           data => this.managerUnitNavData = data)
       // this.$refs.AccNavPanel.$emit('drawManager', managerId)
       // this.$refs.AssetPanel.$emit('drawManager', managerId)

@@ -2,7 +2,7 @@
   <div class="container">
     <h4>基金控制面板</h4>
     <a-row>
-      <a-col :span="10">
+      <a-col :span="12">
         <!-- <ControlPanelRaderChart1 /> -->
         <ControlPanelLineChart
           :id="linechart_id1"
@@ -30,12 +30,12 @@
           v-on:updateValue="updateRaderChart"
         />
       </a-col>
-      <a-col :span="4">
+      <!-- <a-col :span="4">
         <a-button type="primary" size="small" style="margin-top: 80px">
           保守型
         </a-button>
-      </a-col>
-      <a-col :span="10">
+      </a-col> -->
+      <a-col :span="12">
         <ControlPanelRaderChart :value="rader_value" :axis="rader_axis"/>
       </a-col>
     </a-row>
