@@ -4,7 +4,10 @@
 
 <script>
 import * as d3 from "d3";
-import dataJSON from "@/data/market_data.json";
+import market_income from "@/data/CurveChart/market_fund_income.json";
+import market_number from "@/data/CurveChart/market_fund_number.json";
+import market_size from "@/data/CurveChart/market_fund_size.json";
+import market_hs300 from "@/data/CurveChart/market_hs300.json";
 
 export default {
   name: "MarketAnalysisCurveChart",
@@ -16,18 +19,16 @@ export default {
       margin: { top: 10, right: 125, bottom: 20, left: 30 },
       width: 1261.98,
       height: 100,
-      date: Object.keys(dataJSON["fund_size"]),
-      fund_size: Object.values(dataJSON["fund_size"]),
-      fund_number: Object.values(dataJSON["fund_number"]),
-      fund_return: Object.values(dataJSON["fund_return"]),
-      keys: ["基金规模", "基金数量", "基金平均收益"],
+      date: Object.keys(market_income),
+      fund_size: Object.values(market_size),
+      fund_number: Object.values(market_number),
+      fund_income: Object.values(market_income),
+      fund_hs300: Object.values(market_hs300),
+      keys: ["基金规模", "基金数量", "基金平均收益", "沪深300"],
     };
   },
 
   mounted: function () {
-    console.log(dataJSON["fund_size"]);
-    console.log(d3.extent(this.fund_size));
-
     this.renderInit();
     this.renderUpdate();
   },
@@ -59,15 +60,18 @@ export default {
     colorScale() {
       return d3
         .scaleOrdinal()
-        .domain(this.keys)
-        .range(["#BBE6E9", "#FFD9DF", "#CEBDED"]);
+        .domain(this.keys) //["基金规模", "基金数量", "基金平均收益","沪深三百"]
+        .range(["#928a97", "#fbe8d3", "#f85f73", "#283c63"]);
     },
   },
 
   methods: {
     renderInit() {
       this.date = this.date.map(
-        (d) => new Date(d.substring(0, 4) + "-" + d.substring(4))
+        (d) =>
+          new Date(
+            d.substring(0, 4) + "-" + d.substring(4, 6) + "-" + d.substring(6)
+          )
       );
       this.svg = d3
         .select("#market_curvechart")
@@ -95,7 +99,7 @@ export default {
 
       let curveChart = this.svg.append("g");
 
-      //fund_size 蓝色
+      //fund_size
       this.yScale.domain(d3.extent(this.fund_size));
       // console.log(this.yScale(0),this.yScale(100000));
       curveChart
@@ -105,7 +109,7 @@ export default {
         .attr("d", this.linePath(this.fund_size))
         .attr("fill", "none")
         .attr("stroke-width", 1.5)
-        .attr("stroke", "#BBE6E9");
+        .attr("stroke", "#928a97");
 
       // curveChart
       //   .selectAll(".points")
@@ -117,7 +121,7 @@ export default {
       //   .attr("r", 1)
       //   .attr("fill", "red");
 
-      // fund_number 橙黄
+      // fund_number
       this.yScale.domain(d3.extent(this.fund_number));
       curveChart
         .append("g")
@@ -126,18 +130,29 @@ export default {
         .attr("d", this.linePath(this.fund_number))
         .attr("fill", "none")
         .attr("stroke-width", 2)
-        .attr("stroke", "#FFD9DF");
+        .attr("stroke", "#fbe8d3");
 
-      // // fund_return——紫色
-      this.yScale.domain(d3.extent(this.fund_return));
+      //fund_income
+      this.yScale.domain(d3.extent(this.fund_income));
       curveChart
         .append("g")
         .append("path")
-        .attr("class", "line-path-return")
-        .attr("d", this.linePath(this.fund_return))
+        .attr("class", "line-path-income")
+        .attr("d", this.linePath(this.fund_income))
         .attr("fill", "none")
         .attr("stroke-width", 2)
-        .attr("stroke", "#CEBDED");
+        .attr("stroke", "#f85f73");
+
+      // fund_hs300——紫色
+      this.yScale.domain(d3.extent(this.fund_hs300));
+      curveChart
+        .append("g")
+        .append("path")
+        .attr("class", "line-path-fund_hs300")
+        .attr("d", this.linePath(this.fund_hs300))
+        .attr("fill", "none")
+        .attr("stroke-width", 2)
+        .attr("stroke", "#283c63");
 
       curveChart.append("g").attr("class", "brush").call(brush);
 
