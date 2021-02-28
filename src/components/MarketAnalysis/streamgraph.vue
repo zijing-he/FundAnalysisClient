@@ -20,18 +20,21 @@ export default {
       date: Object.keys(dataJSON),
       keys: [],
       data: dataJSON,
-      sector_data:sectorJSON,
-      data_sum:[],
-      sectors:["食品饮料","医疗生物","国防军工","汽车","计算机"],
+      sector_data: sectorJSON,
+      data_sum: [],
+      sectors: ["食品饮料", "医疗生物", "国防军工", "汽车", "计算机"],
+      min: 0,
     };
   },
 
   mounted: function () {
     // console.log(dataJSON);
-    console.log(sectorJSON);
-    console.log(this.sector_data["医药生物"]);
-    console.log(d3.extent(Object.values(this.sector_data["医药生物"])));
+    // console.log(sectorJSON);
+    // console.log(this.sector_data["医药生物"]);
+    // console.log(d3.extent(Object.values(this.sector_data["医药生物"])));
+    
     this.renderInit();
+    console.log(this.min);
     this.renderUpdate();
   },
   computed: {
@@ -53,7 +56,7 @@ export default {
         .scaleLinear()
         .domain([
           0,
-          d3.max(this.data_sum)
+          d3.max(this.data_sum),
           // d3.max(Object.values(this.data), (d) => d3.max(Object.values(d))),
         ])
         .range([this.innerHeight, 0]);
@@ -88,14 +91,15 @@ export default {
           )
       );
       //求每个季度各行业总和
-      for(let date in this.data){
+      for (let date in this.data) {
         let sum = 0;
-        for(let sector in this.data[date]){
+        for (let sector in this.data[date]) {
           sum += this.data[date][sector];
         }
         this.data_sum.push(sum);
       }
 
+      this.min = d3.min(Object.values(this.sector_data["医药生物"]));
       this.svg = d3
         .select("#market_streamgraph")
         .append("svg")
@@ -111,11 +115,13 @@ export default {
         .append("g")
         .attr("transform", `translate(0,${this.innerHeight})`)
         .call(
-          d3.axisBottom(this.xScale).ticks(d3.timeYear.every(1))
-          .tickSize(this.innerHeight/3)
-        )
-        // .select(".domain")
-        // .remove();
+          d3
+            .axisBottom(this.xScale)
+            .ticks(d3.timeYear.every(1))
+            .tickSize(this.innerHeight / 3)
+        );
+      // .select(".domain")
+      // .remove();
       // Customization
       this.svg.selectAll(".tick line").attr("stroke", "black");
       // Add X axis label:
@@ -152,9 +158,9 @@ export default {
         .scaleOrdinal()
         .domain(this.keys)
         .range([...d3.schemeCategory10, ...d3.schemePaired, ...d3.schemeSet1]);
-      
+
       let streamGraph = this.svg.append("g");
-      
+
       streamGraph
         .selectAll(".streamGraphLayers")
         .data(this.stackedData)
@@ -162,15 +168,16 @@ export default {
         .append("path")
         .attr("class", "streamGraphLayers")
         // .style("fill", (d) => color(d.key))
-        .style("fill", "#f9f7f7")
+        .style("fill", "#9F9D9D")
         .attr("d", this.area);
       //   .on("mouseenter", mouseenter)
       //   .on("mouseleave", mouseleave);
 
       let sectorChart = this.svg.append("g");
 
-      
-      this.yScale.domain(d3.extent(Object.values(this.sector_data["医药生物"])));
+      this.yScale.domain(
+        d3.extent(Object.values(this.sector_data["医药生物"]))
+      );
       sectorChart
         .append("g")
         .append("path")
