@@ -1,9 +1,9 @@
 <template>
   <a-row :gutter="[8,8]">
-    <a-col :span="8">
+    <a-col :span="5">
       <ControlPanelLayout />
     </a-col>
-    <a-col :span="16">
+    <a-col :span="19">
       <a-row >
         <MarketAnalysisLayout />
       </a-row>
