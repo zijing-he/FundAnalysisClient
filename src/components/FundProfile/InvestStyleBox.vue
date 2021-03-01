@@ -1,6 +1,6 @@
 <template>
   <div id="invest_style_box" class="invest_style_box">
-    <div class="text">{{boxText}}</div>
+    <div class="text" id="text">{{boxText}}</div>
     <div class="content" id="content">
       <!-- <div class="icons" id="icons">
         <div :key="index" :style="icon.style" v-for="(icon, index) in icons">
@@ -49,7 +49,7 @@ const iconMap = {
 };
 
 // 2.26
-const dataNames = ["nav", "risk", "stock", "bond", "cash", "other", "size", "alpha", "beta", "sharp", "info"];
+const dataNames = ["drop", "risk", "stock", "bond", "cash", "other", "size", "alpha", "beta", "sharp", "info"];
 
 export default {
   name: "InvestStyleBox",
@@ -62,7 +62,7 @@ export default {
     holdingDataKeys: Object,
     holdingDataSorted: Object,
     // 2.26
-    navData: Object,
+    dropData: Object,
     riskData: Object,
     stockData: Object,
     bondData: Object,
@@ -74,6 +74,9 @@ export default {
     sharpData: Object,
     infoData: Object,
     index: Number,
+    boxWidth: Number,
+    contentWidth: Number,
+    boxGap: Number,
   },
   data() {
     return {
@@ -90,8 +93,8 @@ export default {
       smallRadius: 13,
       icons: [],
       // 2.26
-      rectData: {
-        nav: this.navData,
+      barData: {
+        drop: this.dropData,
         risk: this.riskData,
         stock: this.stockData,
         bond: this.bondData,
@@ -103,6 +106,7 @@ export default {
         sharp: this.sharpData,
         info: this.infoData,
       },
+      barMargin: { top: 20, bottom: 20, left: 10, right: 0 },
     };
   },
 
@@ -121,23 +125,32 @@ export default {
     xScale() {
       return d3
         .scaleBand()
-        .range([10, 304])
+        .range([this.barMargin.left, this.contentWidth])
         .domain(d3.range(dataNames.length))
         .padding(0.1);
     },
     yScale() {
       return d3
         .scaleLinear()
-        .range([151 - 20, 20]);
+        .range([this.height - this.barMargin.bottom, this.barMargin.top]);
     },
   },
 
   methods: {
     renderInit() {
       d3
-        .select("#invest_style_box").attr("id", "invest_style_box_" + this.boxId);
+        .select("#invest_style_box")
+        .attr("id", "invest_style_box_" + this.boxId)
+        .style("width", this.boxWidth + "px")
+        .style("margin-left", this.boxGap + "px");
       d3
-        .select("#content").attr("id", "content_" + this.boxId);
+        .select("#text")
+        .attr("id", "text_" + this.boxId)
+        .style("width", this.contentWidth + "px");
+      d3
+        .select("#content")
+        .attr("id", "content_" + this.boxId)
+        .style("width", this.contentWidth + "px");
       d3
         .select("#icons").attr("id", "icons_" + this.boxId);
       this.svg = d3
@@ -245,14 +258,14 @@ export default {
       // 2.26
       const gRects = this.svg.append("g");
       dataNames.forEach((d, i) => {
-        this.yScale.domain(d3.extent(this.rectData[d]));
-        console.log(d3.min(this.rectData[d]));
+        // this.yScale.domain(d3.extent(this.barData[d]));
+        this.yScale.domain([0, 1]);
         gRects
           .append("rect")
           .attr("x", this.xScale(i))
-          .attr("y", this.yScale(this.rectData[d][this.index]))
+          .attr("y", this.yScale(this.barData[d][this.index]))
           .attr("width", this.xScale.bandwidth())
-          .attr("height", this.yScale(d3.min(this.rectData[d])) - this.yScale(this.rectData[d][this.index]))
+          .attr("height", this.yScale(0) - this.yScale(this.barData[d][this.index]))
           .attr("fill", "steelblue");
       });
       this.svg.append("g")

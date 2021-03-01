@@ -9,7 +9,7 @@
         :datum="item.datum"
         :holdingDataKeys="item.holdingDataKeys"
         :holdingDataSorted="item.holdingDataSorted"
-        :navData="item.navData"
+        :dropData="item.dropData"
         :riskData="item.riskData"
         :stockData="item.stockData"
         :bondData="item.bondData"
@@ -21,6 +21,9 @@
         :sharpData="item.sharpData"
         :infoData="item.infoData"
         :index="item.index"
+        :boxWidth="investStyleBoxWidth"
+        :contentWidth="contentWidth"
+        :boxGap="boxGap"
         :key="item.boxId"
         v-for="item in investStyleBoxes">
       </component>
@@ -73,7 +76,7 @@ export default {
       allSharpData: this.sharpData,
       rectMarginRight: 30,
       // 2.26
-      navData_n: [],
+      dropData_n: [],
       riskData_n: [],
       stockData_n: [],
       bondData_n: [],
@@ -83,6 +86,9 @@ export default {
       betaData_n: [],
       sharpData_n: [],
       infoData_n: [],
+      investStyleBoxWidth: 312,
+      contentWidth: 304,
+      boxGap: 60,
     };
   },
 
@@ -90,8 +96,17 @@ export default {
     const fundData = require(`@/data/FundProfile/${this.fundId}.json`);
 
     for (let i in fundData) {
-      let tmpNavData = fundData[i]["navs"];
-      let tmpRiskData = fundData[i]["risks"];
+      // let tmpNavData = fundData[i]["navs"];
+      // let tmpRiskData = fundData[i]["risks"];
+      // 2.26
+      if (["0331", "0630", "0930", "1231"].indexOf(i.substring(4)) === -1) {
+        this.investStyleBoxWidth = 280;
+        this.contentWidth = 275;
+        this.boxGap = 800;
+        this.margin.right = this.investStyleBoxWidth / 2 + 4;
+      }
+      let tmpNavData = fundData[i]["detail_car"];
+      let tmpRiskData = fundData[i]["detail_nav_return"];
       let tmpDateData = Object.keys(tmpNavData);
       tmpDateData = tmpDateData.map(d => `${d.substring(0, 4)}-${d.substring(4, 6)}-${d.substring(6)}`);
       this.sizeData.push(fundData[i]["size"]);
@@ -106,7 +121,7 @@ export default {
       });
 
       // 2.26
-      this.navData_n.push(fundData[i]["nav"]);
+      this.dropData_n.push(fundData[i]["max_drop_down"]);
       this.riskData_n.push(fundData[i]["risk"]);
       this.stockData_n.push(fundData[i]["stock"]);
       this.bondData_n.push(fundData[i]["bond"]);
@@ -139,7 +154,7 @@ export default {
       d.outerRadius = kOuter * this.sizeData[i] + bOuter;
       d.innerRadius = d.outerRadius * 0.8;
       // 2.26
-      d.navData = this.navData_n;
+      d.dropData = this.dropData_n;
       d.riskData = this.riskData_n;
       d.stockData = this.stockData_n;
       d.bondData = this.bondData_n;
@@ -184,7 +199,7 @@ export default {
     yScale() {
       return d3
         .scaleLinear()
-        .domain([0, d3.max(this.riskData)]).nice()
+        .domain(d3.extent(this.riskData)).nice()
         .range([this.height - this.margin.bottom, this.margin.top]);
     },
     line() {
@@ -231,7 +246,9 @@ export default {
     renderInit() {
       // this.width = (156 + 60) * this.sizeData.length + this.margin.left + this.margin.right - 78;
       // 2.26
-      this.width = (312 + 60) * this.sizeData.length + this.margin.left + this.margin.right - 156;
+      this.width = (this.investStyleBoxWidth + this.boxGap) * this.sizeData.length + 
+        this.margin.left + this.margin.right - 
+        this.investStyleBoxWidth / 2;
       d3.select("#curve").attr("id", `curve_${this.fundId}`);
       d3.select("#rects").attr("id", `rects_${this.fundId}`);
       this.svg = d3
@@ -275,7 +292,7 @@ export default {
         .attr("d", this.line(this.riskData));
       
       for (let i = 0; i < this.navData.length - 1; i++) {
-        if (this.navData[i] < 1) {
+        if (this.navData[i] < 0) {
           let path = `M${this.xScale(new Date(this.dateData[i]))}, ${this.yScale(this.riskData[i])}`;
           path += `L${this.xScale(new Date(this.dateData[i + 1]))}, ${this.yScale(this.riskData[i + 1])}`;
           this.svg.append("path")
@@ -289,7 +306,7 @@ export default {
     },
     updateMargin() {
       // let lastPos = -78;
-      let lastPos = -156;
+      let lastPos = -this.investStyleBoxWidth / 2;
       this.investStyleBoxes.forEach(d => {
         // d3
         //   .select("#invest_style_box_" + d.boxId)
@@ -297,7 +314,9 @@ export default {
         // 2.26
         d3
           .select("#invest_style_box_" + d.boxId)
-          .style("margin-left", this.xScale(new Date(d.boxText)) - 156 - (lastPos + 156) + 'px');
+          .style("margin-left", this.xScale(new Date(d.boxText)) - 
+            this.investStyleBoxWidth / 2 -
+            (lastPos + this.investStyleBoxWidth / 2) + "px");
         lastPos = this.xScale(new Date(d.boxText));
       });
     },
@@ -358,12 +377,6 @@ export default {
   z-index: 1;
   overflow-x: auto;
   overflow-y: hidden;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE 10+ */
-}
-
-.curve::-webkit-scrollbar {
-  display: none; /* Chrome Safari */
 }
 
 .rects {

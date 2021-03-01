@@ -12,12 +12,13 @@
 </template>
 <script>
 import FundProfile from "@/components/FundProfile/FundProfile";
+
 export default {
   name: "FundProfileLayout",
   data() {
     return {
       componentName: "FundProfile",
-      fundIds: ["000001", "000011", "000020"],
+      fundIds: ["001758", "003241", "004997", "005270", "112002", "160225", "240020", "481006", "519017", "501015"],
       alphaData: [],
       betaData: [],
       sharpData: [],
