@@ -1,9 +1,8 @@
 <template>
   <div class="container">
-    <h4>基金控制面板</h4>
+    <h4>投资风格面板</h4>
     <a-row>
-      <a-col :span="12">
-        <!-- <ControlPanelRaderChart1 /> -->
+      <!-- <a-col :span="12">
         <ControlPanelLineChart
           :id="linechart_id1"
           :data="income"
@@ -29,17 +28,12 @@
           :data="max_drop"
           v-on:updateValue="updateRaderChart"
         />
-      </a-col>
-      <!-- <a-col :span="4">
-        <a-button type="primary" size="small" style="margin-top: 80px">
-          保守型
-        </a-button>
       </a-col> -->
-      <a-col :span="12">
-        <ControlPanelRaderChart :value="rader_value" :axis="rader_axis"/>
+      <a-col :span="24">
+        <ControlPanelRaderChart :value="rader_value" :axis="rader_axis" />
       </a-col>
     </a-row>
-    <a-row class="sectror_ontainer">
+    <!-- <a-row class="sectror_ontainer">
       <text class="text">关注行业：</text>
       <svg class="icon" aria-hidden="true">
         <use xlink:href="#iconbaijiu_duose_"></use>
@@ -62,11 +56,11 @@
       <svg class="icon" aria-hidden="true">
         <use xlink:href="#iconshipin"></use>
       </svg>
-    </a-row>
+    </a-row> -->
   </div>
 </template>
 <script>
-import ControlPanelLineChart from "@/components/ControlPanel/line-chart";
+// import ControlPanelLineChart from "@/components/ControlPanel/line-chart";
 import ControlPanelRaderChart from "@/components/ControlPanel/rader-chart";
 import holderJSON from "@/data/RaderChart/holder.json";
 import incomeJSON from "@/data/RaderChart/income.json";
@@ -89,16 +83,16 @@ export default {
       risk: Object.values(riskJSON),
       size: Object.values(sizeJSON),
 
-      rader_value:0,
+      rader_value: 0,
       rader_axis: "",
     };
   },
   components: {
-    ControlPanelLineChart,
+    // ControlPanelLineChart,
     ControlPanelRaderChart,
   },
   methods: {
-    updateRaderChart(value,id) {
+    updateRaderChart(value, id) {
       this.rader_value = value;
       this.rader_axis = id;
     },
