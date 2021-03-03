@@ -34,8 +34,8 @@
       </svg>
     </a-row> -->
   </div>
-  <div class="bottomContainer">
-    <sortedList />
+  <div v-if="sortedList" class="bottomContainer">
+    <sortedList :list="sortedList"/>
   </div>
 </template>
 <script>
@@ -48,7 +48,7 @@ export default {
   data() {
     return {
       list: [],
-      sortedList: null,
+      sortedList: [],
     };
   },
   components: {
