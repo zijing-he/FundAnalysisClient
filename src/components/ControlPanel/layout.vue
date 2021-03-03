@@ -1,36 +1,12 @@
 <template>
-  <div class="container">
+  <div class="topContainer">
     <h4>投资风格面板</h4>
-    <a-row>
-      <!-- <a-col :span="12">
-        <ControlPanelLineChart
-          :id="linechart_id1"
-          :data="income"
-          v-on:updateValue="updateRaderChart"
-        />
-        <ControlPanelLineChart
-          :id="linechart_id2"
-          :data="size"
-          v-on:updateValue="updateRaderChart"
-        />
-        <ControlPanelLineChart
-          :id="linechart_id3"
-          :data="holder"
-          v-on:updateValue="updateRaderChart"
-        />
-        <ControlPanelLineChart
-          :id="linechart_id4"
-          :data="risk"
-          v-on:updateValue="updateRaderChart"
-        />
-        <ControlPanelLineChart
-          :id="linechart_id5"
-          :data="max_drop"
-          v-on:updateValue="updateRaderChart"
-        />
-      </a-col> -->
-      <a-col :span="24">
+    <a-row type="flex" align="middle">
+      <a-col :span="20">
         <ControlPanelRaderChart v-on:updateUserData="updateList" />
+      </a-col>
+      <a-col :span="4">
+        <a-button type="primary" @click="handleClick">提交</a-button>
       </a-col>
     </a-row>
     <!-- <a-row class="sectror_ontainer">
@@ -58,47 +34,37 @@
       </svg>
     </a-row> -->
   </div>
+  <div class="bottomContainer">
+    <sortedList />
+  </div>
 </template>
 <script>
-// import ControlPanelLineChart from "@/components/ControlPanel/line-chart";
 import ControlPanelRaderChart from "@/components/ControlPanel/rader-chart";
-import holderJSON from "@/data/RaderChart/holder.json";
-import incomeJSON from "@/data/RaderChart/income.json";
-import max_dropJSON from "@/data/RaderChart/max_drop.json";
-import riskJSON from "@/data/RaderChart/risk.json";
-import sizeJSON from "@/data/RaderChart/size.json";
+import SortedList from "@/components/ControlPanel/sorted-list";
 import DataService from "@/utils/data-service";
 
 export default {
   name: "ControlPanelLayout",
   data() {
     return {
-      linechart_id1: "income",
-      linechart_id2: "size",
-      linechart_id3: "holder",
-      linechart_id4: "risk",
-      linechart_id5: "max_drop",
-      income: Object.values(incomeJSON),
-      holder: Object.values(holderJSON),
-      max_drop: Object.values(max_dropJSON),
-      risk: Object.values(riskJSON),
-      size: Object.values(sizeJSON),
-
-      rader_value: 0,
-      rader_axis: "",
+      list: [],
+      sortedList: null,
     };
   },
   components: {
-    // ControlPanelLineChart,
     ControlPanelRaderChart,
+    SortedList,
   },
   methods: {
-    updateList(list) {
-      //  console.log(list);
-
-      DataService.post("get_fund_ranks", { weights: list }, (data) => {
-        console.log(data);
+    handleClick() {
+      console.log("返回排序结果");
+      DataService.post("get_fund_ranks", { weights: this.list }, (data) => {
+        this.sortedList = data.ranks.slice(0, 10);
+        console.log(this.sortedList);
       });
+    },
+    updateList(value) {
+      this.list = value;
     },
   },
   mounted() {},
@@ -106,12 +72,12 @@ export default {
 </script>
 
 <style scoped>
-.container {
+.topContainer {
   height: 255px;
   width: 100%;
   border: 1px solid black;
 }
-.container h4 {
+.topContainer h4 {
   border-bottom: 1px solid black;
   margin-bottom: 5px;
   font-weight: bold;
@@ -125,6 +91,13 @@ export default {
   font-size: 13px;
 }
 
+.bottomContainer {
+  width: 100%;
+  margin-top: 10px;
+  border: 1px solid black;
+}
+
+/* 
 .icon {
   width: 1.2em;
   height: 1.2em;
@@ -133,5 +106,5 @@ export default {
   vertical-align: -0.15em;
   fill: currentColor;
   overflow: hidden;
-}
+} */
 </style>
