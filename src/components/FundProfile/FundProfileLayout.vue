@@ -3,9 +3,20 @@
     <component :is="componentName"
       :fundId="item"
       :key="item"
+      :returnData="returnData"
+      :carData="carData"
+      :stockData="stockData"
+      :bondData="bondData"
+      :cashData="cashData"
+      :otherData="otherData"
+      :avgSizeData="sizeData"
       :alphaData="alphaData"
       :betaData="betaData"
       :sharpData="sharpData"
+      :dropData="dropData"
+      :infoData="infoData"
+      :riskData="riskData"
+      :weightData="weightData"
       v-for="item in fundIds">
     </component>
   </div>
@@ -18,10 +29,21 @@ export default {
   data() {
     return {
       componentName: "FundProfile",
-      fundIds: ["001758", "003241", "004997", "005270", "112002", "160225", "240020", "481006", "519017", "501015"],
+      fundIds: ["000001", "000006", "000011", "000020", "000021", "000029", "000031", "000039", "000059"],
+      returnData: [],
+      carData: [],
+      stockData: [],
+      bondData: [],
+      cashData: [],
+      otherData: [],
+      sizeData: [],
       alphaData: [],
       betaData: [],
       sharpData: [],
+      dropData: [],
+      infoData: [],
+      riskData: [],
+      weightData: [],
     };
   },
   components: {
@@ -31,10 +53,20 @@ export default {
   mounted() {
     this.fundIds.forEach(d => {
       const fundData = require(`@/data/FundProfile/${d}.json`);
-      const keys = Object.keys(fundData);
-      this.alphaData.push(fundData[keys[keys.length - 1]]["alpha"]);
-      this.betaData.push(fundData[keys[keys.length - 1]]["beta"]);
-      this.sharpData.push(fundData[keys[keys.length - 1]]["sharp_ratio"]);
+      this.returnData.push(fundData["total"][d]["return"]);
+      this.carData.push(fundData["total"][d]["car"]);
+      this.stockData.push(fundData["total"][d]["stock"]);
+      this.bondData.push(fundData["total"][d]["bond"]);
+      this.cashData.push(fundData["total"][d]["cash"]);
+      this.otherData.push(fundData["total"][d]["other"]);
+      this.sizeData.push(fundData["total"][d]["size"]);
+      this.alphaData.push(fundData["total"][d]["alpha"]);
+      this.betaData.push(fundData["total"][d]["beta"]);
+      this.sharpData.push(fundData["total"][d]["sharp_ratio"]);
+      this.dropData.push(fundData["total"][d]["max_drop_down"]);
+      this.infoData.push(fundData["total"][d]["information_ratio"]);
+      this.riskData.push(fundData["total"][d]["risk"]);
+      this.weightData.push(fundData["total"][d]["instl_weight"]);
     });
   },
 };

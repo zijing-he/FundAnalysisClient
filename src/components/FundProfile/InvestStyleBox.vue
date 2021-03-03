@@ -1,6 +1,6 @@
 <template>
   <div id="invest_style_box" class="invest_style_box">
-    <div class="text" id="text">{{boxText}}</div>
+    <div class="text" id="text">{{ boxText }}</div>
     <div class="content" id="content">
       <!-- <div class="icons" id="icons">
         <div :key="index" :style="icon.style" v-for="(icon, index) in icons">
@@ -9,6 +9,11 @@
           </svg>
         </div>
       </div> -->
+      <div class="center" id="center"></div>
+      <div class="left" id="left"></div>
+      <div class="top" id="top"></div>
+      <div class="right" id="right"></div>
+      <div class="bottom" id="bottom"></div>
     </div>
   </div>
 </template>
@@ -16,40 +21,65 @@
 <script>
 import * as d3 from "d3";
 
-const iconMap = {
-  有色金属: "#iconyousejinshu",
-  汽车: "#iconche1-copy",
-  医药生物: "#iconyiyao",
-  交通运输: "#iconjiaotongyunshu",
-  传媒: "#iconmediatb",
-  化工: "#iconhuagong",
-  银行: "#iconyinhang1",
-  非银金融: "#iconfeiyinjinrong",
-  机械设备: "#iconjixieshebei",
-  建筑装饰: "#iconjianzhuzhuangshi",
-  纺织服装: "#iconfangzhifuzhuang",
-  食品饮料: "#iconshipinyinliao",
-  电子: "#icondianzi",
-  计算机: "#iconjisuanjicomputer160",
-  钢铁: "#icongangtie",
-  电气设备: "#icondianqishebei",
-  采掘: "#iconcaijue",
-  国防军工: "#iconguofangjungong",
-  农林牧渔: "#iconnonglinmuyu",
-  综合: "#iconzonghe",
-  轻工制造: "#iconqinggongzhizao",
-  公用事业: "#icongongyongshiye",
-  通信: "#icontongxin-copy",
-  家用电器: "#iconappliances",
-  房地产: "#iconreal-estate",
-  商业贸易: "#iconshangyemaoyi",
-  休闲服务: "#iconxiuxianfuwu",
-  未知: "#iconweizhi",
-  建筑材料: "#iconjianzhucailiao",
-};
+// const iconMap = {
+//   有色金属: "#iconyousejinshu",
+//   汽车: "#iconche1-copy",
+//   医药生物: "#iconyiyao",
+//   交通运输: "#iconjiaotongyunshu",
+//   传媒: "#iconmediatb",
+//   化工: "#iconhuagong",
+//   银行: "#iconyinhang1",
+//   非银金融: "#iconfeiyinjinrong",
+//   机械设备: "#iconjixieshebei",
+//   建筑装饰: "#iconjianzhuzhuangshi",
+//   纺织服装: "#iconfangzhifuzhuang",
+//   食品饮料: "#iconshipinyinliao",
+//   电子: "#icondianzi",
+//   计算机: "#iconjisuanjicomputer160",
+//   钢铁: "#icongangtie",
+//   电气设备: "#icondianqishebei",
+//   采掘: "#iconcaijue",
+//   国防军工: "#iconguofangjungong",
+//   农林牧渔: "#iconnonglinmuyu",
+//   综合: "#iconzonghe",
+//   轻工制造: "#iconqinggongzhizao",
+//   公用事业: "#icongongyongshiye",
+//   通信: "#icontongxin-copy",
+//   家用电器: "#iconappliances",
+//   房地产: "#iconreal-estate",
+//   商业贸易: "#iconshangyemaoyi",
+//   休闲服务: "#iconxiuxianfuwu",
+//   未知: "#iconweizhi",
+//   建筑材料: "#iconjianzhucailiao",
+// };
 
 // 2.26
-const dataNames = ["drop", "risk", "stock", "bond", "cash", "other", "size", "alpha", "beta", "sharp", "info"];
+// const dataNames = [
+//   "drop",
+//   "risk",
+//   "stock",
+//   "bond",
+//   "cash",
+//   "other",
+//   "size",
+//   "alpha",
+//   "beta",
+//   "sharp",
+//   "info",
+// ];
+
+const colorMap = {
+  alpha: "#f4cae4",
+  beta: "#fff2ae",
+  sharp: "#fdcdac",
+  info: "#cbd5e8",
+  stock: "#fbb4ae",
+  bond: "#b3cde3",
+  cash: "#ccebc5",
+  other: "#decbe4",
+  nav: "#e5d8bd",
+  risk: "#33a02c",
+};
 
 export default {
   name: "InvestStyleBox",
@@ -59,21 +89,21 @@ export default {
     innerRadius: Number,
     outerRadius: Number,
     datum: Object,
-    holdingDataKeys: Object,
-    holdingDataSorted: Object,
+    holdingData: Object,
     // 2.26
-    dropData: Object,
-    riskData: Object,
-    stockData: Object,
-    bondData: Object,
-    cashData: Object,
-    otherData: Object,
-    sizeData: Object,
-    alphaData: Object,
-    betaData: Object,
-    sharpData: Object,
-    infoData: Object,
-    index: Number,
+    dropData: Number,
+    navReturnData: Number,
+    hs300Data: Number,
+    riskData: Number,
+    stockData: Number,
+    bondData: Number,
+    cashData: Number,
+    otherData: Number,
+    sizeData: Number,
+    alphaData: Number,
+    betaData: Number,
+    sharpData: Number,
+    infoData: Number,
     boxWidth: Number,
     contentWidth: Number,
     boxGap: Number,
@@ -82,37 +112,52 @@ export default {
     return {
       svg: null,
       margin: { top: 10, right: 20, bottom: 20, left: 20 },
-      // width: 152,
+      width: 200,
       // 2.26
-      width: 304,
-      height: 151,
+      // width: 304,
+      height: 200,
       data: null,
       ratioColors: { org: "rgb(75, 135, 203)", person: "rgb(92, 26, 142)" },
-      circleColors: { high: "rgb(254, 180, 7)", mid: "rgb(239, 161, 112)", low: "rgb(255, 240, 193)" },
+      circleColors: {
+        high: "rgb(254, 180, 7)",
+        mid: "rgb(239, 161, 112)",
+        low: "rgb(255, 240, 193)",
+      },
       largeRadius: 47,
       smallRadius: 13,
       icons: [],
       // 2.26
-      barData: {
-        drop: this.dropData,
-        risk: this.riskData,
-        stock: this.stockData,
-        bond: this.bondData,
-        cash: this.cashData,
-        other: this.otherData,
-        size: this.sizeData,
-        alpha: this.alphaData,
-        beta: this.betaData,
-        sharp: this.sharpData,
-        info: this.infoData,
-      },
-      barMargin: { top: 20, bottom: 20, left: 10, right: 0 },
+      // barData: {
+      //   drop: this.dropData,
+      //   risk: this.riskData,
+      //   stock: this.stockData,
+      //   bond: this.bondData,
+      //   cash: this.cashData,
+      //   other: this.otherData,
+      //   size: this.sizeData,
+      //   alpha: this.alphaData,
+      //   beta: this.betaData,
+      //   sharp: this.sharpData,
+      //   info: this.infoData,
+      // },
+      // barMargin: { top: 20, bottom: 20, left: 10, right: 0 },
+      // version 4
+      centerSvg: null,
+      leftSvg: null,
+      topSvg: null,
+      rightSvg: null,
+      bottomSvg: null,
+      barTopMargin: 5,
+      curDegree: 0,
+      lastTopBars: [],
+      dashlineStartX: 0,
+      dashlineStartY: 0,
     };
   },
 
-  mounted: function () {
+  mounted: function() {
     this.largeRadius = this.innerRadius - 3;
-    this.smallRadius = this.largeRadius * 13 / 47;
+    this.smallRadius = (this.largeRadius * 13) / 47;
     this.renderInit();
     this.renderUpdate();
   },
@@ -122,49 +167,177 @@ export default {
       return (this.height - 2 * this.outerRadius) / 2;
     },
     // 2.26
-    xScale() {
+    // xScale() {
+    //   return d3
+    //     .scaleBand()
+    //     .range([this.barMargin.left, this.contentWidth])
+    //     .domain(d3.range(dataNames.length))
+    //     .padding(0.1);
+    // },
+    // yScale() {
+    //   return d3
+    //     .scaleLinear()
+    //     .range([this.height - this.barMargin.bottom, this.barMargin.top]);
+    // },
+    treemap() {
       return d3
-        .scaleBand()
-        .range([this.barMargin.left, this.contentWidth])
-        .domain(d3.range(dataNames.length))
-        .padding(0.1);
+        .treemap()
+        .tile(d3.treemapSquarify)
+        .size([80, 80])
+        .padding(1)
+        .round(true);
     },
     yScale() {
-      return d3
-        .scaleLinear()
-        .range([this.height - this.barMargin.bottom, this.barMargin.top]);
+      return d3.scaleLinear().domain([0, 1]);
+    },
+    curTopBars() {
+      if (this.curDegree % 360 === 0) {
+        return ["nav", "risk"];
+      } else if (this.curDegree % 360 === 90 || this.curDegree % 360 === -270) {
+        return ["alpha", "beta"];
+      } else if (
+        this.curDegree % 360 === 180 ||
+        this.curDegree % 360 === -180
+      ) {
+        return ["stock", "bond", "cash", "other"];
+      } else {
+        return ["sharp", "info"];
+      }
+    },
+    curTopSide() {
+      if (this.curDegree % 360 === 0) {
+        return "top";
+      } else if (this.curDegree % 360 === 90 || this.curDegree % 360 === -270) {
+        return "left";
+      } else if (
+        this.curDegree % 360 === 180 ||
+        this.curDegree % 360 === -180
+      ) {
+        return "bottom";
+      } else {
+        return "right";
+      }
     },
   },
 
   methods: {
     renderInit() {
-      d3
-        .select("#invest_style_box")
+      d3.select("#invest_style_box")
         .attr("id", "invest_style_box_" + this.boxId)
         .style("width", this.boxWidth + "px")
         .style("margin-left", this.boxGap + "px");
-      d3
-        .select("#text")
+      d3.select("#text")
         .attr("id", "text_" + this.boxId)
         .style("width", this.contentWidth + "px");
-      d3
-        .select("#content")
+      d3.select("#content")
         .attr("id", "content_" + this.boxId)
         .style("width", this.contentWidth + "px");
-      d3
-        .select("#icons").attr("id", "icons_" + this.boxId);
-      this.svg = d3
-        .select("#content_" + this.boxId)
+      d3.select("#center").attr("id", "center_" + this.boxId);
+      d3.select("#left").attr("id", "left_" + this.boxId);
+      d3.select("#top").attr("id", "top_" + this.boxId);
+      d3.select("#right").attr("id", "right_" + this.boxId);
+      d3.select("#bottom").attr("id", "bottom_" + this.boxId);
+      d3.select("#icons").attr("id", "icons_" + this.boxId);
+      this.centerSvg = d3
+        .select("#center_" + this.boxId)
         .append("svg")
-        .attr("width", this.width)
-        .attr("height", this.height)
-        .attr("viewBox", [0, 0, this.width, this.height]);
+        .attr("width", 80)
+        .attr("height", 80)
+        .attr("viewBox", [0, 0, 80, 80]);
+      this.leftSvg = d3
+        .select("#left_" + this.boxId)
+        .append("svg")
+        .attr("width", 60)
+        .attr("height", 80)
+        .attr("viewBox", [0, 0, 60, 80]);
+      this.topSvg = d3
+        .select("#top_" + this.boxId)
+        .append("svg")
+        .attr("width", 80)
+        .attr("height", 60)
+        .attr("viewBox", [0, 0, 80, 60]);
+      this.rightSvg = d3
+        .select("#right_" + this.boxId)
+        .append("svg")
+        .attr("width", 60)
+        .attr("height", 80)
+        .attr("viewBox", [0, 0, 60, 80]);
+      this.bottomSvg = d3
+        .select("#bottom_" + this.boxId)
+        .append("svg")
+        .attr("width", 80)
+        .attr("height", 60)
+        .attr("viewBox", [0, 0, 80, 60]);
     },
     renderUpdate() {
-      // Remove all groups in svg
-      this.svg.selectAll("g").remove();
+      // version 1
+      // 占比
+      // gRatio
+      //   .append("rect")
+      //   .attr("x", 0)
+      //   .attr("y", 0)
+      //   .attr("width", 15)
+      //   .attr("height", 60)
+      //   .attr("fill", this.ratioColors.org)
+      // gRatio
+      //   .append("rect")
+      //   .attr("x", 0)
+      //   .attr("y", 60)
+      //   .attr("width", 15)
+      //   .attr("height", 70)
+      //   .attr("fill", this.ratioColors.person);
 
-      // 原来的设计
+      // 九宫格
+      // const gScale = this.svg.append("g").attr("transform", "translate(40, 20)");
+      // gScale
+      //   .append("rect")
+      //   .attr("x", 0)
+      //   .attr("y", 0)
+      //   .attr("width", 111)
+      //   .attr("height", 111)
+      //   .attr("stroke", "black")
+      //   .attr("fill", "white");
+      // gScale
+      //   .append("path")
+      //   .attr("d", "M 0 37 H 111")
+      //   .attr("stroke", "black");
+      // gScale
+      //   .append("path")
+      //   .attr("d", "M 0 74 H 111")
+      //   .attr("stroke", "black");
+      // gScale
+      //   .append("path")
+      //   .attr("d", "M 37 0 V 111")
+      //   .attr("stroke", "black");
+      // gScale
+      //   .append("path")
+      //   .attr("d", "M 74 0 V 111")
+      //   .attr("stroke", "black");
+
+      // 填色
+      // gScale.append("rect")
+      //   .attr("x", 0)
+      //   .attr("y", 0)
+      //   .attr("width", 37)
+      //   .attr("height", 37)
+      //   .attr("stroke", "black")
+      //   .attr("fill", this.rectColors.high);
+      // gScale.append("rect")
+      //   .attr("x", 37)
+      //   .attr("y", 0)
+      //   .attr("width", 37)
+      //   .attr("height", 37)
+      //   .attr("stroke", "black")
+      //   .attr("fill", this.rectColors.low);
+      // gScale.append("rect")
+      //   .attr("x", 0)
+      //   .attr("y", 37)
+      //   .attr("width", 37)
+      //   .attr("height", 37)
+      //   .attr("stroke", "black")
+      //   .attr("fill", this.rectColors.mid);
+
+      // version 2
       // // 占比
       // // eslint-disable-next-line no-prototype-builtins
       // if (this.datum.hasOwnProperty("instl_weight") && this.datum.hasOwnProperty("retail_weight")) {
@@ -255,89 +428,298 @@ export default {
       //   });
       // });
 
-      // 2.26
-      const gRects = this.svg.append("g");
-      dataNames.forEach((d, i) => {
-        // this.yScale.domain(d3.extent(this.barData[d]));
-        this.yScale.domain([0, 1]);
-        gRects
+      // 2.26 version 3
+      // const gRects = this.svg.append("g");
+      // dataNames.forEach((d, i) => {
+      //   // this.yScale.domain(d3.extent(this.barData[d]));
+      //   this.yScale.domain([0, 1]);
+      //   gRects
+      //     .append("rect")
+      //     .attr("x", this.xScale(i))
+      //     .attr("y", this.yScale(this.barData[d][this.index]))
+      //     .attr("width", this.xScale.bandwidth())
+      //     .attr("height", this.yScale(0) - this.yScale(this.barData[d][this.index]))
+      //     .attr("fill", "steelblue");
+      // });
+      // this.svg.append("g")
+      //   .attr("transform", "translate(0, 111)")
+      //   .call(d3.axisBottom(this.xScale).tickFormat(i => dataNames[i]).tickSizeOuter(0));
+
+      // version 4
+      // treemap
+      const root = this.treemap(
+        d3
+          .hierarchy(this.holdingData)
+          .sum((d) => d.value)
+          .sort((a, b) => b.value - a.value)
+      );
+      const leaf = this.centerSvg
+        .selectAll("g")
+        .data(root.leaves())
+        .join("g")
+        .attr("transform", (d) => `translate(${d.x0},${d.y0})`);
+      const color = d3.scaleOrdinal(d3.schemeCategory10);
+      leaf
+        .append("rect")
+        .attr("fill", (d) => color(d.data.name))
+        .attr("fill-opacity", 0.6)
+        .attr("width", (d) => d.x1 - d.x0)
+        .attr("height", (d) => d.y1 - d.y0);
+      leaf.append("title").text((d) => `${d.data.name}\n${d.value.toFixed(2)}`);
+
+      // bars
+      // top
+      this.yScale.range([60, this.barTopMargin]);
+      const gRectsTop = this.topSvg.append("g");
+      gRectsTop
+        .append("rect")
+        .attr("id", "nav_" + this.boxId)
+        .attr("fill", colorMap.nav)
+        .attr("x", 7)
+        .attr("y", this.yScale(Math.abs(this.navReturnData)))
+        .attr("width", 30)
+        .attr("height", this.yScale(0) - this.yScale(Math.abs(this.navReturnData)));
+      gRectsTop
+        .append("rect")
+        .attr("id", "risk_" + this.boxId)
+        .attr("fill", colorMap.risk)
+        .attr("x", 43)
+        .attr("y", this.yScale(Math.abs(this.riskData)))
+        .attr("width", 30)
+        .attr("height", this.yScale(0) - this.yScale(Math.abs(this.riskData)));
+      if (Math.abs(this.navReturnData) > Math.abs(this.hs300Data)) {
+        gRectsTop
+          .append("path")
+          .attr("stroke-dasharray", "5, 5")
+          .attr("stroke", "black")
+          .attr("d", `M 7 ${this.yScale(Math.abs(this.hs300Data))} H 37`);
+      } else {
+        gRectsTop
           .append("rect")
-          .attr("x", this.xScale(i))
-          .attr("y", this.yScale(this.barData[d][this.index]))
-          .attr("width", this.xScale.bandwidth())
-          .attr("height", this.yScale(0) - this.yScale(this.barData[d][this.index]))
-          .attr("fill", "steelblue");
+          .attr("fill", "none")
+          .attr("stroke-dasharray", "5, 5")
+          .attr("stroke", "black")
+          .attr("x", 7)
+          .attr("y", this.yScale(Math.abs(this.hs300Data)))
+          .attr("width", 30)
+          .attr(
+            "height",
+            this.yScale(Math.abs(this.navReturnData)) - this.yScale(Math.abs(this.hs300Data))
+          );
+      }
+      // right
+      this.yScale.range([0, 60 - this.barTopMargin]);
+      const gRectsRight = this.rightSvg.append("g");
+      gRectsRight
+        .append("rect")
+        .attr("id", "sharp_" + this.boxId)
+        .attr("fill", colorMap.sharp)
+        .attr("x", 0)
+        .attr("y", 7)
+        .attr("width", this.yScale(Math.abs(this.sharpData)) - this.yScale(0))
+        .attr("height", 30);
+      gRectsRight
+        .append("rect")
+        .attr("id", "info_" + this.boxId)
+        .attr("fill", colorMap.info)
+        .attr("x", 0)
+        .attr("y", 43)
+        .attr("width", this.yScale(Math.abs(this.infoData)) - this.yScale(0))
+        .attr("height", 30);
+      // bottom
+      this.yScale.range([0, 60 - this.barTopMargin]);
+      const gRectsBottom = this.bottomSvg.append("g");
+      gRectsBottom
+        .append("rect")
+        .attr("id", "stock_" + this.boxId)
+        .attr("fill", colorMap.stock)
+        .attr("x", 4)
+        .attr("y", 0)
+        .attr("width", 15)
+        .attr("height", this.yScale(Math.abs(this.stockData)) - this.yScale(0));
+      gRectsBottom
+        .append("rect")
+        .attr("id", "bond_" + this.boxId)
+        .attr("fill", colorMap.bond)
+        .attr("x", 23)
+        .attr("y", 0)
+        .attr("width", 15)
+        .attr("height", this.yScale(Math.abs(this.bondData)) - this.yScale(0));
+      gRectsBottom
+        .append("rect")
+        .attr("id", "cash_" + this.boxId)
+        .attr("fill", colorMap.cash)
+        .attr("x", 42)
+        .attr("y", 0)
+        .attr("width", 15)
+        .attr("height", this.yScale(Math.abs(this.cashData)) - this.yScale(0));
+      gRectsBottom
+        .append("rect")
+        .attr("id", "other_" + this.boxId)
+        .attr("fill", colorMap.other)
+        .attr("x", 61)
+        .attr("y", 0)
+        .attr("width", 15)
+        .attr("height", this.yScale(Math.abs(this.otherData)) - this.yScale(0));
+      // left
+      this.yScale.range([this.barTopMargin, 60]);
+      const gRectsLeft = this.leftSvg.append("g");
+      gRectsLeft
+        .append("rect")
+        .attr("id", "alpha_" + this.boxId)
+        .attr("fill", colorMap.alpha)
+        .attr("x", this.yScale(Math.abs(this.alphaData)))
+        .attr("y", 7)
+        .attr("width", this.yScale(1) - this.yScale(Math.abs(this.alphaData)))
+        .attr("height", 30);
+      gRectsLeft
+        .append("rect")
+        .attr("id", "beta_" + this.boxId)
+        .attr("fill", colorMap.beta)
+        .attr("x", this.yScale(Math.abs(this.betaData)))
+        .attr("y", 43)
+        .attr("width", this.yScale(1) - this.yScale(Math.abs(this.betaData)))
+        .attr("height", 30);
+
+      let that = this;
+      this.curTopBars.forEach((d) => {
+        d3.select(`#${d}_${this.boxId}`)
+          .style("cursor", "point")
+          .on("click", function() {
+            d3.select(`#dashline_${this.boxId}`).remove();
+            that.$emit(
+              "clickBar",
+              d3
+                .select(this)
+                .attr("id")
+                .split("_")[0]
+            );
+          });
       });
-      this.svg.append("g")
-        .attr("transform", "translate(0, 131)")
-        .call(d3.axisBottom(this.xScale).tickFormat(i => dataNames[i]).tickSizeOuter(0));
-      
-
-      // 占比
-      // gRatio
-      //   .append("rect")
-      //   .attr("x", 0)
-      //   .attr("y", 0)
-      //   .attr("width", 15)
-      //   .attr("height", 60)
-      //   .attr("fill", this.ratioColors.org)
-      // gRatio
-      //   .append("rect")
-      //   .attr("x", 0)
-      //   .attr("y", 60)
-      //   .attr("width", 15)
-      //   .attr("height", 70)
-      //   .attr("fill", this.ratioColors.person);
-
-      // 九宫格
-      // const gScale = this.svg.append("g").attr("transform", "translate(40, 20)");
-      // gScale
-      //   .append("rect")
-      //   .attr("x", 0)
-      //   .attr("y", 0)
-      //   .attr("width", 111)
-      //   .attr("height", 111)
-      //   .attr("stroke", "black")
-      //   .attr("fill", "white");
-      // gScale
-      //   .append("path")
-      //   .attr("d", "M 0 37 H 111")
-      //   .attr("stroke", "black");
-      // gScale
-      //   .append("path")
-      //   .attr("d", "M 0 74 H 111")
-      //   .attr("stroke", "black");
-      // gScale
-      //   .append("path")
-      //   .attr("d", "M 37 0 V 111")
-      //   .attr("stroke", "black");
-      // gScale
-      //   .append("path")
-      //   .attr("d", "M 74 0 V 111")
-      //   .attr("stroke", "black");
-      
-      // 填色
-      // gScale.append("rect")
-      //   .attr("x", 0)
-      //   .attr("y", 0)
-      //   .attr("width", 37)
-      //   .attr("height", 37)
-      //   .attr("stroke", "black")
-      //   .attr("fill", this.rectColors.high);
-      // gScale.append("rect")
-      //   .attr("x", 37)
-      //   .attr("y", 0)
-      //   .attr("width", 37)
-      //   .attr("height", 37)
-      //   .attr("stroke", "black")
-      //   .attr("fill", this.rectColors.low);
-      // gScale.append("rect")
-      //   .attr("x", 0)
-      //   .attr("y", 37)
-      //   .attr("width", 37)
-      //   .attr("height", 37)
-      //   .attr("stroke", "black")
-      //   .attr("fill", this.rectColors.mid);
+      this.lastTopBars = this.curTopBars;
+    },
+    turnClockwise() {
+      this.curDegree += 90;
+      d3.select("#content_" + this.boxId).style(
+        "transform",
+        `rotate(${this.curDegree}deg)`
+      );
+      let that = this;
+      this.curTopBars.forEach((d) => {
+        d3.select(`#${d}_${this.boxId}`)
+          .style("cursor", "pointer")
+          .on("click", function() {
+            d3.select(`#dashline_${this.boxId}`).remove();
+            that.$emit(
+              "clickBar",
+              d3
+                .select(this)
+                .attr("id")
+                .split("_")[0]
+            );
+          });
+      });
+      this.lastTopBars.forEach((d) => {
+        d3.select(`#${d}_${this.boxId}`)
+          .style("cursor", "default")
+          .on("click", null);
+      });
+      this.lastTopBars = this.curTopBars;
+    },
+    turnCounterClockwise() {
+      this.curDegree -= 90;
+      d3.select("#content_" + this.boxId).style(
+        "transform",
+        `rotate(${this.curDegree}deg)`
+      );
+      let that = this;
+      this.curTopBars.forEach((d) => {
+        d3.select(`#${d}_${this.boxId}`)
+          .style("cursor", "pointer")
+          .on("click", function() {
+            d3.select(`#dashline_${this.boxId}`).remove();
+            that.$emit(
+              "clickBar",
+              d3
+                .select(this)
+                .attr("id")
+                .split("_")[0]
+            );
+          });
+      });
+      this.lastTopBars.forEach((d) => {
+        d3.select(`#${d}_${this.boxId}`)
+          .style("cursor", "default")
+          .on("click", null);
+      });
+      this.lastTopBars = this.curTopBars;
+    },
+    getSelectedBarCenterPoint(type) {
+      console.log(type);
+      console.log(typeof(type));
+      console.log(type in ["stock", "bond", "cash", "other"]);
+      const dom = d3.select(`#${type}_${this.boxId}`);
+      let relativeX, relativeY;
+      if (["nav", "risk"].indexOf(type) !== -1) {
+        // top
+        this.dashlineStartX = parseFloat(dom.attr("width") / 2) + parseFloat(dom.attr("x"));
+        this.dashlineStartY = parseFloat(dom.attr("y")) + this.barTopMargin;
+        relativeX =
+          parseFloat(dom.attr("width") / 2) + parseFloat(dom.attr("x"));
+        relativeY = parseFloat(dom.attr("y")) + this.barTopMargin;
+      } else if (["sharp", "info"].indexOf(type) !== -1) {
+        // right
+        this.dashlineStartX = parseFloat(dom.attr("width"));
+        this.dashlineStartY = parseFloat(dom.attr("height") / 2) + parseFloat(dom.attr("y"));
+        relativeX =
+          parseFloat(dom.attr("height") / 2) + parseFloat(dom.attr("y"));
+        relativeY = 60 - parseFloat(dom.attr("width")) + this.barTopMargin;
+      } else if (["stock", "bond", "cash", "other"].indexOf(type) !== -1) {
+        // bottom
+        this.dashlineStartX = parseFloat(dom.attr("x")) + parseFloat(dom.attr("width") / 2);
+        this.dashlineStartY = parseFloat(dom.attr("height"));
+        relativeX =
+          80 - parseFloat(dom.attr("x")) - parseFloat(dom.attr("width") / 2);
+        relativeY = 60 - parseFloat(dom.attr("height"));
+        console.log(relativeY);
+      } else {
+        // left
+        this.dashlineStartX = parseFloat(dom.attr("x"));
+        this.dashlineStartY = parseFloat(dom.attr("height") / 2) + parseFloat(dom.attr("y"));
+        relativeX =
+          80 - parseFloat(dom.attr("y")) - parseFloat(dom.attr("height") / 2);
+        relativeY = parseFloat(dom.attr("x"));
+      }
+      return [relativeX, relativeY];
+    },
+    drawDashline(xPos, yPos) {
+      let curSvg = null;
+      switch (this.curTopSide) {
+        case "left":
+          curSvg = this.leftSvg;
+          break;
+        case "top":
+          curSvg = this.topSvg;
+          break;
+        case "right":
+          curSvg = this.rightSvg;
+          break;
+        case "bottom":
+          curSvg = this.bottomSvg;
+          break;
+        default:
+          break;
+      }
+      curSvg
+        .append("g")
+        .attr("id", `dashline_${this.boxId}`)
+        .append("path")
+        .attr("stroke-dasharray", "5, 5")
+        .attr("stroke", "black")
+        .attr(
+          "d",
+          `M ${this.dashlineStartX} ${this.dashlineStartY} L ${xPos} ${yPos}`
+        );
     },
   },
 };
@@ -346,23 +728,23 @@ export default {
 <style scoped>
 .invest_style_box {
   position: relative;
-  height: 175px;
-  /* width: 156px; */
+  height: 220px;
+  width: 200px;
   /* 2.26 */
-  width: 312px;
-  border: 1px solid black;
+  /* width: 312px; */
+  /* border: 1px solid black; */
   margin-top: 5px;
   margin-left: 60px;
   flex-shrink: 0;
-  z-index: 2;
+  z-index: 3;
   background-color: white;
 }
 
 .text {
   position: absolute;
-  /* width: 152px; */
+  width: 200px;
   /* 2.26 */
-  width: 304px;
+  /* width: 304px; */
   height: 20px;
   text-align: center;
   font-size: 13px;
@@ -370,11 +752,53 @@ export default {
 
 .content {
   position: absolute;
-  height: 151px;
-  /* width: 152px; */
+  height: 200px;
+  width: 200px;
   /* 2.26 */
-  width: 304px;
+  /* width: 304px; */
   top: 20px;
+  transition: transform 1s;
+}
+
+.center {
+  position: absolute;
+  height: 80px;
+  width: 80px;
+  border: 1px solid black;
+  left: 60px;
+  top: 60px;
+}
+
+.left {
+  position: absolute;
+  height: 80px;
+  width: 60px;
+  left: 0px;
+  top: 60px;
+}
+
+.top {
+  position: absolute;
+  height: 60px;
+  width: 80px;
+  left: 60px;
+  top: 0px;
+}
+
+.right {
+  position: absolute;
+  height: 80px;
+  width: 60px;
+  left: 140px;
+  top: 60px;
+}
+
+.bottom {
+  position: absolute;
+  height: 60px;
+  width: 80px;
+  left: 60px;
+  top: 140px;
 }
 
 .icons {
@@ -385,7 +809,8 @@ export default {
 }
 
 .icon {
-  width: 1em; height: 1em;
+  width: 1em;
+  height: 1em;
   vertical-align: -0.15em;
   fill: currentColor;
   overflow: hidden;
