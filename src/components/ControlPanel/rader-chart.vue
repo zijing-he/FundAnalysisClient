@@ -94,7 +94,7 @@ export default {
         .append("g")
         .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
 
-      this.raderChart = this.svg.append("g");
+      this.raderChart = this.svg.append("g").attr("id", "raderChartGroup");
 
       // 计算界限
       // this.data.forEach((d, i) => {
@@ -278,50 +278,66 @@ export default {
         let width = 165;
         let height = 165;
         console.log(event);
-        console.log(d);
+        // console.log(d);
         const e = nodesGroup.nodes();
         const i = e.indexOf(this); //获取index
         this.parentNode.appendChild(this);
         let dragTarget = d3.select(this);
 
         //dragTarget.data()[0] == d
-        let oldX = dragTarget.attr("cx") - width / 2; //165是width
-        let oldY = height / 2 - dragTarget.attr("cy"); //165是height
+        let oldX = dragTarget.attr("cx"); //165是width
+        let oldY = dragTarget.attr("cy"); //165是height
 
         //Bug for vector @ 270deg -Infinity/Infinity slope
         oldX = Math.abs(oldX) < 0.0000001 ? 0 : oldX;
         oldY = Math.abs(oldY) < 0.0000001 ? 0 : oldY;
+        console.log(oldX, oldY);
+        let raderGroup = d3.select("#raderChartGroup");
+        raderGroup
+          .append("circle")
+          .attr("cx", oldX)
+          .attr("cy", oldY)
+          .attr("r", 3)
+          .attr("fill", "red");
 
         let newY = 0,
           newX = 0,
           newValue = 0;
-        let maxX = maxDataValues[i][0] - width / 2;
-        let maxY = height / 2 - maxDataValues[i][1];
+        let maxX = maxDataValues[i][0];
+        let maxY = maxDataValues[i][1];
 
-        if (oldX === 0) {
-          newY = oldY - event.dy;
-          if (Math.abs(newY) > Math.abs(maxY)) {
-            newY = maxY;
-          }
-          newValue = ((newY / oldY) * d.value).toFixed(2);
-        } else {
+        // if (oldX === 0) {
+        //   newY = oldY - event.dy;
+        //   if (Math.abs(newY) > Math.abs(maxY)) {
+        //     newY = maxY;
+        //   }
+        //   newValue = ((newY / oldY) * d.value).toFixed(2);
+        // } else {
           let slope = oldY / oldX;
 
-          newX = event.dx + dragTarget.attr("cx") - width / 2; //测试是否为字符串？
+          newX = event.dx + dragTarget.attr("cx"); //测试是否为字符串？
 
           if (Math.abs(newX) > Math.abs(maxX)) {
             newX = maxX;
           }
           newY = newX * slope;
 
+          console.log(newX,newY);
+          raderGroup
+          .append("circle")
+          .attr("cx", newX)
+          .attr("cy", newY)
+          .attr("r", 3)
+          .attr("fill", "blue");
+
           let ratio = newX / oldX;
           newValue = (ratio * d.value).toFixed(2);
-        }
+        // }
         //Bound the drag behavior to the max and min of the axis, not by pixels but by value calc (easier)
         if (newValue >= 1 && newValue <= 3) {
-          dragTarget
-            .attr("cx", (d.x = newX + width / 2))
-            .attr("cy", (d.y = height / 2 - newY));
+          // dragTarget
+          //   .attr("cx", (d.x = newX + width / 2))
+          //   .attr("cy", (d.y = height / 2 - newY));
 
           //Updating the data set with the new value
           d.value = newValue;
@@ -338,9 +354,9 @@ export default {
           // dragTarget.call(d3.drag(), null);
         }
 
-        // d3.select(this)
-        //   .attr("cx", (d.x = event.x))
-        //   .attr("cy", (d.y = event.y));
+        d3.select(this)
+          .attr("cx", (d.x = event.x))
+          .attr("cy", (d.y = event.y));
       };
       let dragended = function (event, d) {
         d3.select(this).attr("stroke", null);
