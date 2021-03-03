@@ -20,8 +20,6 @@ export default {
       levels: 15,
       maxValue: 3,
       radians: 2 * Math.PI,
-      color: d3.scaleLinear().domain([0, 1]).range(d3.schemeCategory10),
-      dataScale: d3.scaleLinear().domain([1, 3]).range([-1, 1]), //数据映射
       data: [
         { axis: "stock", value: 2.5 },
         { axis: "bond", value: 2.5 },
@@ -316,7 +314,7 @@ export default {
                   this.factor *
                   Math.cos((i * this.radians) / this.total)),
           ]);
-          userData[d.axis] = (parseFloat(d.value) - 2).toFixed(2);
+          userData[d.axis] = (parseFloat(d.value) - 2).toFixed(4);
         });
 
         let str = "";
