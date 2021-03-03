@@ -34,7 +34,7 @@ export default {
     // console.log(d3.extent(Object.values(this.sector_data["医药生物"])));
     
     this.renderInit();
-    console.log(this.min);
+    // console.log(this.min);
     this.renderUpdate();
   },
   computed: {

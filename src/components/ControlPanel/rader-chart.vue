@@ -7,16 +7,13 @@ import * as d3 from "d3";
 
 export default {
   name: "ControlPanelRaderChart2",
-  props: {
-    value: Number,
-    axis: String,
-  },
+
   components: {},
   data() {
     return {
       svg: null,
       raderChart: null,
-      margin: { top: 45, right: 120, bottom: 55, left: 55 },
+      margin: { top: 45, right: 135, bottom: 60, left: 60 },
       width: 165,
       height: 165,
       factor: 1,
@@ -26,41 +23,38 @@ export default {
       color: d3.scaleLinear().domain([0, 1]).range(d3.schemeCategory10),
       dataScale: d3.scaleLinear().domain([1, 3]).range([-1, 1]), //数据映射
       data: [
-        { axis: "unit_nav", value: 2.5 },
         { axis: "stock", value: 2.5 },
         { axis: "bond", value: 2.5 },
         { axis: "cash", value: 2.5 },
         { axis: "other", value: 2.5 },
         { axis: "size", value: 2.5 },
-        { axis: "instl_weight", value: 2.5 },
         { axis: "alpha", value: 2.5 },
         { axis: "beta", value: 2.5 },
         { axis: "sharp_ratio", value: 2.5 },
+        { axis: "max_drop_down", value: 2.5 },
         { axis: "information_ratio", value: 2.5 },
-        { axis: "detail_car", value: 2.5 },
+        { axis: "nav_return", value: 2.5 },
         { axis: "risk", value: 2.5 },
-        { axis: "holding", value: 2.5 },
-        { axis: "holding_values", value: 2.5 },
+        { axis: "instl_weight", value: 2.5 },
+        { axis: "car", value: 2.5 },
       ],
       dataValues: [],
-      // minDataValues: [],
-      // maxDataValues: [],
       allAxis: [],
       total: 0,
       radius: 0,
     };
   },
   watch: {
-    value: function () {
-      this.data.forEach((d) => {
-        if (d.axis === this.axis) {
-          d.value = this.value;
-        }
-      });
-      this.svg.selectAll("polygon").remove();
-      this.svg.selectAll(".nodes").remove();
-      this.renderUpdate();
-    },
+    // value: function () {
+    //   this.data.forEach((d) => {
+    //     if (d.axis === this.axis) {
+    //       d.value = this.value;
+    //     }
+    //   });
+    //   this.svg.selectAll("polygon").remove();
+    //   this.svg.selectAll(".nodes").remove();
+    //   this.renderUpdate();
+    // },
   },
   mounted: function () {
     this.renderInit();
@@ -95,30 +89,6 @@ export default {
         .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
 
       this.raderChart = this.svg.append("g").attr("id", "raderChartGroup");
-
-      // 计算界限
-      // this.data.forEach((d, i) => {
-      //   this.minDataValues.push([
-      //     (this.width / 2) *
-      //       (1 -
-      //         (1 / this.maxValue) * //1是min边界
-      //           this.factor *
-      //           Math.sin((i * this.radians) / this.total)),
-      //     (this.height / 2) *
-      //       (1 -
-      //         (1 / this.maxValue) *
-      //           this.factor *
-      //           Math.cos((i * this.radians) / this.total)),
-      //   ]);
-      // });
-      // this.data.forEach((d, i) => {
-      //   this.maxDataValues.push([
-      //     (this.width / 2) *
-      //       (1 - this.factor * Math.sin((i * this.radians) / this.total)),
-      //     (this.height / 2) *
-      //       (1 - this.factor * Math.cos((i * this.radians) / this.total)),
-      //   ]);
-      // });
 
       // 生成环
       // for (let i = 0; i < this.levels; i++) {
@@ -211,20 +181,22 @@ export default {
         .style("font-family", "sans-serif")
         .style("font-size", "11px")
         .attr("text-anchor", "middle")
+        .attr("dy", "1.5em")
+        .attr("transform", "translate(0,-10)")
         .attr(
           "x",
           (d, i) =>
             (this.width / 2) *
-            (1 - 1.2 * Math.sin((i * this.radians) / this.total))
+              (1 - 0.85 * Math.sin((i * this.radians) / this.total)) -
+            50 * Math.sin((i * this.radians) / this.total)
         )
         .attr(
           "y",
           (d, i) =>
             (this.height / 2) *
-            (1 - 1.2 * Math.cos((i * this.radians) / this.total))
+              (1 - Math.cos((i * this.radians) / this.total)) -
+            20 * Math.cos((i * this.radians) / this.total)
         );
-
-      // axis.select("#text_unit_nav").attr("dy","-1px");
 
       this.raderChart.attr("transform", "translate(-6,-16)");
     },
@@ -262,11 +234,12 @@ export default {
         .data([this.dataValues])
         .enter()
         .append("polygon")
-        .attr("class", "area")
-        .style("stroke-width", "1.5px")
-        .style("stroke", "#5ABDB8")
-        .style("fill", "#5ABDB8")
-        .style("fill-opacity", 0.4)
+        .attr("class", "radar-chart-area")
+        .attr("id", "radar-chart-area")
+        .style("stroke-width", "2px")
+        .style("stroke", "#d62728")
+        .style("fill", "#d62728")
+        .style("fill-opacity", 0.2)
         // .transition()
         // .duration(2000)
         .attr("points", str);
@@ -277,87 +250,88 @@ export default {
       let move = function (event, d) {
         let width = 165;
         let height = 165;
-        console.log(event);
-        // console.log(d);
         const e = nodesGroup.nodes();
         const i = e.indexOf(this); //获取index
-        this.parentNode.appendChild(this);
         let dragTarget = d3.select(this);
 
-        //dragTarget.data()[0] == d
-        let oldX = dragTarget.attr("cx"); //165是width
-        let oldY = dragTarget.attr("cy"); //165是height
-
-        //Bug for vector @ 270deg -Infinity/Infinity slope
+        let oldX = parseFloat(dragTarget.attr("cx")) - width / 2;
+        let oldY = height / 2 - parseFloat(dragTarget.attr("cy"));
         oldX = Math.abs(oldX) < 0.0000001 ? 0 : oldX;
         oldY = Math.abs(oldY) < 0.0000001 ? 0 : oldY;
-        console.log(oldX, oldY);
-        let raderGroup = d3.select("#raderChartGroup");
-        raderGroup
-          .append("circle")
-          .attr("cx", oldX)
-          .attr("cy", oldY)
-          .attr("r", 3)
-          .attr("fill", "red");
 
         let newY = 0,
           newX = 0,
           newValue = 0;
-        let maxX = maxDataValues[i][0];
-        let maxY = maxDataValues[i][1];
+        let maxX = maxDataValues[i][0] - width / 2;
+        let maxY = height / 2 - maxDataValues[i][1];
 
-        // if (oldX === 0) {
-        //   newY = oldY - event.dy;
-        //   if (Math.abs(newY) > Math.abs(maxY)) {
-        //     newY = maxY;
-        //   }
-        //   newValue = ((newY / oldY) * d.value).toFixed(2);
-        // } else {
+        if (oldX === 0) {
+          newY = oldY - event.dy;
+          if (Math.abs(newY) > Math.abs(maxY)) {
+            newY = maxY;
+          }
+          newValue = ((newY / oldY) * d.value).toFixed(2);
+        } else {
           let slope = oldY / oldX;
 
-          newX = event.dx + dragTarget.attr("cx"); //测试是否为字符串？
+          newX = event.dx + parseFloat(dragTarget.attr("cx")) - width / 2;
 
           if (Math.abs(newX) > Math.abs(maxX)) {
             newX = maxX;
           }
           newY = newX * slope;
 
-          console.log(newX,newY);
-          raderGroup
-          .append("circle")
-          .attr("cx", newX)
-          .attr("cy", newY)
-          .attr("r", 3)
-          .attr("fill", "blue");
-
           let ratio = newX / oldX;
           newValue = (ratio * d.value).toFixed(2);
-        // }
+        }
         //Bound the drag behavior to the max and min of the axis, not by pixels but by value calc (easier)
         if (newValue >= 1 && newValue <= 3) {
-          // dragTarget
-          //   .attr("cx", (d.x = newX + width / 2))
-          //   .attr("cy", (d.y = height / 2 - newY));
+          dragTarget.attr("cx", newX + width / 2).attr("cy", height / 2 - newY);
 
-          //Updating the data set with the new value
           d.value = newValue;
 
-          // updatePoly();
+          updatePoly();
         } else {
           if (newValue <= 1) {
             newValue = 1;
           } else if (newValue >= 3) {
             newValue = 3;
           }
-          console.log("越界了！");
-          // dragTarget.on("drag", null);
-          // dragTarget.call(d3.drag(), null);
         }
-
-        d3.select(this)
-          .attr("cx", (d.x = event.x))
-          .attr("cy", (d.y = event.y));
       };
+
+      let updatePoly = () => {
+        this.dataValues = [];
+        let userData = {};
+        this.data.forEach((d, i) => {
+          this.dataValues.push([
+            (this.width / 2) *
+              (1 -
+                (parseFloat(Math.max(d.value, 0)) / this.maxValue) *
+                  this.factor *
+                  Math.sin((i * this.radians) / this.total)),
+            (this.height / 2) *
+              (1 -
+                (parseFloat(Math.max(d.value, 0)) / this.maxValue) *
+                  this.factor *
+                  Math.cos((i * this.radians) / this.total)),
+          ]);
+          userData[d.axis] = (parseFloat(d.value) - 2).toFixed(2);
+        });
+
+        let str = "";
+        for (let i = 0; i < this.dataValues.length; i++) {
+          str = str + this.dataValues[i][0] + "," + this.dataValues[i][1] + " ";
+        }
+        this.raderChart
+          .select("#radar-chart-area")
+          .data([this.dataValues])
+          .attr("points", str);
+
+        
+        this.$emit("updateUserData", userData);
+      };
+
       let dragended = function (event, d) {
         d3.select(this).attr("stroke", null);
       };
@@ -388,8 +362,9 @@ export default {
                 Math.cos((i * this.radians) / this.total))
         )
         .attr("data-id", (d) => d.axis)
-        .style("fill", this.color(0))
-        .style("fill-opacity", 0.8)
+        .style("fill", "#d62728")
+        .style("fill-opacity", 0.75)
+        .style("cursor", "pointer")
         .call(
           d3
             .drag()

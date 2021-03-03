@@ -8,10 +8,10 @@
         <MarketAnalysisLayout />
       </a-row>
       <a-row >
-        <OverViewLayout />
+        <!-- <OverViewLayout /> -->
       </a-row>
       <a-row>
-        <FundProfileLayout />
+        <!-- <FundProfileLayout /> -->
       </a-row>
     </a-col>
   </a-row>
@@ -28,8 +28,9 @@ export default {
   components: {
     ControlPanelLayout,
     MarketAnalysisLayout,
-    FundProfileLayout,
-    OverViewLayout,
+    // OverViewLayout,
+    // FundProfileLayout,
+    
   },
   mounted() {},
 };

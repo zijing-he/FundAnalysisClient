@@ -30,7 +30,7 @@
         />
       </a-col> -->
       <a-col :span="24">
-        <ControlPanelRaderChart :value="rader_value" :axis="rader_axis" />
+        <ControlPanelRaderChart v-on:updateUserData="updateList" />
       </a-col>
     </a-row>
     <!-- <a-row class="sectror_ontainer">
@@ -67,6 +67,7 @@ import incomeJSON from "@/data/RaderChart/income.json";
 import max_dropJSON from "@/data/RaderChart/max_drop.json";
 import riskJSON from "@/data/RaderChart/risk.json";
 import sizeJSON from "@/data/RaderChart/size.json";
+import DataService from "@/utils/data-service";
 
 export default {
   name: "ControlPanelLayout",
@@ -92,9 +93,12 @@ export default {
     ControlPanelRaderChart,
   },
   methods: {
-    updateRaderChart(value, id) {
-      this.rader_value = value;
-      this.rader_axis = id;
+    updateList(list) {
+      //  console.log(list);
+
+      DataService.post("get_fund_ranks", { weights: list }, (data) => {
+        console.log(data);
+      });
     },
   },
   mounted() {},
