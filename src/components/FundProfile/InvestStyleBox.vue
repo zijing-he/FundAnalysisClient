@@ -77,7 +77,7 @@ const colorMap = {
   bond: "#b3cde3",
   cash: "#ccebc5",
   other: "#decbe4",
-  nav: "#e5d8bd",
+  navReturn: "#e5d8bd",
   risk: "#33a02c",
 };
 
@@ -192,7 +192,7 @@ export default {
     },
     curTopBars() {
       if (this.curDegree % 360 === 0) {
-        return ["nav", "risk"];
+        return ["navReturn", "risk"];
       } else if (this.curDegree % 360 === 90 || this.curDegree % 360 === -270) {
         return ["alpha", "beta"];
       } else if (
@@ -497,8 +497,8 @@ export default {
         .attr("transform", "translate(60, 0)");
       gRectsTop
         .append("rect")
-        .attr("id", "nav_" + this.boxId)
-        .attr("fill", colorMap.nav)
+        .attr("id", "navReturn_" + this.boxId)
+        .attr("fill", colorMap.navReturn)
         .attr(
           "mask",
           this.navReturnData < 0
@@ -803,7 +803,7 @@ export default {
     getSelectedBarCenterPoint(type) {
       const dom = d3.select(`#${type}_${this.boxId}`);
       let relativeX, relativeY;
-      if (["nav", "risk"].indexOf(type) !== -1) {
+      if (["navReturn", "risk"].indexOf(type) !== -1) {
         // top
         this.midPointX =
           parseFloat(dom.attr("width") / 2) + parseFloat(dom.attr("x")) + 60;

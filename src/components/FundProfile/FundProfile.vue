@@ -80,20 +80,6 @@ export default {
     fundData: Object,
     fundIds: Object,
     fundId: String,
-    // returnData: Object,
-    // carData: Object,
-    // stockData: Object,
-    // bondData: Object,
-    // cashData: Object,
-    // otherData: Object,
-    // avgSizeData: Object,
-    // alphaData: Object,
-    // betaData: Object,
-    // sharpData: Object,
-    // dropData: Object,
-    // infoData: Object,
-    // riskData: Object,
-    // weightData: Object,
   },
   components: {
     InvestStyleBox,
@@ -159,7 +145,7 @@ export default {
       // infoData_n: [],
       investStyleBoxWidth: 200,
       contentWidth: 200,
-      boxGap: 60,
+      boxGap: 80,
       // version 4
       maxPathWidth: 60,
       minPathWidth: 30,
@@ -405,51 +391,6 @@ export default {
     this.updateGapPath();
   },
 
-  watch: {
-    // returnData: function(newVal, oldVal) {
-    //   this.allReturnData = newVal;
-    // },
-    // carData: function(newVal, oldVal) {
-    //   this.allCarData = newVal;
-    // },
-    // stockData: function(newVal, oldVal) {
-    //   this.allStockData = newVal;
-    // },
-    // bondData: function(newVal, oldVal) {
-    //   this.allBondData = newVal;
-    // },
-    // cashData: function(newVal, oldVal) {
-    //   this.allCashData = newVal;
-    // },
-    // otherData: function(newVal, oldVal) {
-    //   this.allOtherData = newVal;
-    // },
-    // avgSizeData: function(newVal, oldVal) {
-    //   this.allSizeData = newVal;
-    // },
-    // alphaData: function(newVal, oldVal) {
-    //   this.allAlphaData = newVal;
-    // },
-    // betaData: function(newVal, oldVal) {
-    //   this.allBetaData = newVal;
-    // },
-    // sharpData: function(newVal, oldVal) {
-    //   this.allSharpData = newVal;
-    // },
-    // dropData: function(newVal, oldVal) {
-    //   this.allDropData = newVal;
-    // },
-    // infoData: function(newVal, oldVal) {
-    //   this.allInfoData = newVal;
-    // },
-    // riskData: function(newVal, oldVal) {
-    //   this.allRiskData = newVal;
-    // },
-    // weightData: function(newVal, oldVal) {
-    //   this.allRiskData = newVal;
-    // },
-  },
-
   computed: {
     xScale() {
       return d3
@@ -504,22 +445,35 @@ export default {
     clickBar(type) {
       this.svg.select("#dashline").remove();
       const gDashline = this.svg.append("g").attr("id", "dashline");
+
+      // only consider nonnegative values
+      let selectedBoxIndices = [];
+      for (let i = 0; i < this.investStyleBoxes.length; i++) {
+        if (eval(`this.investStyleBoxes[${i}].${type}Data`) >= 0) {
+          selectedBoxIndices.push(i);
+        }
+      }
+
       let thisK, thisB, lastK, lastB;
-      for (let i = 0; i < this.investStyleBoxes.length - 1; i++) {
+      for (let i = 0; i < selectedBoxIndices.length - 1; i++) {
         const startPoint = this.$refs[
-          this.investStyleBoxes[i].boxId
+          this.investStyleBoxes[selectedBoxIndices[i]].boxId
         ].getSelectedBarCenterPoint(type);
         const endPoint = this.$refs[
-          this.investStyleBoxes[i + 1].boxId
+          this.investStyleBoxes[selectedBoxIndices[i + 1]].boxId
         ].getSelectedBarCenterPoint(type);
         const startX =
-          this.xScale(new Date(this.investStyleBoxes[i].boxText)) -
+          this.xScale(
+            new Date(this.investStyleBoxes[selectedBoxIndices[i]].boxText)
+          ) -
           this.investStyleBoxWidth / 2 +
           60 +
           startPoint[0];
         const startY = 5 + 20 + startPoint[1];
         const endX =
-          this.xScale(new Date(this.investStyleBoxes[i + 1].boxText)) -
+          this.xScale(
+            new Date(this.investStyleBoxes[selectedBoxIndices[i + 1]].boxText)
+          ) -
           this.investStyleBoxWidth / 2 +
           60 +
           endPoint[0];
@@ -534,15 +488,19 @@ export default {
         thisK = (endY - startY) / (endX - startX);
         thisB = startY - startX * thisK;
         let thisX1 =
-          this.xScale(new Date(this.investStyleBoxes[i].boxText)) -
+          this.xScale(
+            new Date(this.investStyleBoxes[selectedBoxIndices[i]].boxText)
+          ) -
           this.investStyleBoxWidth / 2;
         let thisY1 = lastK * thisX1 + lastB;
         let thisX2 =
-          this.xScale(new Date(this.investStyleBoxes[i].boxText)) +
+          this.xScale(
+            new Date(this.investStyleBoxes[selectedBoxIndices[i]].boxText)
+          ) +
           this.investStyleBoxWidth / 2;
         let thisY2 = thisK * thisX2 + thisB;
         let thatX1, thatY1, thatX2, thatY2;
-        if (["nav", "risk"].indexOf(type) !== -1) {
+        if (["navReturn", "risk"].indexOf(type) !== -1) {
           // top
           thatX1 = 0;
           thatY1 = thisY1 - 20 - 5;
@@ -568,23 +526,13 @@ export default {
           thatY2 = 0;
         }
         if (i === 0) {
-          this.$refs[this.investStyleBoxes[i].boxId].drawDashline(
-            thatX1,
-            thatY1,
-            thatX2,
-            thatY2,
-            true,
-            false
-          );
+          this.$refs[
+            this.investStyleBoxes[selectedBoxIndices[i]].boxId
+          ].drawDashline(thatX1, thatY1, thatX2, thatY2, true, false);
         } else {
-          this.$refs[this.investStyleBoxes[i].boxId].drawDashline(
-            thatX1,
-            thatY1,
-            thatX2,
-            thatY2,
-            false,
-            false
-          );
+          this.$refs[
+            this.investStyleBoxes[selectedBoxIndices[i]].boxId
+          ].drawDashline(thatX1, thatY1, thatX2, thatY2, false, false);
         }
         lastK = thisK;
         lastB = thisB;
@@ -592,13 +540,15 @@ export default {
       let lastTmpX =
         this.xScale(
           new Date(
-            this.investStyleBoxes[this.investStyleBoxes.length - 1].boxText
+            this.investStyleBoxes[
+              selectedBoxIndices[selectedBoxIndices.length - 1]
+            ].boxText
           )
         ) -
         this.investStyleBoxWidth / 2;
       let lastTmpY = lastK * lastTmpX + lastB;
       let lastX, lastY;
-      if (["nav", "risk"].indexOf(type) !== -1) {
+      if (["navReturn", "risk"].indexOf(type) !== -1) {
         // top
         lastX = 0;
         lastY = lastTmpY - 20 - 5;
@@ -616,7 +566,8 @@ export default {
         lastY = 200;
       }
       this.$refs[
-        this.investStyleBoxes[this.investStyleBoxes.length - 1].boxId
+        this.investStyleBoxes[selectedBoxIndices[selectedBoxIndices.length - 1]]
+          .boxId
       ].drawDashline(lastX, lastY, -1, -1, false, true);
     },
     topHandleScroll() {
@@ -636,11 +587,13 @@ export default {
     renderInit() {
       // this.width = (156 + 60) * this.sizeData.length + this.margin.left + this.margin.right - 78;
       // 2.26
-      this.width =
+      this.width = Math.max(
         (this.investStyleBoxWidth + this.boxGap) * this.sizeData.length +
-        this.margin.left +
-        this.margin.right -
-        this.investStyleBoxWidth / 2;
+          this.margin.left +
+          this.margin.right -
+          this.investStyleBoxWidth / 2,
+        this.width
+      );
       d3.select("#curve").attr("id", `curve_${this.fundId}`);
       d3.select("#rects").attr("id", `rects_${this.fundId}`);
       d3.select("#selectBox").attr("id", `selectBox_${this.fundId}`);
@@ -738,7 +691,7 @@ export default {
       const rectHeight = 162 / this.selectedRects.length;
       for (let i = 0; i < this.selectedRects.length; i++) {
         this.rectXScale.domain([
-          0,
+          d3.min(this.rectObject[this.selectedRects[i]].data),
           d3.max(this.rectObject[this.selectedRects[i]].data),
         ]);
         gRects
@@ -753,33 +706,6 @@ export default {
           )
           .attr("height", rectHeight);
       }
-      // this.rectXScale.domain([0, d3.max(this.allAlphaData)]);
-      // gRects
-      //   .append("rect")
-      //   .attr("fill", this.rectColors[0])
-      //   .attr("stroke", "black")
-      //   .attr("x", 0)
-      //   .attr("y", 0)
-      //   .attr("width", this.rectXScale(this.thisAlphaData) - this.rectXScale(0))
-      //   .attr("height", 54);
-      // this.rectXScale.domain([0, d3.max(this.allBetaData)]);
-      // gRects
-      //   .append("rect")
-      //   .attr("fill", this.rectColors[1])
-      //   .attr("stroke", "black")
-      //   .attr("x", 0)
-      //   .attr("y", 54)
-      //   .attr("width", this.rectXScale(this.thisBetaData) - this.rectXScale(0))
-      //   .attr("height", 54);
-      // this.rectXScale.domain([0, d3.max(this.allSharpData)]);
-      // gRects
-      //   .append("rect")
-      //   .attr("fill", this.rectColors[2])
-      //   .attr("stroke", "black")
-      //   .attr("x", 0)
-      //   .attr("y", 108)
-      //   .attr("width", this.rectXScale(this.thisSharpData) - this.rectXScale(0))
-      //   .attr("height", 54);
     },
     updateGapPath() {
       const maxSize = Math.max(...this.sizeData);
@@ -788,7 +714,8 @@ export default {
       const b = this.maxPathWidth - k * maxSize;
       let tmpSum = 0;
       for (let i = 0; i < this.investStyleBoxes.length; i++) {
-        const thisPathWidth = k * this.sizeData[i] + b;
+        let thisPathWidth = k * this.sizeData[i] + b;
+        if (this.investStyleBoxes.length === 1) thisPathWidth = this.maxPathWidth;
         for (
           let j = 0;
           j < this.detailCarData[i].length &&
