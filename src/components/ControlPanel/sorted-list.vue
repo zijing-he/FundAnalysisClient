@@ -157,6 +157,9 @@ export default {
     //   console.log(this.weights);
     //   console.log(fundId);
 
+    this.$emit("updateFundProfile", fundId);
+
+
     //得到基金散点图和基金经理信息
       DataService.post(
         "get_manager_fund_local",

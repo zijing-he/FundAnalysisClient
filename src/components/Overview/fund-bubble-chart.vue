@@ -18,7 +18,7 @@ export default {
   watch: {
     fundData: function () {
       // console.log("我已经到气泡图了！");
-      console.log(this.fundData);
+      // console.log(this.fundData);
       this.renderUpdate();
     },
   },

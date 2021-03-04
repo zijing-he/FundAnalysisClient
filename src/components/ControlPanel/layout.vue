@@ -35,7 +35,7 @@
     </a-row> -->
   </div>
   <div class="bottomContainer">
-    <sortedList :list="sortedList" :weights="userWeight" v-on:updateChart="updateBubbleChart"/>
+    <sortedList :list="sortedList" :weights="userWeight" v-on:updateChart="updateBubbleChart" v-on:updateFundProfile="updateFundProfile"/>
   </div>
 </template>
 <script>
@@ -52,7 +52,7 @@ export default {
       userWeight:null,
     };
   },
-  emits: ["updateChart"],
+  emits: ["updateChart","updateFundProfile"],
   components: {
     ControlPanelRaderChart,
     SortedList,
@@ -76,6 +76,11 @@ export default {
       // console.log(funds_info);
       this.$emit("updateChart", funds_info);
 
+    },
+    updateFundProfile(funds_id){
+      // console.log("我在layout");
+      // console.log(funds_id);
+    this.$emit("updateFundProfile", funds_id);
     }
   },
   mounted() {},

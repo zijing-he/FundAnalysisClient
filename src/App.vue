@@ -1,7 +1,10 @@
 <template>
   <a-row :gutter="[8, 8]">
     <a-col :span="5">
-      <ControlPanelLayout v-on:updateChart="updateBubbleChart" />
+      <ControlPanelLayout
+        v-on:updateChart="updateBubbleChart"
+        v-on:updateFundProfile="updateFundProfile"
+      />
     </a-col>
     <a-col :span="19">
       <a-row>
@@ -11,7 +14,7 @@
         <OverViewLayout :fundsData="fundsData" />
       </a-row>
       <a-row>
-        <FundProfileLayout />
+        <FundProfileLayout :fundsID="fundsID"/>
       </a-row>
     </a-col>
   </a-row>
@@ -35,7 +38,8 @@ export default {
     return {
       // funds:null,
       // managers:null,
-      fundsData: {},
+      fundsData: null,
+      fundsID:[],
     };
   },
   methods: {
@@ -43,6 +47,11 @@ export default {
       // console.log("传到App了！");
       // console.log(funds_info);
       this.fundsData = funds_info;
+    },
+    updateFundProfile(funds_id) {
+      // console.log("传到App了！");
+      // console.log(funds_id);
+      this.fundsID = funds_id;
     },
   },
 };

@@ -26,16 +26,16 @@
       v-if="fundData == undefined"
       size="large"
       tip="Loading..."
-      style="margin-top: 20px; margin-bottom: 20px;"
+      style="margin-top: 20px; margin-bottom: 20px"
     />
     <div v-if="fundData !== undefined">
       <component
         :is="componentName"
         :fundData="fundData"
-        :fundIds="fundIds"
+        :fundIds="fundsID"
         :fundId="item"
         :key="item"
-        v-for="item in fundIds"
+        v-for="item in fundsID"
       >
       </component>
     </div>
@@ -47,20 +47,51 @@ import DataService from "@/utils/data-service";
 
 export default {
   name: "FundProfileLayout",
+  props: {
+    fundsID: Array,
+  },
+  watch: {
+    fundsID: function () {
+      // console.log("到fundProfile的layout了");
+      // console.log(this.fundsID);
+
+      DataService.post(
+        "get_fund_time_border",
+        { f_ids: this.fundsID },
+        (data) => {
+          this.start_date = data["start_date"];
+          this.end_date = data["end_date"];
+          // console.log(this.start_date, this.end_date);
+          DataService.post(
+            "get_view_funds",
+            {
+              f_ids: this.fundsID,
+              start_date: this.start_date,
+              end_date: this.end_date,
+            },
+            (data) => {
+              // console.log(data);
+              this.fundData = data;
+            }
+          );
+        }
+      );
+    },
+  },
   data() {
     return {
       componentName: "FundProfile",
-      fundIds: [
-        "000001",
-        "000006",
-        "000011",
-        "000020",
-        "000021",
-        "000029",
-        "000031",
-        "000039",
-        "000059",
-      ],
+      // fundIds: [
+      //   "000001",
+      //   "000006",
+      //   "000011",
+      //   "000020",
+      //   "000021",
+      //   "000029",
+      //   "000031",
+      //   "000039",
+      //   "000059",
+      // ],
       fundData: undefined,
       returnData: [],
       carData: [],
@@ -85,44 +116,44 @@ export default {
   },
   methods: {},
   mounted() {
-    DataService.post(
-      "get_fund_time_border",
-      { f_ids: this.fundIds },
-      (data) => {
-        this.start_date = data["start_date"];
-        this.end_date = data["end_date"];
-        console.log(this.start_date, this.end_date);
-        DataService.post(
-          "get_view_funds",
-          {
-            f_ids: this.fundIds,
-            start_date: this.start_date,
-            end_date: this.end_date,
-          },
-          (data) => {
-            console.log(data);
-            this.fundData = data;
-            // this.fundIds.forEach((d) => {
-            //   this.fundData.push(data["detail"][d]);
-            //   this.returnData.push(data["total"][d]["return"]);
-            //   this.carData.push(data["total"][d]["car"]);
-            //   this.stockData.push(data["total"][d]["stock"]);
-            //   this.bondData.push(data["total"][d]["bond"]);
-            //   this.cashData.push(data["total"][d]["cash"]);
-            //   this.otherData.push(data["total"][d]["other"]);
-            //   this.sizeData.push(data["total"][d]["size"]);
-            //   this.alphaData.push(data["total"][d]["alpha"]);
-            //   this.betaData.push(data["total"][d]["beta"]);
-            //   this.sharpData.push(data["total"][d]["sharp_ratio"]);
-            //   this.dropData.push(data["total"][d]["max_drop_down"]);
-            //   this.infoData.push(data["total"][d]["information_ratio"]);
-            //   this.riskData.push(data["total"][d]["risk"]);
-            //   this.weightData.push(data["total"][d]["instl_weight"]);
-            // });
-          }
-        );
-      }
-    );
+    // DataService.post(
+    //   "get_fund_time_border",
+    //   { f_ids: this.fundIds },
+    //   (data) => {
+    //     this.start_date = data["start_date"];
+    //     this.end_date = data["end_date"];
+    //     console.log(this.start_date, this.end_date);
+    //     DataService.post(
+    //       "get_view_funds",
+    //       {
+    //         f_ids: this.fundIds,
+    //         start_date: this.start_date,
+    //         end_date: this.end_date,
+    //       },
+    //       (data) => {
+    //         console.log(data);
+    //         this.fundData = data;
+    //         // this.fundIds.forEach((d) => {
+    //         //   this.fundData.push(data["detail"][d]);
+    //         //   this.returnData.push(data["total"][d]["return"]);
+    //         //   this.carData.push(data["total"][d]["car"]);
+    //         //   this.stockData.push(data["total"][d]["stock"]);
+    //         //   this.bondData.push(data["total"][d]["bond"]);
+    //         //   this.cashData.push(data["total"][d]["cash"]);
+    //         //   this.otherData.push(data["total"][d]["other"]);
+    //         //   this.sizeData.push(data["total"][d]["size"]);
+    //         //   this.alphaData.push(data["total"][d]["alpha"]);
+    //         //   this.betaData.push(data["total"][d]["beta"]);
+    //         //   this.sharpData.push(data["total"][d]["sharp_ratio"]);
+    //         //   this.dropData.push(data["total"][d]["max_drop_down"]);
+    //         //   this.infoData.push(data["total"][d]["information_ratio"]);
+    //         //   this.riskData.push(data["total"][d]["risk"]);
+    //         //   this.weightData.push(data["total"][d]["instl_weight"]);
+    //         // });
+    //       }
+    //     );
+    //   }
+    // );
   },
 };
 </script>
