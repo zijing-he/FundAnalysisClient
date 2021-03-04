@@ -4,13 +4,12 @@
     <a-row>
       <a-col>
         <fundBubbleChart
-          v-if="data"
           :id="svg_id1"
           :date="date1"
-          :fundData="data"
+          :fundData="fundsData"
         />
       </a-col>
-      <a-col>
+      <!-- <a-col>
         <fundBubbleChart
           v-if="data"
           :id="svg_id2"
@@ -33,10 +32,10 @@
           :date="date4"
           :fundData="data"
         />
-      </a-col>
-      <a-col>
+      </a-col> -->
+      <!-- <a-col>
         <managerBubbleChart />
-      </a-col>
+      </a-col> -->
     </a-row>
   </div>
 </template>
@@ -48,6 +47,11 @@ import DataService from "@/utils/data-service";
 
 export default {
   name: "OverViewLayout",
+  props: {
+    // funds:Object,
+    // managers:Object,
+    fundsData:Object,
+  },
   data() {
     return {
       svg_id1: "fund_bubble_chart1",
@@ -65,22 +69,29 @@ export default {
   },
   components: {
     fundBubbleChart,
-    managerBubbleChart,
+    // managerBubbleChart,
+  },
+   watch: {
+    fundsData: function () {
+      // console.log("我们已经到散点图layout了");
+      // console.log(this.fundsData);
+      
+    },
   },
   methods: {
     updateData() {
       //获取基金id list
-      DataService.post("get_fund_ids", {}, (data) => {
-        this.fund_id = data.fund_ids.slice(0,5);
-        //返还基金气泡图信息（参数数组最少4个id)
-        DataService.post(
-          "get_manager_fund_local",
-          { f_ids: this.fund_id },
-          (info) => {
-            this.data = info;
-          }
-        );
-      });
+      // DataService.post("get_fund_ids", {}, (data) => {
+      //   this.fund_id = data.fund_ids.slice(0,5);
+      //   //返还基金气泡图信息（参数数组最少4个id)
+      //   DataService.post(
+      //     "get_manager_fund_local",
+      //     { f_ids: this.fund_id },
+      //     (info) => {
+      //       this.data = info;
+      //     }
+      //   );
+      // });
       // //返还基金起止时间（参数数组最少4个id)
       // DataService.post(
       //   "get_fund_time_border",

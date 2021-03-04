@@ -35,7 +35,7 @@
     </a-row> -->
   </div>
   <div class="bottomContainer">
-    <sortedList :list="sortedList"/>
+    <sortedList :list="sortedList" :weights="userWeight" v-on:updateChart="updateBubbleChart"/>
   </div>
 </template>
 <script>
@@ -47,10 +47,12 @@ export default {
   name: "ControlPanelLayout",
   data() {
     return {
-      list: [],
+      list: null,
       sortedList: null,
+      userWeight:null,
     };
   },
+  emits: ["updateChart"],
   components: {
     ControlPanelRaderChart,
     SortedList,
@@ -61,11 +63,20 @@ export default {
       DataService.post("get_fund_ranks", { weights: this.list }, (data) => {
         this.sortedList = data.ranks.slice(0, 20);
       });
+      
+      this.userWeight = this.list;
+
     },
     updateList(value) {
       // 返回排序结果
       this.list = value;
     },
+    updateBubbleChart(funds_info){
+      // console.log("我在layout");
+      // console.log(funds_info);
+      this.$emit("updateChart", funds_info);
+
+    }
   },
   mounted() {},
 };

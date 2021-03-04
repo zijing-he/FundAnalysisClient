@@ -1,24 +1,24 @@
 <template>
   <a-row :gutter="[8,8]">
     <a-col :span="5">
-      <ControlPanelLayout />
+      <ControlPanelLayout v-on:updateChart="updateBubbleChart"/>
     </a-col>
     <a-col :span="19">
       <a-row >
         <MarketAnalysisLayout />
       </a-row>
       <a-row >
-        <!-- <OverViewLayout /> -->
+        <OverViewLayout :fundsData="fundsData"/>
       </a-row>
       <a-row>
-        <!-- <FundProfileLayout /> -->
+        <FundProfileLayout />
       </a-row>
     </a-col>
   </a-row>
 </template>
 
 <script>
-import FundProfileLayout from "@/components/FundProfile/FundProfileLayout";
+// import FundProfileLayout from "@/components/FundProfile/FundProfileLayout";
 import ControlPanelLayout from "@/components/ControlPanel/layout";
 import MarketAnalysisLayout from "@/components/MarketAnalysis/layout";
 import OverViewLayout from "@/components/Overview/layout";
@@ -28,11 +28,26 @@ export default {
   components: {
     ControlPanelLayout,
     MarketAnalysisLayout,
-    // OverViewLayout,
+    OverViewLayout,
     // FundProfileLayout,
     
   },
-  mounted() {},
+  data() {
+    return {
+      // funds:null,
+      // managers:null,
+      fundsData:{},
+    };
+  },
+   methods: {
+    updateBubbleChart(funds_info) {
+      
+      // console.log("传到App了！");
+      // console.log(funds_info);
+      this.fundsData = funds_info;
+      
+    },
+  },
 };
 </script>
 
@@ -45,6 +60,6 @@ export default {
   width: 100%;
   height: 100%;
   padding: 10px;
-  border: 2px solid lightblue;
+  /* border: 2px solid lightblue; */
 }
 </style>

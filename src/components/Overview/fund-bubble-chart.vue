@@ -2,18 +2,10 @@
 <template>
   <h5>{{ date }}</h5>
   <div id="fund_bubble_chart"></div>
-  <!-- <a-row>
-    <a-col :span="24">
-      <temporalView :time-interval="timeInterval" @updateDate="debounceZoom" />
-    </a-col>
-  </a-row> -->
 </template>
 
 <script>
-// import _ from "lodash";
 import * as d3 from "d3";
-// import temporalView from "@/components/Overview/temporalView";
-// import dataJSON from "@/data/funds_tsne.json";
 export default {
   name: "fundBubbleChart",
 
@@ -22,8 +14,13 @@ export default {
     date: String,
     fundData: Object,
   },
-  components: {
-    // temporalView,
+  components: {},
+  watch: {
+    fundData: function () {
+      // console.log("我已经到气泡图了！");
+      console.log(this.fundData);
+      this.renderUpdate();
+    },
   },
   data() {
     return {
@@ -31,23 +28,15 @@ export default {
       width: 251.866,
       height: 134,
       margin: { top: 20, right: 20, bottom: 20, left: 20 },
-      data: this.fundData[this.date],
+      data:null,
       data_values: [],
       managers: [],
-      // timeInterval: [0, 50],
     };
   },
 
   mounted: function () {
     this.renderInit();
-    this.renderUpdate();
   },
-  // created() {
-  //   this.debounceZoom = _.debounce(this.handleupdateDate, 33);
-  // },
-  // unmounted() {
-  //   this.debounceZoom.cancel();
-  // },
   computed: {
     innerWidth() {
       return this.width - this.margin.left - this.margin.right;
@@ -70,24 +59,11 @@ export default {
         .nice();
     },
     colorScale() {
-      return d3.scaleOrdinal().domain(this.managers).range(d3.schemeTableau10);
+      return d3.scaleOrdinal().domain(this.managers).range(([...d3.schemeCategory10, ...d3.schemePaired, ...d3.schemeSet1, ...d3.schemeTableau10]));
     },
   },
   methods: {
-    // handleupdateDate(interval) {
-    //   this.timeInterval = interval;
-    //   // console.log(this.timeInterval);
-    //   this.renderUpdate();
-    // },
     renderInit() {
-      this.data_values = Object.values(this.data);
-      this.data_values.forEach((d) => {
-        // d.manager_id[0].forEach((dd) => {
-        //   this.managers.push(dd);
-        // });
-        this.managers.push(d.manager_id[0]);
-      });
-
       d3.select("#fund_bubble_chart").attr("id", this.id);
       this.svg = d3
         .select(`#${this.id}`)
@@ -99,13 +75,13 @@ export default {
         .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
     },
     renderUpdate() {
-      // let timeScale = d3.scaleLinear().domain([0, 100]).range([0, 28]);
-
-      // let timeStart = Math.round(timeScale(this.timeInterval[0]));
-      // let timeEnd = Math.round(timeScale(this.timeInterval[1]));
-
-      // let timeRange = Object.keys(this.data);
-
+      this.data = this.fundData.funds[this.date];
+      this.data_values = Object.values(this.data);
+      // this.data_values.forEach((d) => {
+      //   this.managers.push(d.manager_id[0]);
+      // });
+      this.managers = Object.keys(this.fundData.managers);
+      
       this.svg
         .append("g")
         .selectAll("circle")

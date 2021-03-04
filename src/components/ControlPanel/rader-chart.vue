@@ -1,5 +1,6 @@
 <template>
   <div id="market_raderchart"></div>
+  
 </template>
 
 <script>
@@ -326,7 +327,7 @@ export default {
           .data([this.dataValues])
           .attr("points", str);
 
-        
+        //传数据
         this.$emit("updateUserData", userData);
       };
 

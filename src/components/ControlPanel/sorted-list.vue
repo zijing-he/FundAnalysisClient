@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div >
+    <div>
       <a-button
         type="primary"
         :disabled="!hasSelected"
         :loading="loading"
         @click="handleClick"
-       style="margin-top: 10px"
+        style="margin-top: 10px"
       >
         确定
       </a-button>
@@ -29,12 +29,15 @@
   </div>
 </template>
 <script>
+import DataService from "@/utils/data-service";
+
 export default {
   name: "SortedList",
   props: {
     list: Array,
+    weights: Object,
   },
-  watch: {},
+
   data() {
     return {
       columns: [
@@ -133,15 +136,40 @@ export default {
   },
   methods: {
     onSelectChange(selectedRowKeys) {
-      console.log("selectedRowKeys changed: ", selectedRowKeys);
+      //点击之后的反应
+      //   console.log("selectedRowKeys changed: ", selectedRowKeys);
       this.selectedRowKeys = selectedRowKeys;
     },
     handleClick() {
       this.loading = true;
-      console.log("选择的基金序号",this.selectedRowKeys);
+      console.log("选择的基金序号", this.selectedRowKeys);
+
+      let fundId = [];
+      //选择的基金id
+      this.list.forEach((d, i) => {
+        if (this.selectedRowKeys.indexOf(i + 1) !== -1) {
+          fundId.push(d.id);
+        }
+      });
+
+      let numTop = 10;
+
+    //   console.log(this.weights);
+    //   console.log(fundId);
+
+    //得到基金散点图和基金经理信息
+      DataService.post(
+        "get_manager_fund_local",
+        { weights: this.weights, num_top: numTop, f_ids: fundId },
+        (data) => {
+        //   console.log(data);
+          this.$emit("updateChart", data);
+        }
+      );
+
       setTimeout(() => {
         this.loading = false;
-        this.selectedRowKeys = [];
+        // this.selectedRowKeys = []; //清空
       }, 1000);
     },
   },
