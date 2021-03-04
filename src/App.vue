@@ -1,14 +1,14 @@
 <template>
-  <a-row :gutter="[8,8]">
+  <a-row :gutter="[8, 8]">
     <a-col :span="5">
-      <ControlPanelLayout v-on:updateChart="updateBubbleChart"/>
+      <ControlPanelLayout v-on:updateChart="updateBubbleChart" />
     </a-col>
     <a-col :span="19">
-      <a-row >
+      <a-row>
         <MarketAnalysisLayout />
       </a-row>
-      <a-row >
-        <OverViewLayout :fundsData="fundsData"/>
+      <a-row>
+        <OverViewLayout :fundsData="fundsData" />
       </a-row>
       <a-row>
         <FundProfileLayout />
@@ -18,7 +18,7 @@
 </template>
 
 <script>
-// import FundProfileLayout from "@/components/FundProfile/FundProfileLayout";
+import FundProfileLayout from "@/components/FundProfile/FundProfileLayout";
 import ControlPanelLayout from "@/components/ControlPanel/layout";
 import MarketAnalysisLayout from "@/components/MarketAnalysis/layout";
 import OverViewLayout from "@/components/Overview/layout";
@@ -29,23 +29,20 @@ export default {
     ControlPanelLayout,
     MarketAnalysisLayout,
     OverViewLayout,
-    // FundProfileLayout,
-    
+    FundProfileLayout,
   },
   data() {
     return {
       // funds:null,
       // managers:null,
-      fundsData:{},
+      fundsData: {},
     };
   },
-   methods: {
+  methods: {
     updateBubbleChart(funds_info) {
-      
       // console.log("传到App了！");
       // console.log(funds_info);
       this.fundsData = funds_info;
-      
     },
   },
 };

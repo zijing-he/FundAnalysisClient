@@ -77,21 +77,23 @@ import InvestStyleBox from "./InvestStyleBox";
 export default {
   name: "FundProfile",
   props: {
+    fundData: Object,
+    fundIds: Object,
     fundId: String,
-    returnData: Object,
-    carData: Object,
-    stockData: Object,
-    bondData: Object,
-    cashData: Object,
-    otherData: Object,
-    avgSizeData: Object,
-    alphaData: Object,
-    betaData: Object,
-    sharpData: Object,
-    dropData: Object,
-    infoData: Object,
-    riskData: Object,
-    weightData: Object,
+    // returnData: Object,
+    // carData: Object,
+    // stockData: Object,
+    // bondData: Object,
+    // cashData: Object,
+    // otherData: Object,
+    // avgSizeData: Object,
+    // alphaData: Object,
+    // betaData: Object,
+    // sharpData: Object,
+    // dropData: Object,
+    // infoData: Object,
+    // riskData: Object,
+    // weightData: Object,
   },
   components: {
     InvestStyleBox,
@@ -129,20 +131,20 @@ export default {
       thisInfoData: 0,
       thisRiskData: 0,
       thisWeightData: 0,
-      allReturnData: this.returnData,
-      allCarData: this.carData,
-      allStockData: this.stockData,
-      allBondData: this.bondData,
-      allCashData: this.cashData,
-      allOtherData: this.otherData,
-      allSizeData: this.avgSizeData,
-      allAlphaData: this.alphaData,
-      allBetaData: this.betaData,
-      allSharpData: this.sharpData,
-      allDropData: this.dropData,
-      allInfoData: this.infoData,
-      allRiskData: this.riskData,
-      allWeightData: this.weightData,
+      allReturnData: [],
+      allCarData: [],
+      allStockData: [],
+      allBondData: [],
+      allCashData: [],
+      allOtherData: [],
+      allSizeData: [],
+      allAlphaData: [],
+      allBetaData: [],
+      allSharpData: [],
+      allDropData: [],
+      allInfoData: [],
+      allRiskData: [],
+      allWeightData: [],
       rectMarginRight: 30,
       // 2.26
       // dropData_n: [],
@@ -183,11 +185,27 @@ export default {
   },
 
   mounted: function() {
-    const fundData = require(`@/data/FundProfile/${this.fundId}.json`);
+    // const fundData = require(`@/data/FundProfile/${this.fundId}.json`);
+    this.fundIds.forEach((d) => {
+      this.allReturnData.push(this.fundData["total"][d]["return"]);
+      this.allCarData.push(this.fundData["total"][d]["car"]);
+      this.allStockData.push(this.fundData["total"][d]["stock"]);
+      this.allBondData.push(this.fundData["total"][d]["bond"]);
+      this.allCashData.push(this.fundData["total"][d]["cash"]);
+      this.allOtherData.push(this.fundData["total"][d]["other"]);
+      this.allSizeData.push(this.fundData["total"][d]["size"]);
+      this.allAlphaData.push(this.fundData["total"][d]["alpha"]);
+      this.allBetaData.push(this.fundData["total"][d]["beta"]);
+      this.allSharpData.push(this.fundData["total"][d]["sharp_ratio"]);
+      this.allDropData.push(this.fundData["total"][d]["max_drop_down"]);
+      this.allInfoData.push(this.fundData["total"][d]["information_ratio"]);
+      this.allRiskData.push(this.fundData["total"][d]["risk"]);
+      this.allWeightData.push(this.fundData["total"][d]["instl_weight"]);
+    });
 
-    for (let i in fundData["detail"][this.fundId]) {
-      // let tmpDetailCarData = fundData[i]["detail_car"];
-      // let tmpRiskData = fundData[i]["risks"];
+    for (let i in this.fundData["detail"][this.fundId]) {
+      // let tmpDetailCarData = this.fundData[i]["detail_car"];
+      // let tmpRiskData = this.fundData[i]["risks"];
       // 2.26
       // if (["0331", "0630", "0930", "1231"].indexOf(i.substring(4)) === -1) {
       //   this.investStyleBoxWidth = 280;
@@ -195,14 +213,17 @@ export default {
       //   this.boxGap = 800;
       //   this.margin.right = this.investStyleBoxWidth / 2 + 4;
       // }
-      let tmpDetailCarData = fundData["detail"][this.fundId][i]["detail_car"];
-      let tmpdetailNavReturnData =
-        fundData["detail"][this.fundId][i]["detail_nav_return"];
+      let tmpDetailCarData = this.fundData["detail"][this.fundId][i][
+        "detail_car"
+      ];
+      let tmpdetailNavReturnData = this.fundData["detail"][this.fundId][i][
+        "detail_nav_return"
+      ];
       let tmpDateData = Object.keys(tmpDetailCarData);
       tmpDateData = tmpDateData.map(
         (d) => `${d.substring(0, 4)}-${d.substring(4, 6)}-${d.substring(6)}`
       );
-      this.sizeData.push(fundData["detail"][this.fundId][i]["size"]);
+      this.sizeData.push(this.fundData["detail"][this.fundId][i]["size"]);
       this.dateData = [...this.dateData, ...tmpDateData];
       this.detailNavReturnData = [
         ...this.detailNavReturnData,
@@ -213,7 +234,7 @@ export default {
       //   ...Object.values(tmpDetailCarData),
       // ];
       this.detailCarData.push(Object.values(tmpDetailCarData));
-      let holdingData = fundData["detail"][this.fundId][i]["holding"];
+      let holdingData = this.fundData["detail"][this.fundId][i]["holding"];
       let holdingDataKeys = Object.keys(holdingData)
         .sort((a, b) => holdingData[b] - holdingData[a])
         .slice(0, 10);
@@ -230,80 +251,54 @@ export default {
       };
 
       // 2.26
-      // this.dropData_n.push(fundData[i]["max_drop_down"]);
-      // this.riskData_n.push(fundData[i]["risk"]);
-      // this.stockData_n.push(fundData[i]["stock"]);
-      // this.bondData_n.push(fundData[i]["bond"]);
-      // this.cashData_n.push(fundData[i]["cash"]);
-      // this.otherData_n.push(fundData[i]["other"]);
-      // this.alphaData_n.push(fundData[i]["alpha"]);
-      // this.betaData_n.push(fundData[i]["beta"]);
-      // this.sharpData_n.push(fundData[i]["sharp_ratio"]);
-      // this.infoData_n.push(fundData[i]["information_ratio"]);
+      // this.dropData_n.push(this.fundData[i]["max_drop_down"]);
+      // this.riskData_n.push(this.fundData[i]["risk"]);
+      // this.stockData_n.push(this.fundData[i]["stock"]);
+      // this.bondData_n.push(this.fundData[i]["bond"]);
+      // this.cashData_n.push(this.fundData[i]["cash"]);
+      // this.otherData_n.push(this.fundData[i]["other"]);
+      // this.alphaData_n.push(this.fundData[i]["alpha"]);
+      // this.betaData_n.push(this.fundData[i]["beta"]);
+      // this.sharpData_n.push(this.fundData[i]["sharp_ratio"]);
+      // this.infoData_n.push(this.fundData[i]["information_ratio"]);
 
       this.investStyleBoxes.push({
         boxId: this.fundId + "_" + tmpDateData[tmpDateData.length - 1],
         boxText: tmpDateData[tmpDateData.length - 1],
-        datum: fundData["detail"][this.fundId][i],
+        datum: this.fundData["detail"][this.fundId][i],
         holdingData: thisHoldingData,
-        navReturnData: fundData["detail"][this.fundId][i]["nav_return"],
-        hs300Data: fundData["detail"][this.fundId][i]["hs300_return"],
-        dropData: fundData["detail"][this.fundId][i]["max_drop_down"],
-        riskData: fundData["detail"][this.fundId][i]["risk"],
-        stockData: fundData["detail"][this.fundId][i]["stock"],
-        bondData: fundData["detail"][this.fundId][i]["bond"],
-        cashData: fundData["detail"][this.fundId][i]["cash"],
-        otherData: fundData["detail"][this.fundId][i]["other"],
-        alphaData: fundData["detail"][this.fundId][i]["alpha"],
-        betaData: fundData["detail"][this.fundId][i]["beta"],
-        sharpData: fundData["detail"][this.fundId][i]["sharp_ratio"],
-        infoData: fundData["detail"][this.fundId][i]["information_ratio"],
+        navReturnData: this.fundData["detail"][this.fundId][i]["nav_return"],
+        hs300Data: this.fundData["detail"][this.fundId][i]["hs300_return"],
+        dropData: this.fundData["detail"][this.fundId][i]["max_drop_down"],
+        riskData: this.fundData["detail"][this.fundId][i]["risk"],
+        stockData: this.fundData["detail"][this.fundId][i]["stock"],
+        bondData: this.fundData["detail"][this.fundId][i]["bond"],
+        cashData: this.fundData["detail"][this.fundId][i]["cash"],
+        otherData: this.fundData["detail"][this.fundId][i]["other"],
+        alphaData: this.fundData["detail"][this.fundId][i]["alpha"],
+        betaData: this.fundData["detail"][this.fundId][i]["beta"],
+        sharpData: this.fundData["detail"][this.fundId][i]["sharp_ratio"],
+        infoData: this.fundData["detail"][this.fundId][i]["information_ratio"],
       });
     }
 
-    this.thisReturnData = fundData["total"][this.fundId]["return"];
-    this.thisCarData = fundData["total"][this.fundId]["car"];
-    this.thisStockData = fundData["total"][this.fundId]["stock"];
-    this.thisBondData = fundData["total"][this.fundId]["bond"];
-    this.thisCashData = fundData["total"][this.fundId]["cash"];
-    this.thisOtherData = fundData["total"][this.fundId]["other"];
-    this.thisSizeData = fundData["total"][this.fundId]["size"];
-    this.thisAlphaData = fundData["total"][this.fundId]["alpha"];
-    this.thisBetaData = fundData["total"][this.fundId]["beta"];
-    this.thisSharpData = fundData["total"][this.fundId]["sharp_ratio"];
-    this.thisDropData = fundData["total"][this.fundId]["max_drop_down"];
-    this.thisInfoData = fundData["total"][this.fundId]["information_ratio"];
-    this.thisRiskData = fundData["total"][this.fundId]["risk"];
-    this.thisWeightData = fundData["total"][this.fundId]["instl_weight"];
+    this.thisReturnData = this.fundData["total"][this.fundId]["return"];
+    this.thisCarData = this.fundData["total"][this.fundId]["car"];
+    this.thisStockData = this.fundData["total"][this.fundId]["stock"];
+    this.thisBondData = this.fundData["total"][this.fundId]["bond"];
+    this.thisCashData = this.fundData["total"][this.fundId]["cash"];
+    this.thisOtherData = this.fundData["total"][this.fundId]["other"];
+    this.thisSizeData = this.fundData["total"][this.fundId]["size"];
+    this.thisAlphaData = this.fundData["total"][this.fundId]["alpha"];
+    this.thisBetaData = this.fundData["total"][this.fundId]["beta"];
+    this.thisSharpData = this.fundData["total"][this.fundId]["sharp_ratio"];
+    this.thisDropData = this.fundData["total"][this.fundId]["max_drop_down"];
+    this.thisInfoData = this.fundData["total"][this.fundId][
+      "information_ratio"
+    ];
+    this.thisRiskData = this.fundData["total"][this.fundId]["risk"];
+    this.thisWeightData = this.fundData["total"][this.fundId]["instl_weight"];
 
-    let maxSize = Math.max(...this.sizeData);
-    let minSize = Math.min(...this.sizeData);
-    let kOuter =
-      (this.maxOuterRadius - this.minOuterRadius) / (maxSize - minSize);
-    let bOuter = this.maxOuterRadius - kOuter * maxSize;
-    this.investStyleBoxes.map((d, i) => {
-      d.outerRadius = kOuter * this.sizeData[i] + bOuter;
-      d.innerRadius = d.outerRadius * 0.8;
-      // 2.26
-      // d.dropData = this.dropData_n;
-      // d.riskData = this.riskData_n;
-      // d.stockData = this.stockData_n;
-      // d.bondData = this.bondData_n;
-      // d.cashData = this.cashData_n;
-      // d.otherData = this.otherData_n;
-      // d.sizeData = this.sizeData;
-      // d.alphaData = this.alphaData_n;
-      // d.betaData = this.betaData_n;
-      // d.sharpData = this.sharpData_n;
-      // d.infoData = this.infoData_n;
-      // d.index = i;
-      return d;
-    });
-    this.renderInit();
-    this.renderUpdate();
-  },
-
-  updated: function() {
     this.rectObject = {
       return: {
         color: "steelblue",
@@ -376,54 +371,83 @@ export default {
         thisData: this.thisWeightData,
       },
     };
+
+    let maxSize = Math.max(...this.sizeData);
+    let minSize = Math.min(...this.sizeData);
+    let kOuter =
+      (this.maxOuterRadius - this.minOuterRadius) / (maxSize - minSize);
+    let bOuter = this.maxOuterRadius - kOuter * maxSize;
+    this.investStyleBoxes.map((d, i) => {
+      d.outerRadius = kOuter * this.sizeData[i] + bOuter;
+      d.innerRadius = d.outerRadius * 0.8;
+      // 2.26
+      // d.dropData = this.dropData_n;
+      // d.riskData = this.riskData_n;
+      // d.stockData = this.stockData_n;
+      // d.bondData = this.bondData_n;
+      // d.cashData = this.cashData_n;
+      // d.otherData = this.otherData_n;
+      // d.sizeData = this.sizeData;
+      // d.alphaData = this.alphaData_n;
+      // d.betaData = this.betaData_n;
+      // d.sharpData = this.sharpData_n;
+      // d.infoData = this.infoData_n;
+      // d.index = i;
+      return d;
+    });
+    this.renderInit();
+    this.renderUpdate();
+  },
+
+  updated: function() {
     this.updateMargin();
     this.updateRects();
     this.updateGapPath();
   },
 
   watch: {
-    returnData: function(newVal, oldVal) {
-      this.allReturnData = newVal;
-    },
-    carData: function(newVal, oldVal) {
-      this.allCarData = newVal;
-    },
-    stockData: function(newVal, oldVal) {
-      this.allStockData = newVal;
-    },
-    bondData: function(newVal, oldVal) {
-      this.allBondData = newVal;
-    },
-    cashData: function(newVal, oldVal) {
-      this.allCashData = newVal;
-    },
-    otherData: function(newVal, oldVal) {
-      this.allOtherData = newVal;
-    },
-    avgSizeData: function(newVal, oldVal) {
-      this.allSizeData = newVal;
-    },
-    alphaData: function(newVal, oldVal) {
-      this.allAlphaData = newVal;
-    },
-    betaData: function(newVal, oldVal) {
-      this.allBetaData = newVal;
-    },
-    sharpData: function(newVal, oldVal) {
-      this.allSharpData = newVal;
-    },
-    dropData: function(newVal, oldVal) {
-      this.allDropData = newVal;
-    },
-    infoData: function(newVal, oldVal) {
-      this.allInfoData = newVal;
-    },
-    riskData: function(newVal, oldVal) {
-      this.allRiskData = newVal;
-    },
-    weightData: function(newVal, oldVal) {
-      this.allRiskData = newVal;
-    },
+    // returnData: function(newVal, oldVal) {
+    //   this.allReturnData = newVal;
+    // },
+    // carData: function(newVal, oldVal) {
+    //   this.allCarData = newVal;
+    // },
+    // stockData: function(newVal, oldVal) {
+    //   this.allStockData = newVal;
+    // },
+    // bondData: function(newVal, oldVal) {
+    //   this.allBondData = newVal;
+    // },
+    // cashData: function(newVal, oldVal) {
+    //   this.allCashData = newVal;
+    // },
+    // otherData: function(newVal, oldVal) {
+    //   this.allOtherData = newVal;
+    // },
+    // avgSizeData: function(newVal, oldVal) {
+    //   this.allSizeData = newVal;
+    // },
+    // alphaData: function(newVal, oldVal) {
+    //   this.allAlphaData = newVal;
+    // },
+    // betaData: function(newVal, oldVal) {
+    //   this.allBetaData = newVal;
+    // },
+    // sharpData: function(newVal, oldVal) {
+    //   this.allSharpData = newVal;
+    // },
+    // dropData: function(newVal, oldVal) {
+    //   this.allDropData = newVal;
+    // },
+    // infoData: function(newVal, oldVal) {
+    //   this.allInfoData = newVal;
+    // },
+    // riskData: function(newVal, oldVal) {
+    //   this.allRiskData = newVal;
+    // },
+    // weightData: function(newVal, oldVal) {
+    //   this.allRiskData = newVal;
+    // },
   },
 
   computed: {
@@ -480,6 +504,7 @@ export default {
     clickBar(type) {
       this.svg.select("#dashline").remove();
       const gDashline = this.svg.append("g").attr("id", "dashline");
+      let thisK, thisB, lastK, lastB;
       for (let i = 0; i < this.investStyleBoxes.length - 1; i++) {
         const startPoint = this.$refs[
           this.investStyleBoxes[i].boxId
@@ -501,36 +526,98 @@ export default {
         const endY = 5 + 20 + endPoint[1];
         gDashline
           .append("path")
-          .attr("stroke-dasharray", "5, 5")
+          .attr("stroke-dasharray", "2, 2")
           .attr("stroke", "black")
           .attr("d", `M ${startX} ${startY} L ${endX} ${endY}`);
+
         // 由于遮挡，内部的虚线只能由子组件绘制
-        let k = (endY - startY) / (endX - startX);
-        let b = startY - startX * k;
-        let thisX =
+        thisK = (endY - startY) / (endX - startX);
+        thisB = startY - startX * thisK;
+        let thisX1 =
+          this.xScale(new Date(this.investStyleBoxes[i].boxText)) -
+          this.investStyleBoxWidth / 2;
+        let thisY1 = lastK * thisX1 + lastB;
+        let thisX2 =
           this.xScale(new Date(this.investStyleBoxes[i].boxText)) +
           this.investStyleBoxWidth / 2;
-        let thisY = k * thisX + b;
-        let thatX, thatY;
+        let thisY2 = thisK * thisX2 + thisB;
+        let thatX1, thatY1, thatX2, thatY2;
         if (["nav", "risk"].indexOf(type) !== -1) {
           // top
-          thatX = 80;
-          thatY = thisY - 20 - 5;
+          thatX1 = 0;
+          thatY1 = thisY1 - 20 - 5;
+          thatX2 = 200;
+          thatY2 = thisY2 - 20 - 5;
         } else if (["sharp", "info"].indexOf(type) !== -1) {
           // right
-          thatX = 60 - (thisY - 20 - 5);
-          thatY = 80;
+          thatX1 = 60 - (thisY1 - 20 - 5);
+          thatY1 = 0;
+          thatX2 = 60 - (thisY2 - 20 - 5);
+          thatY2 = 200;
         } else if (["stock", "bond", "cash", "other"].indexOf(type) !== -1) {
           // bottom
-          thatX = 0;
-          thatY = 60 - (thisY - 20 - 5);
+          thatX1 = 200;
+          thatY1 = 60 - (thisY1 - 20 - 5);
+          thatX2 = 0;
+          thatY2 = 60 - (thisY2 - 20 - 5);
         } else {
           // left
-          thatX = thisY - 20 - 5;
-          thatY = 0;
+          thatX1 = thisY1 - 20 - 5;
+          thatY1 = 200;
+          thatX2 = thisY2 - 20 - 5;
+          thatY2 = 0;
         }
-        // this.$refs[this.investStyleBoxes[i + 1].boxId].drawDashline(thatX, thatY);
+        if (i === 0) {
+          this.$refs[this.investStyleBoxes[i].boxId].drawDashline(
+            thatX1,
+            thatY1,
+            thatX2,
+            thatY2,
+            true,
+            false
+          );
+        } else {
+          this.$refs[this.investStyleBoxes[i].boxId].drawDashline(
+            thatX1,
+            thatY1,
+            thatX2,
+            thatY2,
+            false,
+            false
+          );
+        }
+        lastK = thisK;
+        lastB = thisB;
       }
+      let lastTmpX =
+        this.xScale(
+          new Date(
+            this.investStyleBoxes[this.investStyleBoxes.length - 1].boxText
+          )
+        ) -
+        this.investStyleBoxWidth / 2;
+      let lastTmpY = lastK * lastTmpX + lastB;
+      let lastX, lastY;
+      if (["nav", "risk"].indexOf(type) !== -1) {
+        // top
+        lastX = 0;
+        lastY = lastTmpY - 20 - 5;
+      } else if (["sharp", "info"].indexOf(type) !== -1) {
+        // right
+        lastX = 60 - (lastTmpY - 20 - 5);
+        lastY = 0;
+      } else if (["stock", "bond", "cash", "other"].indexOf(type) !== -1) {
+        // bottom
+        lastX = 200;
+        lastY = 60 - (lastTmpY - 20 - 5);
+      } else {
+        // left
+        lastX = lastTmpY - 20 - 5;
+        lastY = 200;
+      }
+      this.$refs[
+        this.investStyleBoxes[this.investStyleBoxes.length - 1].boxId
+      ].drawDashline(lastX, lastY, -1, -1, false, true);
     },
     topHandleScroll() {
       if (!this.isSyncTop) {
