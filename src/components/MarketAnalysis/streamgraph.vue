@@ -173,19 +173,19 @@ export default {
       //   .on("mouseenter", mouseenter)
       //   .on("mouseleave", mouseleave);
 
-      let sectorChart = this.svg.append("g");
+      // let sectorChart = this.svg.append("g");
 
-      this.yScale.domain(
-        d3.extent(Object.values(this.sector_data["医药生物"]))
-      );
-      sectorChart
-        .append("g")
-        .append("path")
-        .attr("class", "line-path-yiyao")
-        .attr("d", this.linePath(Object.values(this.sector_data["医药生物"])))
-        .attr("fill", "none")
-        .attr("stroke-width", 1.5)
-        .attr("stroke", "#928a97");
+      // this.yScale.domain(
+      //   d3.extent(Object.values(this.sector_data["医药生物"]))
+      // );
+      // sectorChart
+      //   .append("g")
+      //   .append("path")
+      //   .attr("class", "line-path-yiyao")
+      //   .attr("d", this.linePath(Object.values(this.sector_data["医药生物"])))
+      //   .attr("fill", "none")
+      //   .attr("stroke-width", 1.5)
+      //   .attr("stroke", "#928a97");
     },
   },
 };

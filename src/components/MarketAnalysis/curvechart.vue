@@ -65,7 +65,14 @@ export default {
     },
   },
 
-  methods: {
+  methods: {updateDate({ selection }) {
+      let start = this.xScale.invert(selection[0]).toISOString().slice(0,10);
+      let end = this.xScale.invert(selection[1]).toISOString().slice(0,10);
+      
+      console.log(start, end);
+      
+      // this.svg.select(".brush").call(this.brush.move, null);  //情况brush后会报错，但是不影响
+    },
     renderInit() {
       this.date = this.date.map(
         (d) =>
@@ -95,7 +102,7 @@ export default {
           [0, -this.margin.top],
           [this.innerWidth, this.innerHeight],
         ])
-        .on("end", updateChart);
+        .on("end", this.updateDate);
 
       let curveChart = this.svg.append("g");
 
@@ -156,9 +163,9 @@ export default {
 
       curveChart.append("g").attr("class", "brush").call(brush);
 
-      function updateChart({ selection }) {
-        console.log(selection); //打印选中的像素点
-      }
+      // function updateChart({ selection }) {
+      //   console.log(selection); //打印选中的像素点
+      // }
 
       //legend
       this.svg
