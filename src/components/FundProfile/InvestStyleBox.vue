@@ -150,8 +150,8 @@ export default {
       barTopMargin: 5,
       curDegree: 0,
       lastTopBars: [],
-      dashlineStartX: 0,
-      dashlineStartY: 0,
+      midPointX: 0,
+      midPointY: 0,
     };
   },
 
@@ -188,7 +188,7 @@ export default {
         .round(true);
     },
     yScale() {
-      return d3.scaleLinear().domain([0, 1]);
+      return d3.scaleLinear();
     },
     curTopBars() {
       if (this.curDegree % 360 === 0) {
@@ -248,26 +248,26 @@ export default {
         .select("#left_" + this.boxId)
         .append("svg")
         .attr("width", 60)
-        .attr("height", 80)
-        .attr("viewBox", [0, 0, 60, 80]);
+        .attr("height", 200)
+        .attr("viewBox", [0, 0, 60, 200]);
       this.topSvg = d3
         .select("#top_" + this.boxId)
         .append("svg")
-        .attr("width", 80)
+        .attr("width", 200)
         .attr("height", 60)
-        .attr("viewBox", [0, 0, 80, 60]);
+        .attr("viewBox", [0, 0, 200, 60]);
       this.rightSvg = d3
         .select("#right_" + this.boxId)
         .append("svg")
         .attr("width", 60)
-        .attr("height", 80)
-        .attr("viewBox", [0, 0, 60, 80]);
+        .attr("height", 200)
+        .attr("viewBox", [0, 0, 60, 200]);
       this.bottomSvg = d3
         .select("#bottom_" + this.boxId)
         .append("svg")
-        .attr("width", 80)
+        .attr("width", 200)
         .attr("height", 60)
-        .attr("viewBox", [0, 0, 80, 60]);
+        .attr("viewBox", [0, 0, 200, 60]);
     },
     renderUpdate() {
       // version 1
@@ -469,51 +469,119 @@ export default {
 
       // bars
       // top
-      this.yScale.range([60, this.barTopMargin]);
-      const gRectsTop = this.topSvg.append("g");
+      this.yScale.domain([0, 1]).range([60, this.barTopMargin]);
+      const topDefs = this.topSvg.append("defs");
+      topDefs
+        .append("pattern")
+        .attr("id", `top_pattern_stripe_${this.boxId}`)
+        .attr("width", 4)
+        .attr("height", 4)
+        .attr("patternUnits", "userSpaceOnUse")
+        .attr("patternTransform", "rotate(45)")
+        .append("rect")
+        .attr("width", 2)
+        .attr("height", 4)
+        .attr("transform", "translate(0, 0)")
+        .attr("fill", "white");
+      topDefs
+        .append("mask")
+        .attr("id", `top_mask_stripe_${this.boxId}`)
+        .append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", "100%")
+        .attr("height", "100%")
+        .attr("fill", `url(#top_pattern_stripe_${this.boxId})`);
+      const gRectsTop = this.topSvg
+        .append("g")
+        .attr("transform", "translate(60, 0)");
       gRectsTop
         .append("rect")
         .attr("id", "nav_" + this.boxId)
         .attr("fill", colorMap.nav)
+        .attr(
+          "mask",
+          this.navReturnData < 0
+            ? `url(#top_mask_stripe_${this.boxId})`
+            : "none"
+        )
         .attr("x", 7)
         .attr("y", this.yScale(Math.abs(this.navReturnData)))
         .attr("width", 30)
-        .attr("height", this.yScale(0) - this.yScale(Math.abs(this.navReturnData)));
+        .attr(
+          "height",
+          this.yScale(0) - this.yScale(Math.abs(this.navReturnData))
+        );
+      this.yScale.domain([0, 1.1]).range([60, this.barTopMargin]);
       gRectsTop
         .append("rect")
         .attr("id", "risk_" + this.boxId)
         .attr("fill", colorMap.risk)
+        .attr(
+          "mask",
+          this.riskData < 0 ? `url(#top_mask_stripe_${this.boxId})` : "none"
+        )
         .attr("x", 43)
         .attr("y", this.yScale(Math.abs(this.riskData)))
         .attr("width", 30)
         .attr("height", this.yScale(0) - this.yScale(Math.abs(this.riskData)));
+      this.yScale.domain([0, 1]).range([60, this.barTopMargin]);
       if (Math.abs(this.navReturnData) > Math.abs(this.hs300Data)) {
         gRectsTop
           .append("path")
-          .attr("stroke-dasharray", "5, 5")
+          .attr("stroke-dasharray", "2, 2")
           .attr("stroke", "black")
           .attr("d", `M 7 ${this.yScale(Math.abs(this.hs300Data))} H 37`);
       } else {
         gRectsTop
           .append("rect")
           .attr("fill", "none")
-          .attr("stroke-dasharray", "5, 5")
+          .attr("stroke-dasharray", "2, 2")
           .attr("stroke", "black")
           .attr("x", 7)
           .attr("y", this.yScale(Math.abs(this.hs300Data)))
           .attr("width", 30)
           .attr(
             "height",
-            this.yScale(Math.abs(this.navReturnData)) - this.yScale(Math.abs(this.hs300Data))
+            this.yScale(Math.abs(this.navReturnData)) -
+              this.yScale(Math.abs(this.hs300Data))
           );
       }
       // right
-      this.yScale.range([0, 60 - this.barTopMargin]);
-      const gRectsRight = this.rightSvg.append("g");
+      this.yScale.domain([0, 1]).range([0, 60 - this.barTopMargin]);
+      const rightDefs = this.rightSvg.append("defs");
+      rightDefs
+        .append("pattern")
+        .attr("id", `right_pattern_stripe_${this.boxId}`)
+        .attr("width", 4)
+        .attr("height", 4)
+        .attr("patternUnits", "userSpaceOnUse")
+        .attr("patternTransform", "rotate(45)")
+        .append("rect")
+        .attr("width", 2)
+        .attr("height", 4)
+        .attr("transform", "translate(0, 0)")
+        .attr("fill", "white");
+      rightDefs
+        .append("mask")
+        .attr("id", `right_mask_stripe_${this.boxId}`)
+        .append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", "100%")
+        .attr("height", "100%")
+        .attr("fill", `url(#right_pattern_stripe_${this.boxId})`);
+      const gRectsRight = this.rightSvg
+        .append("g")
+        .attr("transform", "translate(0, 60)");
       gRectsRight
         .append("rect")
         .attr("id", "sharp_" + this.boxId)
         .attr("fill", colorMap.sharp)
+        .attr(
+          "mask",
+          this.sharpData < 0 ? `url(#right_mask_stripe_${this.boxId})` : "none"
+        )
         .attr("x", 0)
         .attr("y", 7)
         .attr("width", this.yScale(Math.abs(this.sharpData)) - this.yScale(0))
@@ -522,17 +590,49 @@ export default {
         .append("rect")
         .attr("id", "info_" + this.boxId)
         .attr("fill", colorMap.info)
+        .attr(
+          "mask",
+          this.infoData < 0 ? `url(#right_mask_stripe_${this.boxId})` : "none"
+        )
         .attr("x", 0)
         .attr("y", 43)
         .attr("width", this.yScale(Math.abs(this.infoData)) - this.yScale(0))
         .attr("height", 30);
       // bottom
-      this.yScale.range([0, 60 - this.barTopMargin]);
-      const gRectsBottom = this.bottomSvg.append("g");
+      this.yScale.domain([0, 1]).range([0, 60 - this.barTopMargin]);
+      const bottomDefs = this.bottomSvg.append("defs");
+      bottomDefs
+        .append("pattern")
+        .attr("id", `bottom_pattern_stripe_${this.boxId}`)
+        .attr("width", 4)
+        .attr("height", 4)
+        .attr("patternUnits", "userSpaceOnUse")
+        .attr("patternTransform", "rotate(45)")
+        .append("rect")
+        .attr("width", 2)
+        .attr("height", 4)
+        .attr("transform", "translate(0, 0)")
+        .attr("fill", "white");
+      bottomDefs
+        .append("mask")
+        .attr("id", `bottom_mask_stripe_${this.boxId}`)
+        .append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", "100%")
+        .attr("height", "100%")
+        .attr("fill", `url(#bottom_pattern_stripe_${this.boxId})`);
+      const gRectsBottom = this.bottomSvg
+        .append("g")
+        .attr("transform", "translate(60, 0)");
       gRectsBottom
         .append("rect")
         .attr("id", "stock_" + this.boxId)
         .attr("fill", colorMap.stock)
+        .attr(
+          "mask",
+          this.stockData < 0 ? `url(#bottom_mask_stripe_${this.boxId})` : "none"
+        )
         .attr("x", 4)
         .attr("y", 0)
         .attr("width", 15)
@@ -541,6 +641,10 @@ export default {
         .append("rect")
         .attr("id", "bond_" + this.boxId)
         .attr("fill", colorMap.bond)
+        .attr(
+          "mask",
+          this.bondData < 0 ? `url(#bottom_mask_stripe_${this.boxId})` : "none"
+        )
         .attr("x", 23)
         .attr("y", 0)
         .attr("width", 15)
@@ -549,6 +653,10 @@ export default {
         .append("rect")
         .attr("id", "cash_" + this.boxId)
         .attr("fill", colorMap.cash)
+        .attr(
+          "mask",
+          this.cashData < 0 ? `url(#bottom_mask_stripe_${this.boxId})` : "none"
+        )
         .attr("x", 42)
         .attr("y", 0)
         .attr("width", 15)
@@ -557,17 +665,49 @@ export default {
         .append("rect")
         .attr("id", "other_" + this.boxId)
         .attr("fill", colorMap.other)
+        .attr(
+          "mask",
+          this.otherData < 0 ? `url(#bottom_mask_stripe_${this.boxId})` : "none"
+        )
         .attr("x", 61)
         .attr("y", 0)
         .attr("width", 15)
         .attr("height", this.yScale(Math.abs(this.otherData)) - this.yScale(0));
       // left
-      this.yScale.range([this.barTopMargin, 60]);
-      const gRectsLeft = this.leftSvg.append("g");
+      this.yScale.domain([0, 1]).range([this.barTopMargin, 60]);
+      const leftDefs = this.leftSvg.append("defs");
+      leftDefs
+        .append("pattern")
+        .attr("id", `left_pattern_stripe_${this.boxId}`)
+        .attr("width", 4)
+        .attr("height", 4)
+        .attr("patternUnits", "userSpaceOnUse")
+        .attr("patternTransform", "rotate(45)")
+        .append("rect")
+        .attr("width", 2)
+        .attr("height", 4)
+        .attr("transform", "translate(0, 0)")
+        .attr("fill", "white");
+      leftDefs
+        .append("mask")
+        .attr("id", `left_mask_stripe_${this.boxId}`)
+        .append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", "100%")
+        .attr("height", "100%")
+        .attr("fill", `url(#left_pattern_stripe_${this.boxId})`);
+      const gRectsLeft = this.leftSvg
+        .append("g")
+        .attr("transform", "translate(0, 60)");
       gRectsLeft
         .append("rect")
         .attr("id", "alpha_" + this.boxId)
         .attr("fill", colorMap.alpha)
+        .attr(
+          "mask",
+          this.alphaData < 0 ? `url(#left_mask_stripe_${this.boxId})` : "none"
+        )
         .attr("x", this.yScale(Math.abs(this.alphaData)))
         .attr("y", 7)
         .attr("width", this.yScale(1) - this.yScale(Math.abs(this.alphaData)))
@@ -576,6 +716,10 @@ export default {
         .append("rect")
         .attr("id", "beta_" + this.boxId)
         .attr("fill", colorMap.beta)
+        .attr(
+          "mask",
+          this.betaData < 0 ? `url(#left_mask_stripe_${this.boxId})` : "none"
+        )
         .attr("x", this.yScale(Math.abs(this.betaData)))
         .attr("y", 43)
         .attr("width", this.yScale(1) - this.yScale(Math.abs(this.betaData)))
@@ -584,7 +728,7 @@ export default {
       let that = this;
       this.curTopBars.forEach((d) => {
         d3.select(`#${d}_${this.boxId}`)
-          .style("cursor", "point")
+          .style("cursor", "pointer")
           .on("click", function() {
             d3.select(`#dashline_${this.boxId}`).remove();
             that.$emit(
@@ -599,6 +743,7 @@ export default {
       this.lastTopBars = this.curTopBars;
     },
     turnClockwise() {
+      d3.select(`#dashline_${this.boxId}`).remove();
       this.curDegree += 90;
       d3.select("#content_" + this.boxId).style(
         "transform",
@@ -627,6 +772,7 @@ export default {
       this.lastTopBars = this.curTopBars;
     },
     turnCounterClockwise() {
+      d3.select(`#dashline_${this.boxId}`).remove();
       this.curDegree -= 90;
       d3.select("#content_" + this.boxId).style(
         "transform",
@@ -655,44 +801,48 @@ export default {
       this.lastTopBars = this.curTopBars;
     },
     getSelectedBarCenterPoint(type) {
-      console.log(type);
-      console.log(typeof(type));
-      console.log(type in ["stock", "bond", "cash", "other"]);
       const dom = d3.select(`#${type}_${this.boxId}`);
       let relativeX, relativeY;
       if (["nav", "risk"].indexOf(type) !== -1) {
         // top
-        this.dashlineStartX = parseFloat(dom.attr("width") / 2) + parseFloat(dom.attr("x"));
-        this.dashlineStartY = parseFloat(dom.attr("y")) + this.barTopMargin;
+        this.midPointX =
+          parseFloat(dom.attr("width") / 2) + parseFloat(dom.attr("x")) + 60;
+        this.midPointY = parseFloat(dom.attr("y"));
+
         relativeX =
           parseFloat(dom.attr("width") / 2) + parseFloat(dom.attr("x"));
-        relativeY = parseFloat(dom.attr("y")) + this.barTopMargin;
+        relativeY = parseFloat(dom.attr("y"));
       } else if (["sharp", "info"].indexOf(type) !== -1) {
         // right
-        this.dashlineStartX = parseFloat(dom.attr("width"));
-        this.dashlineStartY = parseFloat(dom.attr("height") / 2) + parseFloat(dom.attr("y"));
+        this.midPointX = parseFloat(dom.attr("width"));
+        this.midPointY =
+          parseFloat(dom.attr("height") / 2) + parseFloat(dom.attr("y")) + 60;
+
         relativeX =
           parseFloat(dom.attr("height") / 2) + parseFloat(dom.attr("y"));
-        relativeY = 60 - parseFloat(dom.attr("width")) + this.barTopMargin;
+        relativeY = 60 - parseFloat(dom.attr("width"));
       } else if (["stock", "bond", "cash", "other"].indexOf(type) !== -1) {
         // bottom
-        this.dashlineStartX = parseFloat(dom.attr("x")) + parseFloat(dom.attr("width") / 2);
-        this.dashlineStartY = parseFloat(dom.attr("height"));
+        this.midPointX =
+          parseFloat(dom.attr("x")) + parseFloat(dom.attr("width") / 2) + 60;
+        this.midPointY = parseFloat(dom.attr("height"));
+
         relativeX =
           80 - parseFloat(dom.attr("x")) - parseFloat(dom.attr("width") / 2);
         relativeY = 60 - parseFloat(dom.attr("height"));
-        console.log(relativeY);
       } else {
         // left
-        this.dashlineStartX = parseFloat(dom.attr("x"));
-        this.dashlineStartY = parseFloat(dom.attr("height") / 2) + parseFloat(dom.attr("y"));
+        this.midPointX = parseFloat(dom.attr("x"));
+        this.midPointY =
+          parseFloat(dom.attr("height") / 2) + parseFloat(dom.attr("y")) + 60;
+
         relativeX =
           80 - parseFloat(dom.attr("y")) - parseFloat(dom.attr("height") / 2);
         relativeY = parseFloat(dom.attr("x"));
       }
       return [relativeX, relativeY];
     },
-    drawDashline(xPos, yPos) {
+    drawDashline(xPos1, yPos1, xPos2, yPos2, isFirst, isLast) {
       let curSvg = null;
       switch (this.curTopSide) {
         case "left":
@@ -710,16 +860,35 @@ export default {
         default:
           break;
       }
-      curSvg
-        .append("g")
-        .attr("id", `dashline_${this.boxId}`)
-        .append("path")
-        .attr("stroke-dasharray", "5, 5")
-        .attr("stroke", "black")
-        .attr(
-          "d",
-          `M ${this.dashlineStartX} ${this.dashlineStartY} L ${xPos} ${yPos}`
-        );
+      d3.select(`#dashline_${this.boxId}`).remove();
+      const gDashline = curSvg.append("g").attr("id", `dashline_${this.boxId}`);
+      gDashline
+        .append("circle")
+        .attr("cx", this.midPointX)
+        .attr("cy", this.midPointY)
+        .attr("r", 2)
+        .attr("fill", "red")
+        .attr("stroke", "red");
+      if (!isFirst) {
+        gDashline
+          .append("path")
+          .attr("stroke-dasharray", "2, 2")
+          .attr("stroke", "black")
+          .attr(
+            "d",
+            `M ${xPos1} ${yPos1} L ${this.midPointX} ${this.midPointY}`
+          );
+      }
+      if (!isLast) {
+        gDashline
+          .append("path")
+          .attr("stroke-dasharray", "2, 2")
+          .attr("stroke", "black")
+          .attr(
+            "d",
+            `M ${this.midPointX} ${this.midPointY} L ${xPos2} ${yPos2}`
+          );
+      }
     },
   },
 };
@@ -771,33 +940,33 @@ export default {
 
 .left {
   position: absolute;
-  height: 80px;
+  height: 200px;
   width: 60px;
   left: 0px;
-  top: 60px;
+  top: 0px;
 }
 
 .top {
   position: absolute;
   height: 60px;
-  width: 80px;
-  left: 60px;
+  width: 200px;
+  left: 0px;
   top: 0px;
 }
 
 .right {
   position: absolute;
-  height: 80px;
+  height: 200px;
   width: 60px;
   left: 140px;
-  top: 60px;
+  top: 0px;
 }
 
 .bottom {
   position: absolute;
   height: 60px;
-  width: 80px;
-  left: 60px;
+  width: 200px;
+  left: 0px;
   top: 140px;
 }
 
