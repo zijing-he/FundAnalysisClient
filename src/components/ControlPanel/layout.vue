@@ -34,7 +34,7 @@
       </svg>
     </a-row> -->
   </div>
-  <div v-if="sortedList" class="bottomContainer">
+  <div class="bottomContainer">
     <sortedList :list="sortedList"/>
   </div>
 </template>
@@ -48,7 +48,7 @@ export default {
   data() {
     return {
       list: [],
-      sortedList: [],
+      sortedList: null,
     };
   },
   components: {
@@ -57,13 +57,13 @@ export default {
   },
   methods: {
     handleClick() {
-      console.log("返回排序结果");
+      //点击传值
       DataService.post("get_fund_ranks", { weights: this.list }, (data) => {
-        this.sortedList = data.ranks.slice(0, 10);
-        console.log(this.sortedList);
+        this.sortedList = data.ranks.slice(0, 20);
       });
     },
     updateList(value) {
+      // 返回排序结果
       this.list = value;
     },
   },

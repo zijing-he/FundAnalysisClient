@@ -1,10 +1,29 @@
 <template>
   <div>
+    <div >
+      <a-button
+        type="primary"
+        :disabled="!hasSelected"
+        :loading="loading"
+        @click="handleClick"
+       style="margin-top: 10px"
+      >
+        确定
+      </a-button>
+      <span style="margin-left: 15px">
+        <template v-if="hasSelected">
+          {{ `选择了 ${selectedRowKeys.length} 支基金` }}
+        </template>
+      </span>
+    </div>
     <a-table
+      :row-selection="{
+        selectedRowKeys: selectedRowKeys,
+        onChange: onSelectChange,
+      }"
       :columns="columns"
-      :data-source="data"
-      :scroll="{ x: 1300 }"
-      size="middle"
+      :data-source="list"
+      :scroll="{ x: 1400 }"
     >
     </a-table>
   </div>
@@ -15,18 +34,13 @@ export default {
   props: {
     list: Array,
   },
-  watch: {
-    list: function () {
-      console.log("大人时代变了！");
-      console.log(this.list);
-    },
-  },
+  watch: {},
   data() {
     return {
       columns: [
         {
           title: "排序",
-          width: 30, //可以定住
+          width: 60,
           dataIndex: "key", //列数据在数据项中对应的 key
           key: "key", //Vue 需要的 key, dataIndex唯一可以忽略
           fixed: "left", //列是否固定，可选 true(等效于 left) 'left' 'right'
@@ -59,7 +73,7 @@ export default {
         },
         {
           title: "size",
-          width: 110,
+          width: 130,
           dataIndex: "size",
         },
         {
@@ -73,23 +87,23 @@ export default {
           dataIndex: "beta",
         },
         {
-          title: "sharp_ratio",
+          title: "夏普率",
           width: 70,
           dataIndex: "sharp_ratio",
         },
         {
           title: "最大回撤率",
-          width: 70,
+          width: 100,
           dataIndex: "max_drop_down",
         },
         {
           title: "信息比率",
-          width: 70,
+          width: 90,
           dataIndex: "information_ratio",
         },
         {
           title: "nav_return",
-          width: 70,
+          width: 90,
           dataIndex: "nav_return",
         },
         {
@@ -99,7 +113,7 @@ export default {
         },
         {
           title: "instl_weight",
-          width: 70,
+          width: 100,
           dataIndex: "instl_weight",
         },
         {
@@ -107,206 +121,43 @@ export default {
           dataIndex: "car",
         },
       ],
-      data: this.list,
-      //   data: [
-      //     {
-      //       key: "1",
-      //       alpha: 0.0153,
-      //       beta: 0.9412,
-      //       bond: 0,
-      //       car: -0.0388,
-      //       cash: 0.0014,
-      //       id: "510050",
-      //       information_ratio: 0.0939,
-      //       instl_weight: 0.7062,
-      //       max_drop_down: 0.7023,
-      //       nav_return: 0.0286,
-      //       other: 0.0,
-      //       risk: 0.0451,
-      //       sharp_ratio: 0.939,
-      //       size: 46191167536.83,
-      //       stock: 0.9995,
-      //     },
-      //     {
-      //       key: "2",
-      //       alpha: 0.0153,
-      //       beta: 0.9412,
-      //       bond: 0,
-      //       car: -0.0388,
-      //       cash: 0.0014,
-      //       id: "510050",
-      //       information_ratio: 0.0939,
-      //       instl_weight: 0.7062,
-      //       max_drop_down: 0.7023,
-      //       nav_return: 0.0286,
-      //       other: 0.0,
-      //       risk: 0.0451,
-      //       sharp_ratio: 0.939,
-      //       size: 46191167536.83,
-      //       stock: 0.9995,
-      //     },
-      //     {
-      //       key: "3",
-      //       alpha: 0.0153,
-      //       beta: 0.9412,
-      //       bond: 0,
-      //       car: -0.0388,
-      //       cash: 0.0014,
-      //       id: "510050",
-      //       information_ratio: 0.0939,
-      //       instl_weight: 0.7062,
-      //       max_drop_down: 0.7023,
-      //       nav_return: 0.0286,
-      //       other: 0.0,
-      //       risk: 0.0451,
-      //       sharp_ratio: 0.939,
-      //       size: 46191167536.83,
-      //       stock: 0.9995,
-      //     },
-      //     {
-      //       key: "4",
-      //       alpha: 0.0153,
-      //       beta: 0.9412,
-      //       bond: 0,
-      //       car: -0.0388,
-      //       cash: 0.0014,
-      //       id: "510050",
-      //       information_ratio: 0.0939,
-      //       instl_weight: 0.7062,
-      //       max_drop_down: 0.7023,
-      //       nav_return: 0.0286,
-      //       other: 0.0,
-      //       risk: 0.0451,
-      //       sharp_ratio: 0.939,
-      //       size: 46191167536.83,
-      //       stock: 0.9995,
-      //     },
-      //     {
-      //       key: "5",
-      //       alpha: 0.0153,
-      //       beta: 0.9412,
-      //       bond: 0,
-      //       car: -0.0388,
-      //       cash: 0.0014,
-      //       id: "510050",
-      //       information_ratio: 0.0939,
-      //       instl_weight: 0.7062,
-      //       max_drop_down: 0.7023,
-      //       nav_return: 0.0286,
-      //       other: 0.0,
-      //       risk: 0.0451,
-      //       sharp_ratio: 0.939,
-      //       size: 46191167536.83,
-      //       stock: 0.9995,
-      //     },
-      //     {
-      //       key: "6",
-      //       alpha: 0.0153,
-      //       beta: 0.9412,
-      //       bond: 0,
-      //       car: -0.0388,
-      //       cash: 0.0014,
-      //       id: "510050",
-      //       information_ratio: 0.0939,
-      //       instl_weight: 0.7062,
-      //       max_drop_down: 0.7023,
-      //       nav_return: 0.0286,
-      //       other: 0.0,
-      //       risk: 0.0451,
-      //       sharp_ratio: 0.939,
-      //       size: 46191167536.83,
-      //       stock: 0.9995,
-      //     },
-      //     {
-      //       key: "7",
-      //       alpha: 0.0153,
-      //       beta: 0.9412,
-      //       bond: 0,
-      //       car: -0.0388,
-      //       cash: 0.0014,
-      //       id: "510050",
-      //       information_ratio: 0.0939,
-      //       instl_weight: 0.7062,
-      //       max_drop_down: 0.7023,
-      //       nav_return: 0.0286,
-      //       other: 0.0,
-      //       risk: 0.0451,
-      //       sharp_ratio: 0.939,
-      //       size: 46191167536.83,
-      //       stock: 0.9995,
-      //     },
-      //     {
-      //       key: "8",
-      //       alpha: 0.0153,
-      //       beta: 0.9412,
-      //       bond: 0,
-      //       car: -0.0388,
-      //       cash: 0.0014,
-      //       id: "510050",
-      //       information_ratio: 0.0939,
-      //       instl_weight: 0.7062,
-      //       max_drop_down: 0.7023,
-      //       nav_return: 0.0286,
-      //       other: 0.0,
-      //       risk: 0.0451,
-      //       sharp_ratio: 0.939,
-      //       size: 46191167536.83,
-      //       stock: 0.9995,
-      //     },
-      //     {
-      //       key: "9",
-      //       alpha: 0.0153,
-      //       beta: 0.9412,
-      //       bond: 0,
-      //       car: -0.0388,
-      //       cash: 0.0014,
-      //       id: "510050",
-      //       information_ratio: 0.0939,
-      //       instl_weight: 0.7062,
-      //       max_drop_down: 0.7023,
-      //       nav_return: 0.0286,
-      //       other: 0.0,
-      //       risk: 0.0451,
-      //       sharp_ratio: 0.939,
-      //       size: 46191167536.83,
-      //       stock: 0.9995,
-      //     },
-      //     {
-      //       key: "10",
-      //       alpha: 0.0153,
-      //       beta: 0.9412,
-      //       bond: 0,
-      //       car: -0.0388,
-      //       cash: 0.0014,
-      //       id: "510050",
-      //       information_ratio: 0.0939,
-      //       instl_weight: 0.7062,
-      //       max_drop_down: 0.7023,
-      //       nav_return: 0.0286,
-      //       other: 0.0,
-      //       risk: 0.0451,
-      //       sharp_ratio: 0.939,
-      //       size: 46191167536.83,
-      //       stock: 0.9995,
-      //     },
-      //   ],
+      selectedRowKeys: [],
+      loading: false,
     };
   },
   components: {},
-  methods: {},
-  mounted() {
-    console.log("传递进来了！");
-    console.log(this.list);
+  computed: {
+    hasSelected() {
+      return this.selectedRowKeys.length > 0;
+    },
   },
+  methods: {
+    onSelectChange(selectedRowKeys) {
+      console.log("selectedRowKeys changed: ", selectedRowKeys);
+      this.selectedRowKeys = selectedRowKeys;
+    },
+    handleClick() {
+      this.loading = true;
+      console.log("选择的基金序号",this.selectedRowKeys);
+      setTimeout(() => {
+        this.loading = false;
+        this.selectedRowKeys = [];
+      }, 1000);
+    },
+  },
+  mounted() {},
 };
 </script>
 
 <style >
 .ant-table td {
   font-size: 12px;
-  padding: 0px;
 }
 .ant-table th {
   font-size: 12px;
+}
+.ant-table-thead > tr > th,
+.ant-table-tbody > tr > td {
+  padding: 10px;
 }
 </style>
