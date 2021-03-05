@@ -881,6 +881,7 @@ export default {
       }
       return [relativeX, relativeY];
     },
+    // 内部数据是正的
     drawDashline(xPos1, yPos1, xPos2, yPos2, isFirst, isLast) {
       let curSvg = null;
       switch (this.curTopSide) {
@@ -928,6 +929,33 @@ export default {
             `M ${this.midPointX} ${this.midPointY} L ${xPos2} ${yPos2}`
           );
       }
+    },
+    // 内部数据是正的，直接横穿
+    drawTraverseDashline(startX, startY, endX, endY) {
+      let curSvg = null;
+      switch (this.curTopSide) {
+        case "left":
+          curSvg = this.leftSvg;
+          break;
+        case "top":
+          curSvg = this.topSvg;
+          break;
+        case "right":
+          curSvg = this.rightSvg;
+          break;
+        case "bottom":
+          curSvg = this.bottomSvg;
+          break;
+        default:
+          break;
+      }
+      d3.select(`#dashline_${this.boxId}`).remove();
+      const gDashline = curSvg.append("g").attr("id", `dashline_${this.boxId}`);
+      gDashline
+        .append("path")
+        .attr("stroke-dasharray", "2, 2")
+        .attr("stroke", "black")
+        .attr("d", `M ${startX} ${startY} L ${endX} ${endY}`);
     },
   },
 };

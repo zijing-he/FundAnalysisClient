@@ -75,6 +75,7 @@
 <script>
 import * as d3 from "d3";
 import InvestStyleBox from "./InvestStyleBox";
+import { join } from 'lodash';
 
 export default {
   name: "FundProfile",
@@ -489,6 +490,55 @@ export default {
         // 由于遮挡，内部的虚线只能由子组件绘制
         thisK = (endY - startY) / (endX - startX);
         thisB = startY - startX * thisK;
+
+        // 可能横跨多个组件
+        for (
+          let j = selectedBoxIndices[i] + 1;
+          j < selectedBoxIndices[i + 1];
+          j++
+        ) {
+          let traverseStartX =
+            this.xScale(
+              new Date(this.investStyleBoxes[j].boxText)
+            ) -
+            this.investStyleBoxWidth / 2;
+          let traverseEndX =
+            this.xScale(
+              new Date(this.investStyleBoxes[j].boxText)
+            ) +
+            this.investStyleBoxWidth / 2;
+          let traverseStartY = thisK * traverseStartX + thisB;
+          let traverseEndY = thisK * traverseEndX + thisB;
+          if (["navReturn", "risk"].indexOf(type) !== -1) {
+            // top
+            traverseStartX = 0;
+            traverseStartY = traverseStartY - 20 - 5;
+            traverseEndX = 200;
+            traverseEndY = traverseEndY - 20 - 5;
+          } else if (["sharp", "info"].indexOf(type) !== -1) {
+            // right
+            traverseStartX = 60 - (traverseStartY - 20 - 5);
+            traverseStartY = 0;
+            traverseEndX = 60 - (traverseEndY - 20 - 5);
+            traverseEndY = 200;
+          } else if (["stock", "bond", "cash", "other"].indexOf(type) !== -1) {
+            // bottom
+            traverseStartX = 200;
+            traverseStartY = 60 - (traverseStartY - 20 - 5);
+            traverseEndX = 0;
+            traverseEndY = 60 - (traverseEndY - 20 - 5);
+          } else {
+            // left
+            traverseStartX = traverseStartY - 20 - 5;
+            traverseStartY = 200;
+            traverseEndX = traverseEndY - 20 - 5;
+            traverseEndY = 0;
+          }
+          this.$refs[
+            this.investStyleBoxes[j].boxId
+          ].drawTraverseDashline(traverseStartX, traverseStartY, traverseEndX, traverseEndY);
+        }
+
         let thisX1 =
           this.xScale(
             new Date(this.investStyleBoxes[selectedBoxIndices[i]].boxText)
@@ -714,7 +764,9 @@ export default {
           })
           .on("mousemove", function(e) {
             const key = that.selectedRects[i];
-            const value = that.rectObject[that.selectedRects[i]].thisData.toFixed(2);
+            const value = that.rectObject[
+              that.selectedRects[i]
+            ].thisData.toFixed(2);
             d3.select(`#tooltip_${that.fundId}`)
               .html(key + "<br>" + value)
               .style("left", e.offsetX + 10 + "px")
