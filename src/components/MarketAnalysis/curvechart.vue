@@ -66,11 +66,11 @@ export default {
   },
 
   methods: {updateDate({ selection }) {
-      let start = this.xScale.invert(selection[0]).toISOString().slice(0,10);
-      let end = this.xScale.invert(selection[1]).toISOString().slice(0,10);
+      let start = this.xScale.invert(selection[0]).toISOString().slice(0,10).replace(/-/g,"");
+      let end = this.xScale.invert(selection[1]).toISOString().slice(0,10).replace(/-/g,"");
       
-      console.log(start, end);
-      
+      // console.log(start, end);
+      this.$emit("handleBrush",start,end);
       // this.svg.select(".brush").call(this.brush.move, null);  //情况brush后会报错，但是不影响
     },
     renderInit() {

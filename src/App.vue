@@ -8,13 +8,13 @@
     </a-col>
     <a-col :span="19">
       <a-row>
-        <MarketAnalysisLayout />
+        <MarketAnalysisLayout v-on:handleBrush="updateTimeBoundary" />
       </a-row>
       <a-row>
         <OverViewLayout :fundsData="fundsData" />
       </a-row>
       <a-row>
-        <FundProfileLayout :fundsID="fundsID"/>
+        <FundProfileLayout :fundsID="fundsID" :start="start" :end="end"/>
       </a-row>
     </a-col>
   </a-row>
@@ -34,15 +34,30 @@ export default {
     OverViewLayout,
     FundProfileLayout,
   },
+  // provide() {
+  //   return {
+  //     // todoLength: Vue.computed(() => this.todos.length)
+  //     origin: this.start,
+  //   };
+  // },
   data() {
     return {
       // funds:null,
       // managers:null,
       fundsData: null,
-      fundsID:[],
+      fundsID: [],
+      start:undefined,
+      end:undefined,
     };
   },
   methods: {
+    updateTimeBoundary(start, end) {
+      console.log("让我康康：",start,end);
+      this.start = start;
+      this.end = end;
+    
+     
+    },
     updateBubbleChart(funds_info) {
       // console.log("传到App了！");
       // console.log(funds_info);

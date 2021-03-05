@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <h4>基金市场的演变</h4>
-    <MarketAnalysisCurveChart />
+    <MarketAnalysisCurveChart v-on:handleBrush="getTimeBoundary"/>
     <MarketAnalysisStramGraph />
   </div>
 </template>
@@ -17,7 +17,11 @@ export default {
     MarketAnalysisCurveChart,
     MarketAnalysisStramGraph
   },
-  methods: {},
+  methods: {
+    getTimeBoundary(start,end){
+      this.$emit("handleBrush",start,end);
+    }
+  },
   mounted() {},
 };
 </script>

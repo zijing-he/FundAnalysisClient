@@ -1,81 +1,51 @@
 <template>
   <div class="container">
     <h4>历史数据对比</h4>
-    <a-row>
-      <a-col>
-        <fundBubbleChart
-          :id="svg_id1"
-          :date="date1"
-          :fundData="fundsData"
-        />
-      </a-col>
-      <!-- <a-col>
-        <fundBubbleChart
-          v-if="data"
-          :id="svg_id2"
-          :date="date2"
-          :fundData="data"
-        />
-      </a-col>
-      <a-col>
-        <fundBubbleChart
-          v-if="data"
-          :id="svg_id3"
-          :date="date3"
-          :fundData="data"
-        />
-      </a-col>
-      <a-col>
-        <fundBubbleChart
-          v-if="data"
-          :id="svg_id4"
-          :date="date4"
-          :fundData="data"
-        />
-      </a-col> -->
-      <!-- <a-col>
-        <managerBubbleChart />
-      </a-col> -->
-    </a-row>
+    <a-spin
+      v-if="funds === null"
+      size="large"
+      tip="Loading..."
+      style="margin-top: 20px; margin-bottom: 20px"
+    />
+    <div class="fund_bubble_chart_outer_container" v-if="funds !== null">
+      <fundBubbleChart
+        :quarterFundData="val"
+        :fundManagers="managers"
+        :date="key"
+        :key="key"
+        v-for="(val, key) in funds"
+      >
+      </fundBubbleChart>
+    </div>
   </div>
 </template>
 
 <script>
 import fundBubbleChart from "@/components/Overview/fund-bubble-chart.vue";
 import managerBubbleChart from "@/components/Overview/manager-bubble-chart";
-import DataService from "@/utils/data-service";
 
 export default {
   name: "OverViewLayout",
   props: {
-    // funds:Object,
-    // managers:Object,
-    fundsData:Object,
+    fundsData: Object,
   },
   data() {
     return {
-      svg_id1: "fund_bubble_chart1",
-      svg_id2: "fund_bubble_chart2",
-      svg_id3: "fund_bubble_chart3",
-      svg_id4: "fund_bubble_chart4",
-      date1: "20190331",
-      date2: "20190630",
-      date3: "20190930",
-      date4: "20191231",
-      fund_id: ["112002", "481006", "005270", "590006"],
-      data: null,
-      waitData: false,
+      componentName: fundBubbleChart,
+      managers: null,
+      funds: null,
     };
   },
   components: {
     fundBubbleChart,
     // managerBubbleChart,
   },
-   watch: {
+  watch: {
     fundsData: function () {
-      // console.log("我们已经到散点图layout了");
-      // console.log(this.fundsData);
-      
+      console.log("我们已经到散点图layout了");
+      console.log(this.fundsData);
+      this.managers = this.fundsData.managers;
+      this.funds = this.fundsData.funds;
     },
   },
   methods: {
@@ -115,7 +85,7 @@ export default {
     },
   },
   created() {
-    this.updateData();
+    // this.updateData();
   },
   mounted() {},
 };
@@ -125,12 +95,20 @@ export default {
 .container {
   height: 30%;
   width: 100%;
-  margin-top: 3px;
+  margin-top: 10px;
   border: 1px solid black;
 }
 .container h4 {
   border-bottom: 1px solid black;
   margin-bottom: 0;
   font-weight: bold;
+}
+.fund_bubble_chart_outer_container {
+  /* position: absolute; */
+  display: flex;
+  width: 80%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-right: 1px solid black;
 }
 </style>
