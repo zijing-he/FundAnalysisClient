@@ -61,7 +61,6 @@ export default {
         (data) => {
           this.start_date = data["start_date"];
           this.end_date = data["end_date"];
-          console.log(this.start_date, this.end_date);
           DataService.post(
             "get_view_funds",
             {
@@ -70,7 +69,6 @@ export default {
               end_date: this.end_date,
             },
             (data) => {
-              console.log(data);
               this.fundData = data;
               this.isRequesting = false;
             }

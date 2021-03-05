@@ -14,6 +14,7 @@
       <div class="top" id="top"></div>
       <div class="right" id="right"></div>
       <div class="bottom" id="bottom"></div>
+      <div class="tooltip" id="tooltip"></div>
     </div>
   </div>
 </template>
@@ -237,6 +238,7 @@ export default {
       d3.select("#top").attr("id", "top_" + this.boxId);
       d3.select("#right").attr("id", "right_" + this.boxId);
       d3.select("#bottom").attr("id", "bottom_" + this.boxId);
+      d3.select("#tooltip").attr("id", "tooltip_" + this.boxId);
       d3.select("#icons").attr("id", "icons_" + this.boxId);
       this.centerSvg = d3
         .select("#center_" + this.boxId)
@@ -468,6 +470,8 @@ export default {
       leaf.append("title").text((d) => `${d.data.name}\n${d.value.toFixed(2)}`);
 
       // bars
+      let that = this;
+      // tooltip
       // top
       this.yScale.domain([0, 1]).range([60, this.barTopMargin]);
       const topDefs = this.topSvg.append("defs");
@@ -725,7 +729,42 @@ export default {
         .attr("width", this.yScale(1) - this.yScale(Math.abs(this.betaData)))
         .attr("height", 30);
 
-      let that = this;
+      for (let dataName in colorMap) {
+        d3.select(`#${dataName}_${this.boxId}`)
+          .on("mouseover", function() {
+            d3.select(`#tooltip_${that.boxId}`).style("display", "block");
+          })
+          .on("mousemove", function(e) {
+            // console.log(e.offsetX, e.offsetY);
+            const key = d3
+              .select(this)
+              .attr("id")
+              .split("_")[0];
+            const value = eval(`that.${key}Data`).toFixed(2);
+            let curOffsetX = e.offsetX;
+            let curOffsetY = e.offsetY;
+            if (["navReturn", "risk"].indexOf(key) !== -1) {
+              // top
+            } else if (["sharp", "info"].indexOf(key) !== -1) {
+              // right
+              curOffsetX += 80;
+            } else if (["stock", "bond", "cash", "other"].indexOf(key) !== -1) {
+              // bottom
+              curOffsetY += 80;
+            } else {
+              // left
+            }
+            d3.select(`#tooltip_${that.boxId}`)
+              .html(key + "<br>" + value)
+              .style("left", curOffsetX + 10 + "px")
+              .style("top", curOffsetY + 10 + "px")
+              .style("transform", `rotate(${-that.curDegree}deg)`);
+          })
+          .on("mouseout", function() {
+            d3.select(`#tooltip_${that.boxId}`).style("display", "none");
+          });
+      }
+
       this.curTopBars.forEach((d) => {
         d3.select(`#${d}_${this.boxId}`)
           .style("cursor", "pointer")
@@ -970,18 +1009,16 @@ export default {
   top: 140px;
 }
 
-.icons {
+.tooltip {
   position: absolute;
-  height: 151px;
-  width: 76px;
-  left: 76px;
-}
-
-.icon {
-  width: 1em;
-  height: 1em;
-  vertical-align: -0.15em;
-  fill: currentColor;
-  overflow: hidden;
+  text-align: center;
+  max-width: 150px;
+  max-height: 50px;
+  padding: 6px;
+  border: none;
+  background: black;
+  color: white;
+  pointer-events: none;
+  display: none;
 }
 </style>

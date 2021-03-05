@@ -50,7 +50,9 @@
       ref="bottomElement"
       @scroll="bottomHandleScroll()"
     ></div>
-    <div class="rects" id="rects"></div>
+    <div class="rects" id="rects">
+      <div class="tooltip" id="tooltip"></div>
+    </div>
     <div class="select-box" id="selectBox">
       <a-select
         mode="tags"
@@ -596,6 +598,7 @@ export default {
       );
       d3.select("#curve").attr("id", `curve_${this.fundId}`);
       d3.select("#rects").attr("id", `rects_${this.fundId}`);
+      d3.select("#tooltip").attr("id", `tooltip_${this.fundId}`);
       d3.select("#selectBox").attr("id", `selectBox_${this.fundId}`);
       this.svg = d3
         .select(`#curve_${this.fundId}`)
@@ -684,6 +687,7 @@ export default {
       });
     },
     updateRects() {
+      let that = this;
       this.rectSvg.selectAll("g").remove();
       const gRects = this.rectSvg
         .append("g")
@@ -704,7 +708,21 @@ export default {
             "width",
             this.rectXScale(this.rectObject[this.selectedRects[i]].thisData)
           )
-          .attr("height", rectHeight);
+          .attr("height", rectHeight)
+          .on("mouseover", function() {
+            d3.select(`#tooltip_${that.fundId}`).style("display", "block");
+          })
+          .on("mousemove", function(e) {
+            const key = that.selectedRects[i];
+            const value = that.rectObject[that.selectedRects[i]].thisData.toFixed(2);
+            d3.select(`#tooltip_${that.fundId}`)
+              .html(key + "<br>" + value)
+              .style("left", e.offsetX + 10 + "px")
+              .style("top", e.offsetY + 10 + "px");
+          })
+          .on("mouseout", function() {
+            d3.select(`#tooltip_${that.fundId}`).style("display", "none");
+          });
       }
     },
     updateGapPath() {
@@ -715,7 +733,8 @@ export default {
       let tmpSum = 0;
       for (let i = 0; i < this.investStyleBoxes.length; i++) {
         let thisPathWidth = k * this.sizeData[i] + b;
-        if (this.investStyleBoxes.length === 1) thisPathWidth = this.maxPathWidth;
+        if (this.investStyleBoxes.length === 1)
+          thisPathWidth = this.maxPathWidth;
         for (
           let j = 0;
           j < this.detailCarData[i].length &&
@@ -808,5 +827,18 @@ export default {
   fill: currentColor;
   overflow: hidden;
   cursor: pointer;
+}
+
+.tooltip {
+  position: absolute;
+  text-align: center;
+  max-width: 150px;
+  max-height: 50px;
+  padding: 6px;
+  border: none;
+  background: black;
+  color: white;
+  pointer-events: none;
+  display: none;
 }
 </style>
