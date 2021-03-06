@@ -2,12 +2,12 @@
   <div class="container">
     <h4>历史数据对比</h4>
     <a-spin
-      v-if="funds === null"
+      v-if="isRequesting"
       size="large"
       tip="Loading..."
-      style="margin-top: 20px; margin-bottom: 20px"
+      style="margin-top: 89.3px; margin-bottom: 89.3px"
     />
-    <div class="fund_bubble_chart_outer_container" v-if="funds !== null">
+    <div class="fund_bubble_chart_outer_container"   v-if="!isRequesting" >
       <fundBubbleChart
         :quarterFundData="val"
         :fundManagers="managers"
@@ -34,18 +34,17 @@ export default {
       componentName: fundBubbleChart,
       managers: null,
       funds: null,
+      isRequesting:true,
     };
   },
   components: {
     fundBubbleChart,
-    // managerBubbleChart,
   },
   watch: {
     fundsData: function () {
-      console.log("我们已经到散点图layout了");
-      console.log(this.fundsData);
       this.managers = this.fundsData.managers;
       this.funds = this.fundsData.funds;
+      this.isRequesting = false;
     },
   },
   methods: {

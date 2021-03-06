@@ -21,8 +21,6 @@ export default {
   components: {},
   watch: {
     quarterFundData: function () {
-      console.log("季度数据改变了");
-
       this.renderUpdate();
     },
   },
@@ -38,11 +36,7 @@ export default {
       managers: [],
     };
   },
-  //v-if == true之后就到mounted，没有到watch
   mounted: function () {
-    // console.log("这里是", this.date);
-    // console.log(this.quarterFundData);
-    // console.log(this.fundManagers);
     this.renderInit();
     this.renderUpdate();
   },
@@ -101,15 +95,18 @@ export default {
       //   this.managers.push(d.manager_id[0]);
       // });
       this.managers = Object.keys(this.fundManagers);
+      this.svg.selectAll("circle").remove();
       this.svg
         .append("g")
         .selectAll("circle")
         .data(this.data_values)
-        .join("circle")
+        .enter()
+        .append("circle")
+        // .join("circle")
         .attr("cx", (d) => this.xScale(d.loc[0]))
         .attr("cy", (d) => this.yScale(d.loc[1]))
         .attr("r", 4)
-        .style("fill", (d) => this.colorScale(d.manager_id[0]))
+        .style("fill", (d) => this.colorScale(d.manager_ids[0]))
         .style("stroke", (d) =>
           d.new == true || d.delete == true ? "black" : "none"
         )

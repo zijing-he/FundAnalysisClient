@@ -29,15 +29,13 @@
   </div>
 </template>
 <script>
-import DataService from "@/utils/data-service";
+
 
 export default {
   name: "SortedList",
   props: {
     list: Array,
-    weights: Object,
   },
-
   data() {
     return {
       columns: [
@@ -142,7 +140,7 @@ export default {
     },
     handleClick() {
       this.loading = true;
-      console.log("选择的基金序号", this.selectedRowKeys);
+      // console.log("选择的基金序号", this.selectedRowKeys);
 
       let fundId = [];
       //选择的基金id
@@ -152,24 +150,17 @@ export default {
         }
       });
 
-      let numTop = 10;
+      //点击后——>向上传递勾选的ID
+      this.$emit("updateFundId", fundId);
 
-    //   console.log(this.weights);
-    //   console.log(fundId);
-
-    this.$emit("updateFundProfile", fundId);
-
-
-    //得到基金散点图和基金经理信息
-      DataService.post(
-        "get_manager_fund_local",
-        { weights: this.weights, num_top: numTop, f_ids: fundId },
-        (data) => {
-        //   console.log(data);
-          this.$emit("updateChart", data);
-        }
-      );
-
+      //得到基金散点图和基金经理信息
+      // DataService.post(
+      //   "get_manager_fund_local",
+      //   { weights: this.weights, num_top: 10, f_ids: fundId },
+      //   (data) => {
+      //     this.$emit("updateChart", data);
+      //   }
+      // );
       setTimeout(() => {
         this.loading = false;
         // this.selectedRowKeys = []; //清空
@@ -187,8 +178,5 @@ export default {
 .ant-table th {
   font-size: 12px;
 }
-.ant-table-thead > tr > th,
-.ant-table-tbody > tr > td {
-  padding: 10px;
-}
+
 </style>

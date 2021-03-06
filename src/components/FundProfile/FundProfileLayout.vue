@@ -26,7 +26,7 @@
       v-if="isRequesting"
       size="large"
       tip="Loading..."
-      style="margin-top: 20px; margin-bottom: 20px"
+      style="margin-top: 105px; margin-bottom: 105px"
     />
     <div v-if="!isRequesting">
       <component
@@ -49,35 +49,33 @@ export default {
   name: "FundProfileLayout",
   props: {
     fundsID: Array,
-    start: Number,
-    end: Number,
+  },
+  inject: ["getStart", "getEnd"],
+  computed: {
+    getReactiveStart() {
+      return this.getStart();
+    },
+    getReactiveEnd() {
+      return this.getEnd();
+    },
   },
   watch: {
-    start: function () {
-      console.log("起始点改变了:", this.start, this.end);
+    getReactiveStart: function () {  //筛选时间功能
+      this.isRequesting = true;
+      this.start_date = this.getStart();
+      this.end_date = this.getEnd();
+      this.getViewFunds();
     },
     fundsID: function () {
-      // console.log("到fundProfile的layout了");
-      // console.log(this.fundsID);
       this.isRequesting = true;
       DataService.post(
         "get_fund_time_border",
         { f_ids: this.fundsID },
         (data) => {
+          console.log("最大的起止时间：",data);
           this.start_date = data["start_date"];
           this.end_date = data["end_date"];
-          DataService.post(
-            "get_view_funds",
-            {
-              f_ids: this.fundsID,
-              start_date: this.start_date,
-              end_date: this.end_date,
-            },
-            (data) => {
-              this.fundData = data;
-              this.isRequesting = false;
-            }
-          );
+          this.getViewFunds();
         }
       );
     },
@@ -85,17 +83,6 @@ export default {
   data() {
     return {
       componentName: "FundProfile",
-      // fundIds: [
-      //   "000001",
-      //   "000006",
-      //   "000011",
-      //   "000020",
-      //   "000021",
-      //   "000029",
-      //   "000031",
-      //   "000039",
-      //   "000059",
-      // ],
       fundData: undefined,
       returnData: [],
       carData: [],
@@ -119,7 +106,22 @@ export default {
   components: {
     FundProfile,
   },
-  methods: {},
+  methods: {
+    getViewFunds() {
+      DataService.post(
+        "get_view_funds",
+        {
+          f_ids: this.fundsID,
+          start_date: this.start_date,
+          end_date: this.end_date,
+        },
+        (data) => {
+          this.fundData = data;
+          this.isRequesting = false;
+        }
+      );
+    },
+  },
   mounted() {
     // DataService.post(
     //   "get_fund_time_border",

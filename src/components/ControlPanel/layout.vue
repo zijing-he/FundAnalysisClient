@@ -35,7 +35,7 @@
     </a-row> -->
   </div>
   <div class="bottomContainer">
-    <sortedList :list="sortedList" :weights="userWeight" v-on:updateChart="updateBubbleChart" v-on:updateFundProfile="updateFundProfile"/>
+    <sortedList :list="sortedList" v-on:updateFundId="handleUpdateFundId" />
   </div>
 </template>
 <script>
@@ -47,12 +47,28 @@ export default {
   name: "ControlPanelLayout",
   data() {
     return {
-      list: null,
+      //默认值
+      weight: {
+        alpha: "0.5000",
+        beta: "0.5000",
+        bond: "0.5000",
+        car: "0.5000",
+        cash: "0.5000",
+        information_ratio: "0.5000",
+        instl_weight: "0.5000",
+        max_drop_down: "0.5000",
+        nav_return: "0.5000",
+        other: "0.5000",
+        risk: "0.5000",
+        sharp_ratio: "0.5000",
+        size: "0.5000",
+        stock: "0.5000",
+      },
       sortedList: null,
-      userWeight:null,
+      userWeight: null,
     };
   },
-  emits: ["updateChart","updateFundProfile"],
+  emits: ["updateWeightsAndId"],
   components: {
     ControlPanelRaderChart,
     SortedList,
@@ -60,28 +76,20 @@ export default {
   methods: {
     handleClick() {
       //点击传值
-      DataService.post("get_fund_ranks", { weights: this.list }, (data) => {
-        this.sortedList = data.ranks.slice(0, 20);
+      DataService.post("get_fund_ranks", { weights: this.weight }, (data) => {
+        this.sortedList = data.ranks.slice(0, 10);
       });
-      
-      this.userWeight = this.list;
 
+      this.userWeight = this.weight;
     },
-    updateList(value) {
+    updateList(userWeight) {
       // 返回排序结果
-      this.list = value;
+      this.weight = userWeight;
     },
-    updateBubbleChart(funds_info){
-      // console.log("我在layout");
-      // console.log(funds_info);
-      this.$emit("updateChart", funds_info);
 
+    handleUpdateFundId(fundsId) {
+      this.$emit("updateWeightsAndId", fundsId, this.userWeight);
     },
-    updateFundProfile(funds_id){
-      // console.log("我在layout");
-      // console.log(funds_id);
-    this.$emit("updateFundProfile", funds_id);
-    }
   },
   mounted() {},
 };
@@ -109,6 +117,7 @@ export default {
 
 .bottomContainer {
   width: 100%;
+  height: 735px;
   margin-top: 10px;
   border: 1px solid black;
 }

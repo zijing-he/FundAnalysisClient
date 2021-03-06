@@ -1,10 +1,7 @@
 <template>
   <a-row :gutter="[8, 8]">
     <a-col :span="5">
-      <ControlPanelLayout
-        v-on:updateChart="updateBubbleChart"
-        v-on:updateFundProfile="updateFundProfile"
-      />
+      <ControlPanelLayout v-on:updateWeightsAndId="handleUpdateWeightsAndId" />
     </a-col>
     <a-col :span="19">
       <a-row>
@@ -14,7 +11,7 @@
         <OverViewLayout :fundsData="fundsData" />
       </a-row>
       <a-row>
-        <FundProfileLayout :fundsID="fundsID" :start="start" :end="end"/>
+        <!-- <FundProfileLayout :fundsID="fundsID"/> -->
       </a-row>
     </a-col>
   </a-row>
@@ -25,6 +22,7 @@ import FundProfileLayout from "@/components/FundProfile/FundProfileLayout";
 import ControlPanelLayout from "@/components/ControlPanel/layout";
 import MarketAnalysisLayout from "@/components/MarketAnalysis/layout";
 import OverViewLayout from "@/components/Overview/layout";
+import DataService from "@/utils/data-service";
 
 export default {
   name: "App",
@@ -32,41 +30,70 @@ export default {
     ControlPanelLayout,
     MarketAnalysisLayout,
     OverViewLayout,
-    FundProfileLayout,
+    // FundProfileLayout,
   },
-  // provide() {
-  //   return {
-  //     // todoLength: Vue.computed(() => this.todos.length)
-  //     origin: this.start,
-  //   };
-  // },
-  data() {
+  provide() {
     return {
-      // funds:null,
-      // managers:null,
-      fundsData: null,
-      fundsID: [],
-      start:undefined,
-      end:undefined,
+      getStart: () => this.startDate,
+      getEnd: () => this.startDate,
     };
   },
+  data() {
+    return {
+      fundsData: null,
+      fundsID: [],
+      startDate: 0,
+      endDate: 100,
+      userWeight: null,
+    };
+  },
+  computed: {},
   methods: {
+    getTimeBoundary() {
+      DataService.post(
+        "get_fund_time_border",
+        { f_ids: this.fundsID },
+        (data) => {
+          console.log("最大的起止时间：", data);
+          this.startDate = data["start_date"];
+          this.endDate = data["end_date"];
+
+          //先后
+          this.getFundManagers();
+        }
+      );
+    },
+
+    getFundManagers() {
+      //得到基金散点图和基金经理信息
+      DataService.post(
+        "get_manager_fund_local",
+        {
+          weights: this.userWeight,
+          num_top: 10,
+          f_ids: this.fundsID,
+          start_date: this.startDate,
+          end_date: this.endDate,
+        },
+        (data) => {
+          console.log("基金经理相关信息：", data);
+          this.fundsData = data;
+        }
+      );
+    },
     updateTimeBoundary(start, end) {
-      console.log("让我康康：",start,end);
+      console.log("让我康康起始点：", start, end);
       this.start = start;
       this.end = end;
+
+
     
-     
     },
-    updateBubbleChart(funds_info) {
-      // console.log("传到App了！");
-      // console.log(funds_info);
-      this.fundsData = funds_info;
-    },
-    updateFundProfile(funds_id) {
-      // console.log("传到App了！");
-      // console.log(funds_id);
-      this.fundsID = funds_id;
+    handleUpdateWeightsAndId(fundsID, userWeight) {
+      this.fundsID = fundsID;
+      this.userWeight = userWeight;
+
+      this.getTimeBoundary();
     },
   },
 };
