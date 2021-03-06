@@ -23,12 +23,12 @@
     >
     </component> -->
     <a-spin
-      v-if="fundData == undefined"
+      v-if="isRequesting"
       size="large"
       tip="Loading..."
       style="margin-top: 20px; margin-bottom: 20px"
     />
-    <div v-if="fundData !== undefined">
+    <div v-if="!isRequesting">
       <component
         :is="componentName"
         :fundData="fundData"
@@ -57,43 +57,29 @@ export default {
       console.log("起始点改变了:", this.start, this.end);
     },
     fundsID: function () {
-      console.log("我到了", this.start, this.end);
-      if (this.start == undefined) {
-        DataService.post(
-          "get_fund_time_border",
-          { f_ids: this.fundsID },
-          (data) => {
-            this.start_date = data["start_date"];
-            this.end_date = data["end_date"];
-            // console.log(this.start_date, this.end_date);
-            DataService.post(
-              "get_view_funds",
-              {
-                f_ids: this.fundsID,
-                start_date: this.start_date,
-                end_date: this.end_date,
-              },
-              (data) => {
-                // console.log(data);
-                this.fundData = data;
-              }
-            );
-          }
-        );
-      } else {
-        DataService.post(
-          "get_view_funds",
-          {
-            f_ids: this.fundsID,
-            start_date: this.start,
-            end_date: this.end,
-          },
-          (data) => {
-            // console.log(data);
-            this.fundData = data;
-          }
-        );
-      }
+      // console.log("到fundProfile的layout了");
+      // console.log(this.fundsID);
+      this.isRequesting = true;
+      DataService.post(
+        "get_fund_time_border",
+        { f_ids: this.fundsID },
+        (data) => {
+          this.start_date = data["start_date"];
+          this.end_date = data["end_date"];
+          DataService.post(
+            "get_view_funds",
+            {
+              f_ids: this.fundsID,
+              start_date: this.start_date,
+              end_date: this.end_date,
+            },
+            (data) => {
+              this.fundData = data;
+              this.isRequesting = false;
+            }
+          );
+        }
+      );
     },
   },
   data() {
@@ -127,6 +113,7 @@ export default {
       weightData: [],
       start_date: null,
       end_date: null,
+      isRequesting: true,
     };
   },
   components: {

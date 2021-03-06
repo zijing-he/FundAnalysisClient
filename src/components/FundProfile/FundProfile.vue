@@ -50,7 +50,9 @@
       ref="bottomElement"
       @scroll="bottomHandleScroll()"
     ></div>
-    <div class="rects" id="rects"></div>
+    <div class="rects" id="rects">
+      <div class="tooltip" id="tooltip"></div>
+    </div>
     <div class="select-box" id="selectBox">
       <a-select
         mode="tags"
@@ -73,6 +75,7 @@
 <script>
 import * as d3 from "d3";
 import InvestStyleBox from "./InvestStyleBox";
+import { join } from 'lodash';
 
 export default {
   name: "FundProfile",
@@ -80,20 +83,6 @@ export default {
     fundData: Object,
     fundIds: Object,
     fundId: String,
-    // returnData: Object,
-    // carData: Object,
-    // stockData: Object,
-    // bondData: Object,
-    // cashData: Object,
-    // otherData: Object,
-    // avgSizeData: Object,
-    // alphaData: Object,
-    // betaData: Object,
-    // sharpData: Object,
-    // dropData: Object,
-    // infoData: Object,
-    // riskData: Object,
-    // weightData: Object,
   },
   components: {
     InvestStyleBox,
@@ -159,7 +148,7 @@ export default {
       // infoData_n: [],
       investStyleBoxWidth: 200,
       contentWidth: 200,
-      boxGap: 60,
+      boxGap: 80,
       // version 4
       maxPathWidth: 60,
       minPathWidth: 30,
@@ -405,51 +394,6 @@ export default {
     this.updateGapPath();
   },
 
-  watch: {
-    // returnData: function(newVal, oldVal) {
-    //   this.allReturnData = newVal;
-    // },
-    // carData: function(newVal, oldVal) {
-    //   this.allCarData = newVal;
-    // },
-    // stockData: function(newVal, oldVal) {
-    //   this.allStockData = newVal;
-    // },
-    // bondData: function(newVal, oldVal) {
-    //   this.allBondData = newVal;
-    // },
-    // cashData: function(newVal, oldVal) {
-    //   this.allCashData = newVal;
-    // },
-    // otherData: function(newVal, oldVal) {
-    //   this.allOtherData = newVal;
-    // },
-    // avgSizeData: function(newVal, oldVal) {
-    //   this.allSizeData = newVal;
-    // },
-    // alphaData: function(newVal, oldVal) {
-    //   this.allAlphaData = newVal;
-    // },
-    // betaData: function(newVal, oldVal) {
-    //   this.allBetaData = newVal;
-    // },
-    // sharpData: function(newVal, oldVal) {
-    //   this.allSharpData = newVal;
-    // },
-    // dropData: function(newVal, oldVal) {
-    //   this.allDropData = newVal;
-    // },
-    // infoData: function(newVal, oldVal) {
-    //   this.allInfoData = newVal;
-    // },
-    // riskData: function(newVal, oldVal) {
-    //   this.allRiskData = newVal;
-    // },
-    // weightData: function(newVal, oldVal) {
-    //   this.allRiskData = newVal;
-    // },
-  },
-
   computed: {
     xScale() {
       return d3
@@ -504,22 +448,35 @@ export default {
     clickBar(type) {
       this.svg.select("#dashline").remove();
       const gDashline = this.svg.append("g").attr("id", "dashline");
+
+      // only consider nonnegative values
+      let selectedBoxIndices = [];
+      for (let i = 0; i < this.investStyleBoxes.length; i++) {
+        if (eval(`this.investStyleBoxes[${i}].${type}Data`) >= 0) {
+          selectedBoxIndices.push(i);
+        }
+      }
+
       let thisK, thisB, lastK, lastB;
-      for (let i = 0; i < this.investStyleBoxes.length - 1; i++) {
+      for (let i = 0; i < selectedBoxIndices.length - 1; i++) {
         const startPoint = this.$refs[
-          this.investStyleBoxes[i].boxId
+          this.investStyleBoxes[selectedBoxIndices[i]].boxId
         ].getSelectedBarCenterPoint(type);
         const endPoint = this.$refs[
-          this.investStyleBoxes[i + 1].boxId
+          this.investStyleBoxes[selectedBoxIndices[i + 1]].boxId
         ].getSelectedBarCenterPoint(type);
         const startX =
-          this.xScale(new Date(this.investStyleBoxes[i].boxText)) -
+          this.xScale(
+            new Date(this.investStyleBoxes[selectedBoxIndices[i]].boxText)
+          ) -
           this.investStyleBoxWidth / 2 +
           60 +
           startPoint[0];
         const startY = 5 + 20 + startPoint[1];
         const endX =
-          this.xScale(new Date(this.investStyleBoxes[i + 1].boxText)) -
+          this.xScale(
+            new Date(this.investStyleBoxes[selectedBoxIndices[i + 1]].boxText)
+          ) -
           this.investStyleBoxWidth / 2 +
           60 +
           endPoint[0];
@@ -533,16 +490,69 @@ export default {
         // 由于遮挡，内部的虚线只能由子组件绘制
         thisK = (endY - startY) / (endX - startX);
         thisB = startY - startX * thisK;
+
+        // 可能横跨多个组件
+        for (
+          let j = selectedBoxIndices[i] + 1;
+          j < selectedBoxIndices[i + 1];
+          j++
+        ) {
+          let traverseStartX =
+            this.xScale(
+              new Date(this.investStyleBoxes[j].boxText)
+            ) -
+            this.investStyleBoxWidth / 2;
+          let traverseEndX =
+            this.xScale(
+              new Date(this.investStyleBoxes[j].boxText)
+            ) +
+            this.investStyleBoxWidth / 2;
+          let traverseStartY = thisK * traverseStartX + thisB;
+          let traverseEndY = thisK * traverseEndX + thisB;
+          if (["navReturn", "risk"].indexOf(type) !== -1) {
+            // top
+            traverseStartX = 0;
+            traverseStartY = traverseStartY - 20 - 5;
+            traverseEndX = 200;
+            traverseEndY = traverseEndY - 20 - 5;
+          } else if (["sharp", "info"].indexOf(type) !== -1) {
+            // right
+            traverseStartX = 60 - (traverseStartY - 20 - 5);
+            traverseStartY = 0;
+            traverseEndX = 60 - (traverseEndY - 20 - 5);
+            traverseEndY = 200;
+          } else if (["stock", "bond", "cash", "other"].indexOf(type) !== -1) {
+            // bottom
+            traverseStartX = 200;
+            traverseStartY = 60 - (traverseStartY - 20 - 5);
+            traverseEndX = 0;
+            traverseEndY = 60 - (traverseEndY - 20 - 5);
+          } else {
+            // left
+            traverseStartX = traverseStartY - 20 - 5;
+            traverseStartY = 200;
+            traverseEndX = traverseEndY - 20 - 5;
+            traverseEndY = 0;
+          }
+          this.$refs[
+            this.investStyleBoxes[j].boxId
+          ].drawTraverseDashline(traverseStartX, traverseStartY, traverseEndX, traverseEndY);
+        }
+
         let thisX1 =
-          this.xScale(new Date(this.investStyleBoxes[i].boxText)) -
+          this.xScale(
+            new Date(this.investStyleBoxes[selectedBoxIndices[i]].boxText)
+          ) -
           this.investStyleBoxWidth / 2;
         let thisY1 = lastK * thisX1 + lastB;
         let thisX2 =
-          this.xScale(new Date(this.investStyleBoxes[i].boxText)) +
+          this.xScale(
+            new Date(this.investStyleBoxes[selectedBoxIndices[i]].boxText)
+          ) +
           this.investStyleBoxWidth / 2;
         let thisY2 = thisK * thisX2 + thisB;
         let thatX1, thatY1, thatX2, thatY2;
-        if (["nav", "risk"].indexOf(type) !== -1) {
+        if (["navReturn", "risk"].indexOf(type) !== -1) {
           // top
           thatX1 = 0;
           thatY1 = thisY1 - 20 - 5;
@@ -568,23 +578,13 @@ export default {
           thatY2 = 0;
         }
         if (i === 0) {
-          this.$refs[this.investStyleBoxes[i].boxId].drawDashline(
-            thatX1,
-            thatY1,
-            thatX2,
-            thatY2,
-            true,
-            false
-          );
+          this.$refs[
+            this.investStyleBoxes[selectedBoxIndices[i]].boxId
+          ].drawDashline(thatX1, thatY1, thatX2, thatY2, true, false);
         } else {
-          this.$refs[this.investStyleBoxes[i].boxId].drawDashline(
-            thatX1,
-            thatY1,
-            thatX2,
-            thatY2,
-            false,
-            false
-          );
+          this.$refs[
+            this.investStyleBoxes[selectedBoxIndices[i]].boxId
+          ].drawDashline(thatX1, thatY1, thatX2, thatY2, false, false);
         }
         lastK = thisK;
         lastB = thisB;
@@ -592,13 +592,15 @@ export default {
       let lastTmpX =
         this.xScale(
           new Date(
-            this.investStyleBoxes[this.investStyleBoxes.length - 1].boxText
+            this.investStyleBoxes[
+              selectedBoxIndices[selectedBoxIndices.length - 1]
+            ].boxText
           )
         ) -
         this.investStyleBoxWidth / 2;
       let lastTmpY = lastK * lastTmpX + lastB;
       let lastX, lastY;
-      if (["nav", "risk"].indexOf(type) !== -1) {
+      if (["navReturn", "risk"].indexOf(type) !== -1) {
         // top
         lastX = 0;
         lastY = lastTmpY - 20 - 5;
@@ -616,7 +618,8 @@ export default {
         lastY = 200;
       }
       this.$refs[
-        this.investStyleBoxes[this.investStyleBoxes.length - 1].boxId
+        this.investStyleBoxes[selectedBoxIndices[selectedBoxIndices.length - 1]]
+          .boxId
       ].drawDashline(lastX, lastY, -1, -1, false, true);
     },
     topHandleScroll() {
@@ -636,13 +639,16 @@ export default {
     renderInit() {
       // this.width = (156 + 60) * this.sizeData.length + this.margin.left + this.margin.right - 78;
       // 2.26
-      this.width =
+      this.width = Math.max(
         (this.investStyleBoxWidth + this.boxGap) * this.sizeData.length +
-        this.margin.left +
-        this.margin.right -
-        this.investStyleBoxWidth / 2;
+          this.margin.left +
+          this.margin.right -
+          this.investStyleBoxWidth / 2,
+        this.width
+      );
       d3.select("#curve").attr("id", `curve_${this.fundId}`);
       d3.select("#rects").attr("id", `rects_${this.fundId}`);
+      d3.select("#tooltip").attr("id", `tooltip_${this.fundId}`);
       d3.select("#selectBox").attr("id", `selectBox_${this.fundId}`);
       this.svg = d3
         .select(`#curve_${this.fundId}`)
@@ -731,6 +737,7 @@ export default {
       });
     },
     updateRects() {
+      let that = this;
       this.rectSvg.selectAll("g").remove();
       const gRects = this.rectSvg
         .append("g")
@@ -738,7 +745,7 @@ export default {
       const rectHeight = 162 / this.selectedRects.length;
       for (let i = 0; i < this.selectedRects.length; i++) {
         this.rectXScale.domain([
-          0,
+          d3.min(this.rectObject[this.selectedRects[i]].data),
           d3.max(this.rectObject[this.selectedRects[i]].data),
         ]);
         gRects
@@ -751,35 +758,24 @@ export default {
             "width",
             this.rectXScale(this.rectObject[this.selectedRects[i]].thisData)
           )
-          .attr("height", rectHeight);
+          .attr("height", rectHeight)
+          .on("mouseover", function() {
+            d3.select(`#tooltip_${that.fundId}`).style("display", "block");
+          })
+          .on("mousemove", function(e) {
+            const key = that.selectedRects[i];
+            const value = that.rectObject[
+              that.selectedRects[i]
+            ].thisData.toFixed(2);
+            d3.select(`#tooltip_${that.fundId}`)
+              .html(key + "<br>" + value)
+              .style("left", e.offsetX + 10 + "px")
+              .style("top", e.offsetY + 10 + "px");
+          })
+          .on("mouseout", function() {
+            d3.select(`#tooltip_${that.fundId}`).style("display", "none");
+          });
       }
-      // this.rectXScale.domain([0, d3.max(this.allAlphaData)]);
-      // gRects
-      //   .append("rect")
-      //   .attr("fill", this.rectColors[0])
-      //   .attr("stroke", "black")
-      //   .attr("x", 0)
-      //   .attr("y", 0)
-      //   .attr("width", this.rectXScale(this.thisAlphaData) - this.rectXScale(0))
-      //   .attr("height", 54);
-      // this.rectXScale.domain([0, d3.max(this.allBetaData)]);
-      // gRects
-      //   .append("rect")
-      //   .attr("fill", this.rectColors[1])
-      //   .attr("stroke", "black")
-      //   .attr("x", 0)
-      //   .attr("y", 54)
-      //   .attr("width", this.rectXScale(this.thisBetaData) - this.rectXScale(0))
-      //   .attr("height", 54);
-      // this.rectXScale.domain([0, d3.max(this.allSharpData)]);
-      // gRects
-      //   .append("rect")
-      //   .attr("fill", this.rectColors[2])
-      //   .attr("stroke", "black")
-      //   .attr("x", 0)
-      //   .attr("y", 108)
-      //   .attr("width", this.rectXScale(this.thisSharpData) - this.rectXScale(0))
-      //   .attr("height", 54);
     },
     updateGapPath() {
       const maxSize = Math.max(...this.sizeData);
@@ -788,7 +784,9 @@ export default {
       const b = this.maxPathWidth - k * maxSize;
       let tmpSum = 0;
       for (let i = 0; i < this.investStyleBoxes.length; i++) {
-        const thisPathWidth = k * this.sizeData[i] + b;
+        let thisPathWidth = k * this.sizeData[i] + b;
+        if (this.investStyleBoxes.length === 1)
+          thisPathWidth = this.maxPathWidth;
         for (
           let j = 0;
           j < this.detailCarData[i].length &&
@@ -881,5 +879,18 @@ export default {
   fill: currentColor;
   overflow: hidden;
   cursor: pointer;
+}
+
+.tooltip {
+  position: absolute;
+  text-align: center;
+  max-width: 150px;
+  max-height: 50px;
+  padding: 6px;
+  border: none;
+  background: black;
+  color: white;
+  pointer-events: none;
+  display: none;
 }
 </style>
