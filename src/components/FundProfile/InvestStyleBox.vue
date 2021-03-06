@@ -678,7 +678,7 @@ export default {
         .attr("width", 15)
         .attr("height", this.yScale(Math.abs(this.otherData)) - this.yScale(0));
       // left
-      this.yScale.domain([0, 1]).range([this.barTopMargin, 60]);
+      this.yScale.domain([0, 1]).range([60, this.barTopMargin]);
       const leftDefs = this.leftSvg.append("defs");
       leftDefs
         .append("pattern")
@@ -714,7 +714,7 @@ export default {
         )
         .attr("x", this.yScale(Math.abs(this.alphaData)))
         .attr("y", 7)
-        .attr("width", this.yScale(1) - this.yScale(Math.abs(this.alphaData)))
+        .attr("width", this.yScale(0) - this.yScale(Math.abs(this.alphaData)))
         .attr("height", 30);
       gRectsLeft
         .append("rect")
@@ -726,7 +726,7 @@ export default {
         )
         .attr("x", this.yScale(Math.abs(this.betaData)))
         .attr("y", 43)
-        .attr("width", this.yScale(1) - this.yScale(Math.abs(this.betaData)))
+        .attr("width", this.yScale(0) - this.yScale(Math.abs(this.betaData)))
         .attr("height", 30);
 
       for (let dataName in colorMap) {
@@ -769,7 +769,6 @@ export default {
         d3.select(`#${d}_${this.boxId}`)
           .style("cursor", "pointer")
           .on("click", function() {
-            d3.select(`#dashline_${this.boxId}`).remove();
             that.$emit(
               "clickBar",
               d3
@@ -782,7 +781,6 @@ export default {
       this.lastTopBars = this.curTopBars;
     },
     turnClockwise() {
-      d3.select(`#dashline_${this.boxId}`).remove();
       this.curDegree += 90;
       d3.select("#content_" + this.boxId).style(
         "transform",
@@ -793,7 +791,6 @@ export default {
         d3.select(`#${d}_${this.boxId}`)
           .style("cursor", "pointer")
           .on("click", function() {
-            d3.select(`#dashline_${this.boxId}`).remove();
             that.$emit(
               "clickBar",
               d3
@@ -811,7 +808,6 @@ export default {
       this.lastTopBars = this.curTopBars;
     },
     turnCounterClockwise() {
-      d3.select(`#dashline_${this.boxId}`).remove();
       this.curDegree -= 90;
       d3.select("#content_" + this.boxId).style(
         "transform",
@@ -822,7 +818,6 @@ export default {
         d3.select(`#${d}_${this.boxId}`)
           .style("cursor", "pointer")
           .on("click", function() {
-            d3.select(`#dashline_${this.boxId}`).remove();
             that.$emit(
               "clickBar",
               d3
@@ -900,7 +895,6 @@ export default {
         default:
           break;
       }
-      d3.select(`#dashline_${this.boxId}`).remove();
       const gDashline = curSvg.append("g").attr("id", `dashline_${this.boxId}`);
       gDashline
         .append("circle")
@@ -949,7 +943,6 @@ export default {
         default:
           break;
       }
-      d3.select(`#dashline_${this.boxId}`).remove();
       const gDashline = curSvg.append("g").attr("id", `dashline_${this.boxId}`);
       gDashline
         .append("path")
@@ -957,6 +950,9 @@ export default {
         .attr("stroke", "black")
         .attr("d", `M ${startX} ${startY} L ${endX} ${endY}`);
     },
+    removeDashline() {
+      d3.select(`#dashline_${this.boxId}`).remove();
+    }
   },
 };
 </script>
