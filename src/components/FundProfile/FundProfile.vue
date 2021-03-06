@@ -436,18 +436,24 @@ export default {
     turnClockwise() {
       this.svg.select("#dashline").remove();
       this.investStyleBoxes.forEach((d) => {
+        this.$refs[d.boxId].removeDashline();
         this.$refs[d.boxId].turnClockwise();
       });
     },
     turnCounterClockwise() {
       this.svg.select("#dashline").remove();
       this.investStyleBoxes.forEach((d) => {
+        this.$refs[d.boxId].removeDashline();
         this.$refs[d.boxId].turnCounterClockwise();
       });
     },
     clickBar(type) {
       this.svg.select("#dashline").remove();
       const gDashline = this.svg.append("g").attr("id", "dashline");
+
+      this.investStyleBoxes.forEach(d => {
+        this.$refs[d.boxId].removeDashline();
+      });
 
       // only consider nonnegative values
       let selectedBoxIndices = [];
