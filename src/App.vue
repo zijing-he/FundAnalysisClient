@@ -5,13 +5,15 @@
     </a-col>
     <a-col :span="19">
       <a-row>
-        <MarketAnalysisLayout v-on:handleBrush="updateTimeBoundary" />
+        <MarketAnalysisLayout
+          v-on:updateTimeBoundary="handleUpdateTimeBoundary"
+        />
       </a-row>
       <a-row>
         <OverViewLayout :fundsData="fundsData" />
       </a-row>
       <a-row>
-        <!-- <FundProfileLayout :fundsID="fundsID"/> -->
+        <FundProfileLayout :fundsID="needFundsID" :start_date="startDate" :end_date="endDate"/>
       </a-row>
     </a-col>
   </a-row>
@@ -30,21 +32,22 @@ export default {
     ControlPanelLayout,
     MarketAnalysisLayout,
     OverViewLayout,
-    // FundProfileLayout,
+    FundProfileLayout,
   },
-  provide() {
-    return {
-      getStart: () => this.startDate,
-      getEnd: () => this.startDate,
-    };
-  },
+  // provide() {
+  //   return {
+  //     getStart: () => this.startDate,
+  //     getEnd: () => this.endDate,
+  //   };
+  // },
   data() {
     return {
       fundsData: null,
-      fundsID: [],
-      startDate: 0,
-      endDate: 100,
+      fundsID: null,
+      startDate: undefined,
+      endDate: undefined,
       userWeight: null,
+      needFundsID:null,
     };
   },
   computed: {},
@@ -54,10 +57,9 @@ export default {
         "get_fund_time_border",
         { f_ids: this.fundsID },
         (data) => {
-          console.log("最大的起止时间：", data);
-          this.startDate = data["start_date"];
-          this.endDate = data["end_date"];
-
+          this.startDate = data["start_date"].toString();
+          this.endDate = data["end_date"].toString();
+          this.needFundsID = this.fundsID;
           //先后
           this.getFundManagers();
         }
@@ -76,24 +78,27 @@ export default {
           end_date: this.endDate,
         },
         (data) => {
-          console.log("基金经理相关信息：", data);
           this.fundsData = data;
         }
       );
     },
-    updateTimeBoundary(start, end) {
-      console.log("让我康康起始点：", start, end);
-      this.start = start;
-      this.end = end;
-
-
-    
+    handleUpdateTimeBoundary(start, end) {
+      console.log("起始点：", start, end);
+      this.startDate = start;  //start发生变化，FundProfileLayout里的start也会改变，导致getviewFunds改变
+      this.endDate = end;
+      if(this.fundsID && this.userWeight){
+        this.getFundManagers();
+      } 
     },
     handleUpdateWeightsAndId(fundsID, userWeight) {
       this.fundsID = fundsID;
       this.userWeight = userWeight;
-
-      this.getTimeBoundary();
+      if (this.startDate == undefined && this.endDate == undefined) {
+        this.getTimeBoundary();
+      }
+      else{
+        this.getFundManagers();
+      }
     },
   },
 };

@@ -16,9 +16,9 @@ export default {
   data() {
     return {
       svg: null,
-      margin: { top: 10, right: 125, bottom: 20, left: 30 },
-      width: 1261.98,
-      height: 100,
+      margin: { top: 10, right: 125, bottom: 20, left: 15 },
+      width: 990,
+      height: 110,
       date: Object.keys(market_income),
       fund_size: Object.values(market_size),
       fund_number: Object.values(market_number),
@@ -65,12 +65,21 @@ export default {
     },
   },
 
-  methods: {updateDate({ selection }) {
-      let start = this.xScale.invert(selection[0]).toISOString().slice(0,10).replace(/-/g,"");
-      let end = this.xScale.invert(selection[1]).toISOString().slice(0,10).replace(/-/g,"");
-      
+  methods: {
+    updateDate({ selection }) {
+      let start = this.xScale
+        .invert(selection[0])
+        .toISOString()
+        .slice(0, 10)
+        .replace(/-/g, "");
+      let end = this.xScale
+        .invert(selection[1])
+        .toISOString()
+        .slice(0, 10)
+        .replace(/-/g, "");
+
       // console.log(start, end);
-      this.$emit("handleBrush",start,end);
+      this.$emit("updateBrush", start, end);
       // this.svg.select(".brush").call(this.brush.move, null);  //情况brush后会报错，但是不影响
     },
     renderInit() {
@@ -196,6 +205,6 @@ export default {
 <style scoped>
 #market_curvechart {
   height: 110px;
-  width: 100%;
+  width: 50%;
 }
 </style>

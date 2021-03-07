@@ -1,8 +1,10 @@
 <template>
   <div class="container">
     <h4>基金市场的演变</h4>
-    <MarketAnalysisCurveChart v-on:handleBrush="getTimeBoundary"/>
+     <div class="inner_container">
+    <MarketAnalysisCurveChart v-on:updateBrush="handleUpdateBrush"/>
     <MarketAnalysisStramGraph />
+     </div>
   </div>
 </template>
 <script>
@@ -18,8 +20,8 @@ export default {
     MarketAnalysisStramGraph
   },
   methods: {
-    getTimeBoundary(start,end){
-      this.$emit("handleBrush",start,end);
+    handleUpdateBrush(start,end){
+      this.$emit("updateTimeBoundary",start,end);
     }
   },
   mounted() {},
@@ -28,7 +30,6 @@ export default {
 
 <style scoped>
 .container {
-  height: 35%;
   width: 100%;
   border: 1px solid black;
 }
@@ -36,5 +37,8 @@ export default {
   border-bottom: 1px solid black;
   margin-bottom: 0;
   font-weight: bold;
+}
+.inner_container{
+  display:flex;
 }
 </style>

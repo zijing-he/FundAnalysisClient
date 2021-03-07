@@ -1,21 +1,26 @@
 <template>
   <div class="container">
     <h4>历史数据对比</h4>
-    <a-spin
-      v-if="isRequesting"
-      size="large"
-      tip="Loading..."
-      style="margin-top: 89.3px; margin-bottom: 89.3px"
-    />
-    <div class="fund_bubble_chart_outer_container"   v-if="!isRequesting" >
-      <fundBubbleChart
-        :quarterFundData="val"
-        :fundManagers="managers"
-        :date="key"
-        :key="key"
-        v-for="(val, key) in funds"
-      >
-      </fundBubbleChart>
+    <div class="inner_container">
+      <a-spin
+        v-if="isRequesting"
+        size="large"
+        tip="Loading..."
+        style="margin-top: 89.3px; margin-bottom: 89.3px"
+      />
+      <div class="fund_bubble_chart_outer_container" v-if="!isRequesting">
+        <fundBubbleChart
+          :quarterFundData="val"
+          :fundManagers="managers"
+          :date="key"
+          :key="key"
+          v-for="(val, key) in funds"
+        >
+        </fundBubbleChart>
+      </div>
+      <div class="manager_bubble_chart_container" v-if="!isRequesting">
+        <managerBubbleChart :fundManagers="managers"/>
+      </div>
     </div>
   </div>
 </template>
@@ -34,11 +39,12 @@ export default {
       componentName: fundBubbleChart,
       managers: null,
       funds: null,
-      isRequesting:true,
+      isRequesting: true,
     };
   },
   components: {
     fundBubbleChart,
+    managerBubbleChart
   },
   watch: {
     fundsData: function () {
@@ -92,15 +98,18 @@ export default {
 
 <style scoped>
 .container {
-  height: 30%;
   width: 100%;
   margin-top: 10px;
   border: 1px solid black;
 }
-.container h4 {
+h4 {
   border-bottom: 1px solid black;
   margin-bottom: 0;
   font-weight: bold;
+}
+.inner_container {
+  display: flex;
+justify-content: center;
 }
 .fund_bubble_chart_outer_container {
   /* position: absolute; */
@@ -109,5 +118,8 @@ export default {
   overflow-x: auto;
   overflow-y: hidden;
   border-right: 1px solid black;
+}
+.manager_bubble_chart_container {
+  width: 20%;
 }
 </style>

@@ -14,9 +14,9 @@ export default {
   data() {
     return {
       svg: null,
-      margin: { top: 0, right: 125, bottom: 35, left: 30 },
-      width: 1261.98,
-      height: 100,
+      margin: { top: 0, right: 40, bottom: 45, left: 30 },
+      width: 990,
+      height: 110,
       date: Object.keys(dataJSON),
       keys: [],
       data: dataJSON,
@@ -32,7 +32,7 @@ export default {
     // console.log(sectorJSON);
     // console.log(this.sector_data["医药生物"]);
     // console.log(d3.extent(Object.values(this.sector_data["医药生物"])));
-    
+
     this.renderInit();
     // console.log(this.min);
     this.renderUpdate();
@@ -78,6 +78,7 @@ export default {
     stackedData() {
       return d3.stack().offset(d3.stackOffsetSilhouette).keys(this.keys)(
         Object.values(this.data)
+        // .filter((d, i) => i % 2 != 0)
       );
     },
   },
@@ -99,7 +100,7 @@ export default {
         this.data_sum.push(sum);
       }
 
-      this.min = d3.min(Object.values(this.sector_data["医药生物"]));
+      // this.min = d3.min(Object.values(this.sector_data["医药生物"]));
       this.svg = d3
         .select("#market_streamgraph")
         .append("svg")
@@ -118,7 +119,7 @@ export default {
           d3
             .axisBottom(this.xScale)
             .ticks(d3.timeYear.every(1))
-            .tickSize(this.innerHeight / 3)
+            .tickSize(this.innerHeight / 2 - 3)
         );
       // .select(".domain")
       // .remove();
@@ -193,8 +194,7 @@ export default {
 
 <style scoped>
 #market_streamgraph {
-  margin-top: 10px;
   height: 110px;
-  width: 100%;
+  width: 50%;
 }
 </style>
