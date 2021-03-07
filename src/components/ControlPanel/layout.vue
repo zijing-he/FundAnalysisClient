@@ -117,7 +117,7 @@ export default {
 
 .bottomContainer {
   width: 100%;
-  height: 735px;
+  height: 800px;
   margin-top: 10px;
   border: 1px solid black;
 }

@@ -16,15 +16,15 @@ export default {
     return {
       svg: null,
       width: 390,
-      height: 200,
+      height: 216,
       margin: { top: 20, right: 20, bottom: 20, left: 20 },
       data: this.fundManagers,
       name: [],
-      managerId:[],
+      managerId: [],
     };
   },
   mounted: function () {
-    // console.log("我康康基金经理：",this.fundManagers);
+    console.log("我康康基金经理：",this.fundManagers);
     this.renderInit();
     this.renderUpdate();
   },
@@ -69,37 +69,40 @@ export default {
         .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
     },
     renderUpdate() {
-      // let tooltip = d3
-      //   .select("#manager_bubble_chart")
-      //   .append("div")
-      //   .style("position", "absolute")
-      //   .style("opacity", 0)
-      //   .attr("class", "tooltip")
-      //   .style("width","140px")
-      //   .style("height","55px")
-      //   .style("background-color", "black")
-      //   .style("border-radius", "5px")
-      //   .style("padding", "7px")
-      //   .style("color", "white");
+      let tooltip = d3
+        .select("#manager_bubble_chart")
+        .append("div")
+        .style("position", "absolute")
+        // .style("opacity", 0)
+        .attr("class", "tooltip")
+        .style("visibility", "hidden")
+        .style("width", "150px")
+        .style("height", "78px")
+        .style("background-color", "black")
+        .style("border-radius", "5px")
+        .style("padding", "7px")
+        .style("color", "white");
 
-      // let showTooltip = (event, d) => {
-      //   tooltip.transition().duration(200);
-      //   tooltip
-      //     .style("opacity", 1)
-      //     .html("基金经理：" + d + "<br /> 掌管基金：" + this.data[d].number)
-      //     .style("left", (event.pageX-1300)  + "px")
-      //     .style("top", (event.pageY - 190) + "px");
-      // };
+      let showTooltip = (event, d) => {
+        console.log(event);
+        console.log(d);
+        tooltip.transition().duration(200);
+        tooltip
+          .style("visibility", "visible")
+          .html("基金经理：" + this.data[d].cn_name + "<br /> 经理ID：" + d +  "<br /> 任职天数：" + this.data[d].days)
+          .style("left", event.pageX - 520 + "px")
+          .style("top", event.pageY - 70 + "px");
+      };
 
-      // let moveTooltip = (event) => {
-      //   tooltip
-      //     .style("left", (event.pageX-1300) + "px")
-      //     .style("top", (event.pageY - 190) + "px");
-      // };
+      let moveTooltip = (event) => {
+        tooltip
+          .style("left", event.pageX - 520 + "px")
+          .style("top", event.pageY - 70 + "px");
+      };
 
-      // let hideTooltip = (event) => {
-      //   tooltip.transition().duration(200).style("opacity", 0);
-      // };
+      let hideTooltip = (event) => {
+        tooltip.style("visibility", "hidden");
+      };
 
       this.svg
         .append("g")
@@ -112,12 +115,12 @@ export default {
         .attr("cy", (d) => this.yScale(this.data[d].loc[1]))
         .attr("r", (d) => this.sizeScale(this.data[d].size))
         .style("fill", (d) => this.data[d].color)
-        // .style("stroke","white")
-        // .style("stroke-width","0.5px")
-        // .style(":hover","stroke: black")
-        // .on("mouseover", showTooltip)
-        // .on("mousemove", moveTooltip)
-        // .on("mouseleave", hideTooltip);
+        .style("stroke", "white")
+        .style("stroke-width", "0.5px")
+        .style(":hover", "stroke: black")
+        .on("mouseover", showTooltip)
+        .on("mousemove", moveTooltip)
+        .on("mouseleave", hideTooltip);
     },
   },
 };
