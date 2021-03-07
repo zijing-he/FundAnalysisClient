@@ -28,7 +28,7 @@ export default {
     return {
       svg: null,
       width: 200,
-      height: 200,
+      height: 180,
       margin: { top: 20, right: 20, bottom: 20, left: 20 },
       data: null,
       data_values: [],
@@ -106,7 +106,8 @@ export default {
         .attr("cx", (d) => this.xScale(d.loc[0]))
         .attr("cy", (d) => this.yScale(d.loc[1]))
         .attr("r", 4)
-        .style("fill", (d) => this.colorScale(d.manager_ids[0]))
+        // .style("fill", (d) => this.colorScale(d.manager_ids[0]))
+        .style("fill", "#B6B6B6")
         .style("stroke", (d) =>
           d.new == true || d.delete == true ? "black" : "none"
         )
@@ -124,7 +125,7 @@ h5 {
 }
 .fund_bubble_chart_inner_container {
   position: relative;
-  height: 220px;
+  height: 200px;
   width: 200px;
   flex-shrink: 0;
   margin-right: 30px;

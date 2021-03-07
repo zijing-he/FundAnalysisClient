@@ -49,35 +49,13 @@ export default {
   name: "FundProfileLayout",
   props: {
     fundsID: Array,
-  },
-  inject: ["getStart", "getEnd"],
-  computed: {
-    getReactiveStart() {
-      return this.getStart();
-    },
-    getReactiveEnd() {
-      return this.getEnd();
-    },
+    start_date: String,
+    end_date: String,
   },
   watch: {
-    getReactiveStart: function () {  //筛选时间功能
-      this.isRequesting = true;
-      this.start_date = this.getStart();
-      this.end_date = this.getEnd();
-      this.getViewFunds();
-    },
     fundsID: function () {
       this.isRequesting = true;
-      DataService.post(
-        "get_fund_time_border",
-        { f_ids: this.fundsID },
-        (data) => {
-          console.log("最大的起止时间：",data);
-          this.start_date = data["start_date"];
-          this.end_date = data["end_date"];
-          this.getViewFunds();
-        }
-      );
+      this.getViewFunds();
     },
   },
   data() {
@@ -98,8 +76,6 @@ export default {
       infoData: [],
       riskData: [],
       weightData: [],
-      start_date: null,
-      end_date: null,
       isRequesting: true,
     };
   },
@@ -117,6 +93,12 @@ export default {
         },
         (data) => {
           this.fundData = data;
+          console.log(
+            this.start_date,
+            this.end_date,
+            this.fundsID,
+            this.fundData
+          );
           this.isRequesting = false;
         }
       );

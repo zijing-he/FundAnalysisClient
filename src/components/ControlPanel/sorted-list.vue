@@ -124,6 +124,7 @@ export default {
       ],
       selectedRowKeys: [],
       loading: false,
+      fundId:[]
     };
   },
   components: {},
@@ -142,16 +143,17 @@ export default {
       this.loading = true;
       // console.log("选择的基金序号", this.selectedRowKeys);
 
-      let fundId = [];
+      // let fundId = [];
       //选择的基金id
       this.list.forEach((d, i) => {
         if (this.selectedRowKeys.indexOf(i + 1) !== -1) {
-          fundId.push(d.id);
+          this.fundId.push(d.id);
         }
       });
 
       //点击后——>向上传递勾选的ID
-      this.$emit("updateFundId", fundId);
+      this.$emit("updateFundId", this.fundId);
+      
 
       //得到基金散点图和基金经理信息
       // DataService.post(
@@ -164,6 +166,7 @@ export default {
       setTimeout(() => {
         this.loading = false;
         // this.selectedRowKeys = []; //清空
+        this.fundId = [];
       }, 1000);
     },
   },
