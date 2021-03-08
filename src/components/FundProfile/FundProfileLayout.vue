@@ -15,6 +15,7 @@
         :fundId="item"
         :startDate="start_date"
         :endDate="end_date"
+        :boxHeight="eachHeight"
         :key="item"
         @handleScroll="handleScroll"
         @handleSelect="handleSelect"
@@ -36,9 +37,12 @@ export default {
     end_date: String,
   },
   watch: {
-    fundsID: function() {
+    fundsID: function(val) {
+      console.log(val);
       this.isRequesting = true;
       this.getViewFunds();
+      if (val.length <= 3) this.eachHeight = 270;
+      else this.eachHeight = this.totalHeight / val.length;
     },
   },
   data() {
@@ -47,6 +51,7 @@ export default {
       fundData: undefined,
       isRequesting: true,
       totalHeight: 905,
+      eachHeight: 270,
     };
   },
   components: {

@@ -40,7 +40,6 @@ const colorMap = {
 export default {
   name: "InvestStyleBox",
   props: {
-    isValid: Boolean,
     boxId: String,
     boxText: String,
     innerRadius: Number,
@@ -107,12 +106,10 @@ export default {
   },
 
   mounted: function() {
-    if (this.isValid) {
-      this.largeRadius = this.innerRadius - 3;
-      this.smallRadius = (this.largeRadius * 13) / 47;
-      this.renderInit();
-      this.renderUpdate();
-    }
+    this.largeRadius = this.innerRadius - 3;
+    this.smallRadius = (this.largeRadius * 13) / 47;
+    this.renderInit();
+    this.renderUpdate();
   },
 
   computed: {

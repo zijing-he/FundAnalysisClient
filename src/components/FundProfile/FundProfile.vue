@@ -13,15 +13,8 @@
       ref="topElement"
       @scroll="topHandleScroll()"
     >
-      <!-- <component
-        :is="componentName"
-        :isValid="false"
-        :key="i"
-        v-for="(d, i) in emptyBoxes"
-      ></component> -->
       <component
         :is="componentName"
-        :isValid="true"
         :ref="item.boxId"
         :boxId="item.boxId"
         :boxText="item.boxText"
@@ -92,6 +85,7 @@ export default {
     fundId: String,
     startDate: String,
     endDate: String,
+    boxHeight: Number,
   },
   components: {
     InvestStyleBox,
@@ -158,7 +152,7 @@ export default {
       // infoData_n: [],
       investStyleBoxWidth: 200,
       contentWidth: 200,
-      boxGap: 80,
+      boxGap: 200,
       // version 4
       maxPathWidth: 60,
       minPathWidth: 30,
