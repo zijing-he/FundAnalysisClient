@@ -1,27 +1,5 @@
 <template>
   <div class="container">
-    <!-- <component
-      :is="componentName"
-      :fundData="fundData[i]"
-      :fundId="d"
-      :key="d"
-      :returnData="returnData"
-      :carData="carData"
-      :stockData="stockData"
-      :bondData="bondData"
-      :cashData="cashData"
-      :otherData="otherData"
-      :avgSizeData="sizeData"
-      :alphaData="alphaData"
-      :betaData="betaData"
-      :sharpData="sharpData"
-      :dropData="dropData"
-      :infoData="infoData"
-      :riskData="riskData"
-      :weightData="weightData"
-      v-for="(d, i) in fundIds"
-    >
-    </component> -->
     <a-spin
       v-if="isRequesting"
       size="large"
@@ -31,10 +9,15 @@
     <div v-if="!isRequesting">
       <component
         :is="componentName"
+        :ref="item"
         :fundData="fundData"
         :fundIds="fundsID"
         :fundId="item"
+        :startDate="start_date"
+        :endDate="end_date"
         :key="item"
+        @handleScroll="handleScroll"
+        @handleSelect="handleSelect"
         v-for="item in fundsID"
       >
       </component>
@@ -53,7 +36,7 @@ export default {
     end_date: String,
   },
   watch: {
-    fundsID: function () {
+    fundsID: function() {
       this.isRequesting = true;
       this.getViewFunds();
     },
@@ -62,21 +45,8 @@ export default {
     return {
       componentName: "FundProfile",
       fundData: undefined,
-      returnData: [],
-      carData: [],
-      stockData: [],
-      bondData: [],
-      cashData: [],
-      otherData: [],
-      sizeData: [],
-      alphaData: [],
-      betaData: [],
-      sharpData: [],
-      dropData: [],
-      infoData: [],
-      riskData: [],
-      weightData: [],
       isRequesting: true,
+      totalHeight: 905,
     };
   },
   components: {
@@ -92,6 +62,7 @@ export default {
           end_date: this.end_date,
         },
         (data) => {
+          console.log(data);
           this.fundData = data;
           console.log(
             this.start_date,
@@ -103,47 +74,16 @@ export default {
         }
       );
     },
+    handleScroll(value) {
+      for (let i = 0; i < this.fundsID.length; i++)
+        this.$refs[this.fundsID[i]].handleScroll(value);
+    },
+    handleSelect(value) {
+      for (let i = 0; i < this.fundsID.length; i++)
+        this.$refs[this.fundsID[i]].handleSelect(value);
+    },
   },
-  mounted() {
-    // DataService.post(
-    //   "get_fund_time_border",
-    //   { f_ids: this.fundIds },
-    //   (data) => {
-    //     this.start_date = data["start_date"];
-    //     this.end_date = data["end_date"];
-    //     console.log(this.start_date, this.end_date);
-    //     DataService.post(
-    //       "get_view_funds",
-    //       {
-    //         f_ids: this.fundIds,
-    //         start_date: this.start_date,
-    //         end_date: this.end_date,
-    //       },
-    //       (data) => {
-    //         console.log(data);
-    //         this.fundData = data;
-    //         // this.fundIds.forEach((d) => {
-    //         //   this.fundData.push(data["detail"][d]);
-    //         //   this.returnData.push(data["total"][d]["return"]);
-    //         //   this.carData.push(data["total"][d]["car"]);
-    //         //   this.stockData.push(data["total"][d]["stock"]);
-    //         //   this.bondData.push(data["total"][d]["bond"]);
-    //         //   this.cashData.push(data["total"][d]["cash"]);
-    //         //   this.otherData.push(data["total"][d]["other"]);
-    //         //   this.sizeData.push(data["total"][d]["size"]);
-    //         //   this.alphaData.push(data["total"][d]["alpha"]);
-    //         //   this.betaData.push(data["total"][d]["beta"]);
-    //         //   this.sharpData.push(data["total"][d]["sharp_ratio"]);
-    //         //   this.dropData.push(data["total"][d]["max_drop_down"]);
-    //         //   this.infoData.push(data["total"][d]["information_ratio"]);
-    //         //   this.riskData.push(data["total"][d]["risk"]);
-    //         //   this.weightData.push(data["total"][d]["instl_weight"]);
-    //         // });
-    //       }
-    //     );
-    //   }
-    // );
-  },
+  mounted() {},
 };
 </script>
 

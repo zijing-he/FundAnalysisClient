@@ -21,70 +21,26 @@
 
 <script>
 import * as d3 from "d3";
-
-// const iconMap = {
-//   有色金属: "#iconyousejinshu",
-//   汽车: "#iconche1-copy",
-//   医药生物: "#iconyiyao",
-//   交通运输: "#iconjiaotongyunshu",
-//   传媒: "#iconmediatb",
-//   化工: "#iconhuagong",
-//   银行: "#iconyinhang1",
-//   非银金融: "#iconfeiyinjinrong",
-//   机械设备: "#iconjixieshebei",
-//   建筑装饰: "#iconjianzhuzhuangshi",
-//   纺织服装: "#iconfangzhifuzhuang",
-//   食品饮料: "#iconshipinyinliao",
-//   电子: "#icondianzi",
-//   计算机: "#iconjisuanjicomputer160",
-//   钢铁: "#icongangtie",
-//   电气设备: "#icondianqishebei",
-//   采掘: "#iconcaijue",
-//   国防军工: "#iconguofangjungong",
-//   农林牧渔: "#iconnonglinmuyu",
-//   综合: "#iconzonghe",
-//   轻工制造: "#iconqinggongzhizao",
-//   公用事业: "#icongongyongshiye",
-//   通信: "#icontongxin-copy",
-//   家用电器: "#iconappliances",
-//   房地产: "#iconreal-estate",
-//   商业贸易: "#iconshangyemaoyi",
-//   休闲服务: "#iconxiuxianfuwu",
-//   未知: "#iconweizhi",
-//   建筑材料: "#iconjianzhucailiao",
-// };
-
-// 2.26
-// const dataNames = [
-//   "drop",
-//   "risk",
-//   "stock",
-//   "bond",
-//   "cash",
-//   "other",
-//   "size",
-//   "alpha",
-//   "beta",
-//   "sharp",
-//   "info",
-// ];
+import sectorDict from "@/data/FundProfile/sector_dict.json";
+import weightKey from "@/data/FundProfile/weight_key.json";
 
 const colorMap = {
-  alpha: "#f4cae4",
-  beta: "#fff2ae",
-  sharp: "#fdcdac",
-  info: "#cbd5e8",
-  stock: "#fbb4ae",
-  bond: "#b3cde3",
-  cash: "#ccebc5",
-  other: "#decbe4",
-  navReturn: "#e5d8bd",
-  risk: "#33a02c",
+  alpha: "#ffff33",
+  beta: "#ffffcc",
+  sharp_ratio: "#984ea3",
+  information_ratio: "#decbe4",
+  stock: "#a65628",
+  bond: "#377eb8",
+  cash: "#f781bf",
+  other: "#999999",
+  nav_return: "#ff7f00",
+  risk: "#fed9a6",
 };
 
 export default {
   name: "InvestStyleBox",
   props: {
+    isValid: Boolean,
     boxId: String,
     boxText: String,
     innerRadius: Number,
@@ -92,19 +48,19 @@ export default {
     datum: Object,
     holdingData: Object,
     // 2.26
-    dropData: Number,
-    navReturnData: Number,
+    max_drop_downData: Number,
+    nav_returnData: Object,
     hs300Data: Number,
-    riskData: Number,
+    riskData: Object,
     stockData: Number,
     bondData: Number,
     cashData: Number,
     otherData: Number,
-    sizeData: Number,
-    alphaData: Number,
-    betaData: Number,
-    sharpData: Number,
-    infoData: Number,
+    sizeData: Object,
+    alphaData: Object,
+    betaData: Object,
+    sharp_ratioData: Object,
+    information_ratioData: Object,
     boxWidth: Number,
     contentWidth: Number,
     boxGap: Number,
@@ -118,12 +74,6 @@ export default {
       // width: 304,
       height: 200,
       data: null,
-      ratioColors: { org: "rgb(75, 135, 203)", person: "rgb(92, 26, 142)" },
-      circleColors: {
-        high: "rgb(254, 180, 7)",
-        mid: "rgb(239, 161, 112)",
-        low: "rgb(255, 240, 193)",
-      },
       largeRadius: 47,
       smallRadius: 13,
       icons: [],
@@ -138,8 +88,8 @@ export default {
       //   size: this.sizeData,
       //   alpha: this.alphaData,
       //   beta: this.betaData,
-      //   sharp: this.sharpData,
-      //   info: this.infoData,
+      //   sharp_ratio: this.sharpData,
+      //   information_ratio: this.infoData,
       // },
       // barMargin: { top: 20, bottom: 20, left: 10, right: 0 },
       // version 4
@@ -157,10 +107,12 @@ export default {
   },
 
   mounted: function() {
-    this.largeRadius = this.innerRadius - 3;
-    this.smallRadius = (this.largeRadius * 13) / 47;
-    this.renderInit();
-    this.renderUpdate();
+    if (this.isValid) {
+      this.largeRadius = this.innerRadius - 3;
+      this.smallRadius = (this.largeRadius * 13) / 47;
+      this.renderInit();
+      this.renderUpdate();
+    }
   },
 
   computed: {
@@ -193,7 +145,7 @@ export default {
     },
     curTopBars() {
       if (this.curDegree % 360 === 0) {
-        return ["navReturn", "risk"];
+        return ["nav_return", "risk"];
       } else if (this.curDegree % 360 === 90 || this.curDegree % 360 === -270) {
         return ["alpha", "beta"];
       } else if (
@@ -202,7 +154,7 @@ export default {
       ) {
         return ["stock", "bond", "cash", "other"];
       } else {
-        return ["sharp", "info"];
+        return ["sharp_ratio", "information_ratio"];
       }
     },
     curTopSide() {
@@ -460,10 +412,9 @@ export default {
         .data(root.leaves())
         .join("g")
         .attr("transform", (d) => `translate(${d.x0},${d.y0})`);
-      const color = d3.scaleOrdinal(d3.schemeCategory10);
       leaf
         .append("rect")
-        .attr("fill", (d) => color(d.data.name))
+        .attr("fill", (d) => sectorDict[d.data.name].color)
         .attr("fill-opacity", 0.6)
         .attr("width", (d) => d.x1 - d.x0)
         .attr("height", (d) => d.y1 - d.y0);
@@ -501,36 +452,41 @@ export default {
         .attr("transform", "translate(60, 0)");
       gRectsTop
         .append("rect")
-        .attr("id", "navReturn_" + this.boxId)
-        .attr("fill", colorMap.navReturn)
+        .attr("id", "nav_return-" + this.boxId)
+        .attr("fill", colorMap.nav_return)
         .attr(
           "mask",
-          this.navReturnData < 0
+          this.nav_returnData.norm < 0
             ? `url(#top_mask_stripe_${this.boxId})`
             : "none"
         )
         .attr("x", 7)
-        .attr("y", this.yScale(Math.abs(this.navReturnData)))
+        .attr("y", this.yScale(Math.abs(this.nav_returnData.norm)))
         .attr("width", 30)
         .attr(
           "height",
-          this.yScale(0) - this.yScale(Math.abs(this.navReturnData))
+          this.yScale(0) - this.yScale(Math.abs(this.nav_returnData.norm))
         );
       this.yScale.domain([0, 1.1]).range([60, this.barTopMargin]);
       gRectsTop
         .append("rect")
-        .attr("id", "risk_" + this.boxId)
+        .attr("id", "risk-" + this.boxId)
         .attr("fill", colorMap.risk)
         .attr(
           "mask",
-          this.riskData < 0 ? `url(#top_mask_stripe_${this.boxId})` : "none"
+          this.riskData.norm < 0
+            ? `url(#top_mask_stripe_${this.boxId})`
+            : "none"
         )
         .attr("x", 43)
-        .attr("y", this.yScale(Math.abs(this.riskData)))
+        .attr("y", this.yScale(Math.abs(this.riskData.norm)))
         .attr("width", 30)
-        .attr("height", this.yScale(0) - this.yScale(Math.abs(this.riskData)));
+        .attr(
+          "height",
+          this.yScale(0) - this.yScale(Math.abs(this.riskData.norm))
+        );
       this.yScale.domain([0, 1]).range([60, this.barTopMargin]);
-      if (Math.abs(this.navReturnData) > Math.abs(this.hs300Data)) {
+      if (Math.abs(this.nav_returnData.norm) > Math.abs(this.hs300Data)) {
         gRectsTop
           .append("path")
           .attr("stroke-dasharray", "2, 2")
@@ -547,7 +503,7 @@ export default {
           .attr("width", 30)
           .attr(
             "height",
-            this.yScale(Math.abs(this.navReturnData)) -
+            this.yScale(Math.abs(this.nav_returnData.norm)) -
               this.yScale(Math.abs(this.hs300Data))
           );
       }
@@ -580,27 +536,37 @@ export default {
         .attr("transform", "translate(0, 60)");
       gRectsRight
         .append("rect")
-        .attr("id", "sharp_" + this.boxId)
-        .attr("fill", colorMap.sharp)
+        .attr("id", "sharp_ratio-" + this.boxId)
+        .attr("fill", colorMap.sharp_ratio)
         .attr(
           "mask",
-          this.sharpData < 0 ? `url(#right_mask_stripe_${this.boxId})` : "none"
+          this.sharp_ratioData.norm < 0
+            ? `url(#right_mask_stripe_${this.boxId})`
+            : "none"
         )
         .attr("x", 0)
         .attr("y", 7)
-        .attr("width", this.yScale(Math.abs(this.sharpData)) - this.yScale(0))
+        .attr(
+          "width",
+          this.yScale(Math.abs(this.sharp_ratioData.norm)) - this.yScale(0)
+        )
         .attr("height", 30);
       gRectsRight
         .append("rect")
-        .attr("id", "info_" + this.boxId)
-        .attr("fill", colorMap.info)
+        .attr("id", "information_ratio-" + this.boxId)
+        .attr("fill", colorMap.information_ratio)
         .attr(
           "mask",
-          this.infoData < 0 ? `url(#right_mask_stripe_${this.boxId})` : "none"
+          this.information_ratioData.norm < 0
+            ? `url(#right_mask_stripe_${this.boxId})`
+            : "none"
         )
         .attr("x", 0)
         .attr("y", 43)
-        .attr("width", this.yScale(Math.abs(this.infoData)) - this.yScale(0))
+        .attr(
+          "width",
+          this.yScale(Math.abs(this.information_ratioData.norm)) - this.yScale(0)
+        )
         .attr("height", 30);
       // bottom
       this.yScale.domain([0, 1]).range([0, 60 - this.barTopMargin]);
@@ -631,7 +597,7 @@ export default {
         .attr("transform", "translate(60, 0)");
       gRectsBottom
         .append("rect")
-        .attr("id", "stock_" + this.boxId)
+        .attr("id", "stock-" + this.boxId)
         .attr("fill", colorMap.stock)
         .attr(
           "mask",
@@ -643,7 +609,7 @@ export default {
         .attr("height", this.yScale(Math.abs(this.stockData)) - this.yScale(0));
       gRectsBottom
         .append("rect")
-        .attr("id", "bond_" + this.boxId)
+        .attr("id", "bond-" + this.boxId)
         .attr("fill", colorMap.bond)
         .attr(
           "mask",
@@ -655,7 +621,7 @@ export default {
         .attr("height", this.yScale(Math.abs(this.bondData)) - this.yScale(0));
       gRectsBottom
         .append("rect")
-        .attr("id", "cash_" + this.boxId)
+        .attr("id", "cash-" + this.boxId)
         .attr("fill", colorMap.cash)
         .attr(
           "mask",
@@ -667,7 +633,7 @@ export default {
         .attr("height", this.yScale(Math.abs(this.cashData)) - this.yScale(0));
       gRectsBottom
         .append("rect")
-        .attr("id", "other_" + this.boxId)
+        .attr("id", "other-" + this.boxId)
         .attr("fill", colorMap.other)
         .attr(
           "mask",
@@ -706,46 +672,62 @@ export default {
         .attr("transform", "translate(0, 60)");
       gRectsLeft
         .append("rect")
-        .attr("id", "alpha_" + this.boxId)
+        .attr("id", "alpha-" + this.boxId)
         .attr("fill", colorMap.alpha)
         .attr(
           "mask",
-          this.alphaData < 0 ? `url(#left_mask_stripe_${this.boxId})` : "none"
+          this.alphaData.norm < 0
+            ? `url(#left_mask_stripe_${this.boxId})`
+            : "none"
         )
-        .attr("x", this.yScale(Math.abs(this.alphaData)))
+        .attr("x", this.yScale(Math.abs(this.alphaData.norm)))
         .attr("y", 7)
-        .attr("width", this.yScale(0) - this.yScale(Math.abs(this.alphaData)))
+        .attr(
+          "width",
+          this.yScale(0) - this.yScale(Math.abs(this.alphaData.norm))
+        )
         .attr("height", 30);
       gRectsLeft
         .append("rect")
-        .attr("id", "beta_" + this.boxId)
+        .attr("id", "beta-" + this.boxId)
         .attr("fill", colorMap.beta)
         .attr(
           "mask",
-          this.betaData < 0 ? `url(#left_mask_stripe_${this.boxId})` : "none"
+          this.betaData.norm < 0
+            ? `url(#left_mask_stripe_${this.boxId})`
+            : "none"
         )
-        .attr("x", this.yScale(Math.abs(this.betaData)))
+        .attr("x", this.yScale(Math.abs(this.betaData.norm)))
         .attr("y", 43)
-        .attr("width", this.yScale(0) - this.yScale(Math.abs(this.betaData)))
+        .attr(
+          "width",
+          this.yScale(0) - this.yScale(Math.abs(this.betaData.norm))
+        )
         .attr("height", 30);
 
       for (let dataName in colorMap) {
-        d3.select(`#${dataName}_${this.boxId}`)
+        d3.select(`#${dataName}-${this.boxId}`)
           .on("mouseover", function() {
             d3.select(`#tooltip_${that.boxId}`).style("display", "block");
           })
           .on("mousemove", function(e) {
-            // console.log(e.offsetX, e.offsetY);
-            const key = d3
+            let key = d3
               .select(this)
               .attr("id")
-              .split("_")[0];
-            const value = eval(`that.${key}Data`).toFixed(2);
+              .split("-")[0];
+            let value;
+            if (
+              ["nav_return", "risk", "alpha", "beta", "sharp_ratio", "information_ratio"].indexOf(
+                key
+              ) !== -1
+            )
+              value = eval(`that.${key}Data.value`).toFixed(2);
+            else value = eval(`that.${key}Data`).toFixed(2);
             let curOffsetX = e.offsetX;
             let curOffsetY = e.offsetY;
-            if (["navReturn", "risk"].indexOf(key) !== -1) {
+            if (["nav_return", "risk"].indexOf(key) !== -1) {
               // top
-            } else if (["sharp", "info"].indexOf(key) !== -1) {
+            } else if (["sharp_ratio", "information_ratio"].indexOf(key) !== -1) {
               // right
               curOffsetX += 80;
             } else if (["stock", "bond", "cash", "other"].indexOf(key) !== -1) {
@@ -754,6 +736,7 @@ export default {
             } else {
               // left
             }
+            key = weightKey[key]["cn_name"];
             d3.select(`#tooltip_${that.boxId}`)
               .html(key + "<br>" + value)
               .style("left", curOffsetX + 10 + "px")
@@ -766,7 +749,7 @@ export default {
       }
 
       this.curTopBars.forEach((d) => {
-        d3.select(`#${d}_${this.boxId}`)
+        d3.select(`#${d}-${this.boxId}`)
           .style("cursor", "pointer")
           .on("click", function() {
             that.$emit(
@@ -774,7 +757,7 @@ export default {
               d3
                 .select(this)
                 .attr("id")
-                .split("_")[0]
+                .split("-")[0]
             );
           });
       });
@@ -788,7 +771,7 @@ export default {
       );
       let that = this;
       this.curTopBars.forEach((d) => {
-        d3.select(`#${d}_${this.boxId}`)
+        d3.select(`#${d}-${this.boxId}`)
           .style("cursor", "pointer")
           .on("click", function() {
             that.$emit(
@@ -796,12 +779,12 @@ export default {
               d3
                 .select(this)
                 .attr("id")
-                .split("_")[0]
+                .split("-")[0]
             );
           });
       });
       this.lastTopBars.forEach((d) => {
-        d3.select(`#${d}_${this.boxId}`)
+        d3.select(`#${d}-${this.boxId}`)
           .style("cursor", "default")
           .on("click", null);
       });
@@ -815,7 +798,7 @@ export default {
       );
       let that = this;
       this.curTopBars.forEach((d) => {
-        d3.select(`#${d}_${this.boxId}`)
+        d3.select(`#${d}-${this.boxId}`)
           .style("cursor", "pointer")
           .on("click", function() {
             that.$emit(
@@ -823,21 +806,21 @@ export default {
               d3
                 .select(this)
                 .attr("id")
-                .split("_")[0]
+                .split("-")[0]
             );
           });
       });
       this.lastTopBars.forEach((d) => {
-        d3.select(`#${d}_${this.boxId}`)
+        d3.select(`#${d}-${this.boxId}`)
           .style("cursor", "default")
           .on("click", null);
       });
       this.lastTopBars = this.curTopBars;
     },
     getSelectedBarCenterPoint(type) {
-      const dom = d3.select(`#${type}_${this.boxId}`);
+      const dom = d3.select(`#${type}-${this.boxId}`);
       let relativeX, relativeY;
-      if (["navReturn", "risk"].indexOf(type) !== -1) {
+      if (["nav_return", "risk"].indexOf(type) !== -1) {
         // top
         this.midPointX =
           parseFloat(dom.attr("width") / 2) + parseFloat(dom.attr("x")) + 60;
@@ -846,7 +829,7 @@ export default {
         relativeX =
           parseFloat(dom.attr("width") / 2) + parseFloat(dom.attr("x"));
         relativeY = parseFloat(dom.attr("y"));
-      } else if (["sharp", "info"].indexOf(type) !== -1) {
+      } else if (["sharp_ratio", "information_ratio"].indexOf(type) !== -1) {
         // right
         this.midPointX = parseFloat(dom.attr("width"));
         this.midPointY =
@@ -952,7 +935,7 @@ export default {
     },
     removeDashline() {
       d3.select(`#dashline_${this.boxId}`).remove();
-    }
+    },
   },
 };
 </script>
