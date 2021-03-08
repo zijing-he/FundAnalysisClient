@@ -30,7 +30,6 @@ export default {
     },
   },
   mounted: function () {
-    console.log("我康康基金经理：", this.fundManagers);
     this.renderInit();
     this.renderUpdate();
   },
@@ -75,7 +74,6 @@ export default {
     },
     renderUpdate() {
       this.managerId = Object.keys(this.data);
-      console.log(this.managerId);
       let tooltip = d3
         .select("#manager_bubble_chart")
         .append("div")
@@ -116,7 +114,6 @@ export default {
       };
 
       let clickTooltip = (event, d) => {
-        console.log(d);
         this.$emit("showManager", d);
       };
 

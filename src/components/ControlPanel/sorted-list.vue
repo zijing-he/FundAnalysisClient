@@ -1,36 +1,54 @@
 <template>
-  <div>
-    <div>
-      <a-button
-        type="primary"
-        :disabled="!hasSelected"
-        :loading="loading"
-        @click="handleClick"
-        style="margin-top: 10px"
-      >
-        确定
-      </a-button>
-      <span style="margin-left: 15px">
-        <template v-if="hasSelected">
-          {{ `选择了 ${selectedRowKeys.length} 支基金` }}
-        </template>
-      </span>
+  <div class="search_container">
+    <div class="search_fund">
+    <a-input-search
+      v-model:value="fundValue"
+      placeholder="查询基金"
+      enter-button
+      @search="onSearchFund"
+    />
     </div>
-    <a-table
-      :row-selection="{
-        selectedRowKeys: selectedRowKeys,
-        onChange: onSelectChange,
-      }"
-      :columns="columns"
-      :data-source="list"
-      :scroll="{ x: 1400 }"
-    >
-    </a-table>
+     <div class="search_manager">
+    <a-input-search
+      v-model:value="managerValue"
+      placeholder="查询基金经理"
+      enter-button
+      @search="onSearchManager"
+    />
+    </div>
   </div>
+  <div class="button_container">
+    <div class="button">
+    <a-button
+      type="primary"
+      :disabled="!hasSelected"
+      :loading="loading"
+      @click="handleClick"
+    >
+      确定
+    </a-button>
+    </div>
+    
+    <div class="text">
+      <template v-if="hasSelected">
+        {{ `选择了 ${selectedRowKeys.length} 支基金` }}
+      </template>
+    </div>
+    
+  </div>
+  <a-table
+    :row-selection="{
+      selectedRowKeys: selectedRowKeys,
+      onChange: onSelectChange,
+    }"
+    :columns="columns"
+    :data-source="list"
+    :scroll="{ x: 1400 }"
+  >
+  </a-table>
 </template>
 <script>
-
-
+import { message } from "ant-design-vue";
 export default {
   name: "SortedList",
   props: {
@@ -48,7 +66,7 @@ export default {
         },
         {
           title: "基金代码",
-          width: 80,
+          width: 90,
           dataIndex: "id",
           fixed: "left",
         },
@@ -89,12 +107,12 @@ export default {
         },
         {
           title: "夏普率",
-          width: 70,
+          width: 80,
           dataIndex: "sharp_ratio",
         },
         {
           title: "最大回撤率",
-          width: 100,
+          width: 110,
           dataIndex: "max_drop_down",
         },
         {
@@ -104,7 +122,7 @@ export default {
         },
         {
           title: "nav_return",
-          width: 90,
+          width: 100,
           dataIndex: "nav_return",
         },
         {
@@ -114,7 +132,7 @@ export default {
         },
         {
           title: "instl_weight",
-          width: 100,
+          width: 110,
           dataIndex: "instl_weight",
         },
         {
@@ -124,7 +142,9 @@ export default {
       ],
       selectedRowKeys: [],
       loading: false,
-      fundId:[]
+      fundId: [],
+      fundValue: "",
+      managerValue:""
     };
   },
   components: {},
@@ -133,15 +153,28 @@ export default {
       return this.selectedRowKeys.length > 0;
     },
   },
+  emits:["updateFundId"],
   methods: {
+    onSearchFund(fundValue) {
+      console.log("查找的基金ID：", fundValue,this.fundValue);
+      
+    },
+    onSearchManager(managerValue) {
+      console.log("查找的基金经理ID",managerValue,this.managerValue);
+    },
     onSelectChange(selectedRowKeys) {
       //点击之后的反应
-      //   console.log("selectedRowKeys changed: ", selectedRowKeys);
-      this.selectedRowKeys = selectedRowKeys;
+      console.log("selectedRowKeys changed: ", selectedRowKeys);
+      if (selectedRowKeys.length <= 5) {
+        this.selectedRowKeys = selectedRowKeys;
+      } else {
+        // window.alert("基金比较不宜多于5个~");
+        message.error("基金比较不宜多于5个~", 2);
+      }
     },
     handleClick() {
       this.loading = true;
-      // console.log("选择的基金序号", this.selectedRowKeys);
+      console.log("选择的基金序号", this.selectedRowKeys);
 
       // let fundId = [];
       //选择的基金id
@@ -153,7 +186,6 @@ export default {
 
       //点击后——>向上传递勾选的ID
       this.$emit("updateFundId", this.fundId);
-      
 
       //得到基金散点图和基金经理信息
       // DataService.post(
@@ -173,13 +205,36 @@ export default {
   mounted() {},
 };
 </script>
+<style scoped>
+.search_container{
+  
+  display: flex;
+  flex-direction: row;
+  justify-content:space-around;
+  /* margin-top:10px; */
+}
+.search_fund{
+  width:50%;
+}
+.search_manager{
+  width:50%;
+}
+.button_container{
+  display: flex;
+  flex-direction: row;
+  justify-content:center;
+  align-items:center;
+  height:50px;
+}
 
-<style >
+.text{
+  margin-left:10px;
+  font-size:15px;
+}
 .ant-table td {
   font-size: 12px;
 }
 .ant-table th {
   font-size: 12px;
 }
-
 </style>

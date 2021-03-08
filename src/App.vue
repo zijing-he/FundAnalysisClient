@@ -13,7 +13,11 @@
         <OverViewLayout :fundsData="fundsData" />
       </a-row>
       <a-row>
-        <FundProfileLayout :fundsID="needFundsID" :start_date="startDate" :end_date="endDate"/>
+        <FundProfileLayout
+          :fundsID="needFundsID"
+          :start_date="startDate"
+          :end_date="endDate"
+        />
       </a-row>
     </a-col>
   </a-row>
@@ -47,7 +51,7 @@ export default {
       startDate: undefined,
       endDate: undefined,
       userWeight: null,
-      needFundsID:null,
+      needFundsID: null,
     };
   },
   computed: {},
@@ -57,7 +61,6 @@ export default {
         "get_fund_time_border",
         { f_ids: this.fundsID },
         (data) => {
-          console.log("得到的时间",data);
           this.startDate = data["start_date"].toString();
           this.endDate = data["end_date"].toString();
           this.needFundsID = this.fundsID;
@@ -85,19 +88,18 @@ export default {
     },
     handleUpdateTimeBoundary(start, end) {
       console.log("起始点：", start, end);
-      this.startDate = start;  //start发生变化，FundProfileLayout里的start也会改变，导致getviewFunds改变
+      this.startDate = start; //start发生变化，FundProfileLayout里的start也会改变，导致getviewFunds改变
       this.endDate = end;
-      if(this.fundsID && this.userWeight){
+      if (this.fundsID && this.userWeight) {
         this.getFundManagers();
-      } 
+      }
     },
     handleUpdateWeightsAndId(fundsID, userWeight) {
       this.fundsID = fundsID;
       this.userWeight = userWeight;
-      if (this.startDate == undefined && this.endDate == undefined) {
+      if (!this.startDate && !this.endDate) {
         this.getTimeBoundary();
-      }
-      else{
+      } else {
         this.getFundManagers();
       }
     },
