@@ -57,6 +57,7 @@ export default {
         "get_fund_time_border",
         { f_ids: this.fundsID },
         (data) => {
+          console.log("得到的时间",data);
           this.startDate = data["start_date"].toString();
           this.endDate = data["end_date"].toString();
           this.needFundsID = this.fundsID;
