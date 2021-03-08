@@ -12,6 +12,7 @@
         <fundBubbleChart
           :quarterFundData="val"
           :fundManagers="managers"
+          :mangerId="mangerId"
           :date="key"
           :key="key"
           v-for="(val, key) in funds"
@@ -19,7 +20,10 @@
         </fundBubbleChart>
       </div>
       <div class="manager_bubble_chart_container" v-if="!isRequesting">
-        <managerBubbleChart :fundManagers="managers"/>
+        <managerBubbleChart
+          :fundManagers="managers"
+          v-on:showManager="handleShowManager"
+        />
       </div>
     </div>
   </div>
@@ -39,58 +43,26 @@ export default {
       componentName: fundBubbleChart,
       managers: null,
       funds: null,
+      mangerId: undefined,
       isRequesting: true,
     };
   },
   components: {
     fundBubbleChart,
-    managerBubbleChart
+    managerBubbleChart,
   },
   watch: {
     fundsData: function () {
+      this.isRequesting = true;
       this.managers = this.fundsData.managers;
       this.funds = this.fundsData.funds;
       this.isRequesting = false;
     },
   },
   methods: {
-    updateData() {
-      //获取基金id list
-      // DataService.post("get_fund_ids", {}, (data) => {
-      //   this.fund_id = data.fund_ids.slice(0,5);
-      //   //返还基金气泡图信息（参数数组最少4个id)
-      //   DataService.post(
-      //     "get_manager_fund_local",
-      //     { f_ids: this.fund_id },
-      //     (info) => {
-      //       this.data = info;
-      //     }
-      //   );
-      // });
-      // //返还基金起止时间（参数数组最少4个id)
-      // DataService.post(
-      //   "get_fund_time_border",
-      //   { f_ids: ["112002", "481006", "005270", "590006"] },
-      //   (data) => {
-      //     console.log(data);
-      //   }
-      // );
-      //  //返还基金画像的信息（参数数组最少4个id)
-      // DataService.post(
-      //   "get_view_funds",
-      //   {
-      //     f_ids: ["112002", "481006", "005270", "590006"],
-      //     start_date: "20060816",
-      //     end_date: "20191231",
-      //   },
-      //   (data) => {
-      //     console.log(data);
-      //   }
-      // );
+    handleShowManager(mangerId) {
+      this.mangerId = mangerId;
     },
-  },
-  created() {
-    // this.updateData();
   },
   mounted() {},
 };
@@ -109,7 +81,7 @@ h4 {
 }
 .inner_container {
   display: flex;
-justify-content: center;
+  justify-content: center;
 }
 .fund_bubble_chart_outer_container {
   /* position: absolute; */

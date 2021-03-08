@@ -23,8 +23,14 @@ export default {
       managerId: [],
     };
   },
+  watch: {
+    fundManagers: function (value) {
+      this.data = value;
+      this.renderUpdate();
+    },
+  },
   mounted: function () {
-    console.log("我康康基金经理：",this.fundManagers);
+    console.log("我康康基金经理：", this.fundManagers);
     this.renderInit();
     this.renderUpdate();
   },
@@ -58,7 +64,6 @@ export default {
   },
   methods: {
     renderInit() {
-      this.managerId = Object.keys(this.data);
       this.svg = d3
         .select("#manager_bubble_chart")
         .append("svg")
@@ -69,6 +74,8 @@ export default {
         .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
     },
     renderUpdate() {
+      this.managerId = Object.keys(this.data);
+      console.log(this.managerId);
       let tooltip = d3
         .select("#manager_bubble_chart")
         .append("div")
@@ -84,12 +91,16 @@ export default {
         .style("color", "white");
 
       let showTooltip = (event, d) => {
-        console.log(event);
-        console.log(d);
-        tooltip.transition().duration(200);
         tooltip
           .style("visibility", "visible")
-          .html("基金经理：" + this.data[d].cn_name + "<br /> 经理ID：" + d +  "<br /> 任职天数：" + this.data[d].days)
+          .html(
+            "基金经理：" +
+              this.data[d].cn_name +
+              "<br /> 经理ID：" +
+              d +
+              "<br /> 任职天数：" +
+              this.data[d].days
+          )
           .style("left", event.pageX - 520 + "px")
           .style("top", event.pageY - 70 + "px");
       };
@@ -104,6 +115,12 @@ export default {
         tooltip.style("visibility", "hidden");
       };
 
+      let clickTooltip = (event, d) => {
+        console.log(d);
+        this.$emit("showManager", d);
+      };
+
+      this.svg.selectAll("circle").remove();
       this.svg
         .append("g")
         .selectAll("dot")
@@ -120,7 +137,8 @@ export default {
         .style(":hover", "stroke: black")
         .on("mouseover", showTooltip)
         .on("mousemove", moveTooltip)
-        .on("mouseleave", hideTooltip);
+        .on("mouseleave", hideTooltip)
+        .on("click", clickTooltip);
     },
   },
 };

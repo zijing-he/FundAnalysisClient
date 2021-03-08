@@ -17,10 +17,14 @@ export default {
     date: String,
     quarterFundData: Object,
     fundManagers: Object,
+    mangerId: String,
   },
   components: {},
   watch: {
     quarterFundData: function () {
+      this.renderUpdate();
+    },
+    mangerId: function () {
       this.renderUpdate();
     },
   },
@@ -33,7 +37,7 @@ export default {
       data: null,
       data_values: [],
       fund_id: [],
-      managers: [],
+      managersKey: [],
     };
   },
   mounted: function () {
@@ -61,17 +65,6 @@ export default {
         .range([this.innerHeight, 0])
         .nice();
     },
-    colorScale() {
-      return d3
-        .scaleOrdinal()
-        .domain(this.managers)
-        .range([
-          ...d3.schemeCategory10,
-          ...d3.schemePaired,
-          ...d3.schemeSet1,
-          ...d3.schemeTableau10,
-        ]);
-    },
   },
   methods: {
     renderInit() {
@@ -90,11 +83,11 @@ export default {
     renderUpdate() {
       this.data = this.quarterFundData;
       this.data_values = Object.values(this.quarterFundData);
-      this.fund_id = Object.keys(this.quarterFundData);
+      // this.fund_id = Object.keys(this.quarterFundData);
       // this.data_values.forEach((d) => {
       //   this.managers.push(d.manager_id[0]);
       // });
-      this.managers = Object.keys(this.fundManagers);
+      // this.managersKey = Object.keys(this.fundManagers);
       this.svg.selectAll("circle").remove();
       this.svg
         .append("g")
@@ -106,8 +99,23 @@ export default {
         .attr("cx", (d) => this.xScale(d.loc[0]))
         .attr("cy", (d) => this.yScale(d.loc[1]))
         .attr("r", 4)
-        // .style("fill", (d) => this.colorScale(d.manager_ids[0]))
-        .style("fill", "#B6B6B6")
+        .style("fill", (d, i) => {
+          if (this.mangerId) {
+            let flag = false;
+            d.manager_ids.forEach((dd) => {
+              if (dd == this.mangerId) {
+                flag = true;
+              }
+            });
+            if (flag) {
+              return this.fundManagers[this.mangerId].color;
+            } else {
+              return "#B6B6B6";
+            }
+          } else {
+            return "#B6B6B6";
+          }
+        })
         .style("stroke", (d) =>
           d.new == true || d.delete == true ? "black" : "none"
         )
