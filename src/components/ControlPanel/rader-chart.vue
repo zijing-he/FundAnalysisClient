@@ -1,6 +1,6 @@
 <template>
   <div id="market_raderchart"></div>
-  
+  <div class="update_value"></div>
 </template>
 
 <script>
@@ -371,10 +371,33 @@ export default {
             .on("drag", move)
             .on("end", dragended)
         );
+
+      let toolTip = this.svg
+        .append("g")
+        .attr("id", "toolTip")
+
+        .attr("width", "30px")
+        .attr("height", "30px")
+        .append("div")
+        .style("display", "block")
+        .style("text-align", "center")
+        .style("margin-top", "13px")
+        .text("Drag a Point to Edit");
     },
   },
 };
 </script>
 
 <style scoped>
+.update_value {
+  position: absolute;
+  left: 180px;
+  top: 89px;
+  width: 45px;
+  height: 45px;
+  background-color: #a8a8a8;
+  color: white;
+  border-radius: 50%;
+  opacity: 1;
+}
 </style>

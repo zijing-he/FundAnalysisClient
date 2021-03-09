@@ -38,12 +38,6 @@ export default {
     OverViewLayout,
     FundProfileLayout,
   },
-  // provide() {
-  //   return {
-  //     getStart: () => this.startDate,
-  //     getEnd: () => this.endDate,
-  //   };
-  // },
   data() {
     return {
       fundsData: null,
