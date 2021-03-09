@@ -2,13 +2,6 @@
   <div id="invest_style_box" class="invest_style_box">
     <div class="text" id="text">{{ boxText }}</div>
     <div class="content" id="content">
-      <!-- <div class="icons" id="icons">
-        <div :key="index" :style="icon.style" v-for="(icon, index) in icons">
-          <svg class="icon" aria-hidden="true">
-            <use :xlink:href="icon.id"></use>
-          </svg>
-        </div>
-      </div> -->
       <div class="center" id="center"></div>
       <div class="left" id="left"></div>
       <div class="top" id="top"></div>
@@ -42,9 +35,6 @@ export default {
   props: {
     boxId: String,
     boxText: String,
-    innerRadius: Number,
-    outerRadius: Number,
-    datum: Object,
     holdingData: Object,
     // 2.26
     max_drop_downData: Number,
@@ -69,28 +59,7 @@ export default {
       svg: null,
       margin: { top: 10, right: 20, bottom: 20, left: 20 },
       width: 200,
-      // 2.26
-      // width: 304,
       height: 200,
-      data: null,
-      largeRadius: 47,
-      smallRadius: 13,
-      icons: [],
-      // 2.26
-      // barData: {
-      //   drop: this.dropData,
-      //   risk: this.riskData,
-      //   stock: this.stockData,
-      //   bond: this.bondData,
-      //   cash: this.cashData,
-      //   other: this.otherData,
-      //   size: this.sizeData,
-      //   alpha: this.alphaData,
-      //   beta: this.betaData,
-      //   sharp_ratio: this.sharpData,
-      //   information_ratio: this.infoData,
-      // },
-      // barMargin: { top: 20, bottom: 20, left: 10, right: 0 },
       // version 4
       centerSvg: null,
       leftSvg: null,
@@ -106,34 +75,16 @@ export default {
   },
 
   mounted: function() {
-    this.largeRadius = this.innerRadius - 3;
-    this.smallRadius = (this.largeRadius * 13) / 47;
     this.renderInit();
     this.renderUpdate();
   },
 
   computed: {
-    topMargin() {
-      return (this.height - 2 * this.outerRadius) / 2;
-    },
-    // 2.26
-    // xScale() {
-    //   return d3
-    //     .scaleBand()
-    //     .range([this.barMargin.left, this.contentWidth])
-    //     .domain(d3.range(dataNames.length))
-    //     .padding(0.1);
-    // },
-    // yScale() {
-    //   return d3
-    //     .scaleLinear()
-    //     .range([this.height - this.barMargin.bottom, this.barMargin.top]);
-    // },
     treemap() {
       return d3
         .treemap()
         .tile(d3.treemapSquarify)
-        .size([80, 80])
+        .size([(80 * this.boxWidth) / 200, (80 * this.boxWidth) / 200])
         .padding(1)
         .round(true);
     },
@@ -175,227 +126,80 @@ export default {
       d3.select("#invest_style_box")
         .attr("id", "invest_style_box_" + this.boxId)
         .style("width", this.boxWidth + "px")
+        .style("height", (220 * this.boxWidth) / 200 + "px")
         .style("margin-left", this.boxGap + "px");
       d3.select("#text")
         .attr("id", "text_" + this.boxId)
-        .style("width", this.contentWidth + "px");
+        .style("width", this.contentWidth + "px")
+        .style("height", (20 * this.boxWidth) / 200 + "px");
       d3.select("#content")
         .attr("id", "content_" + this.boxId)
-        .style("width", this.contentWidth + "px");
-      d3.select("#center").attr("id", "center_" + this.boxId);
-      d3.select("#left").attr("id", "left_" + this.boxId);
-      d3.select("#top").attr("id", "top_" + this.boxId);
-      d3.select("#right").attr("id", "right_" + this.boxId);
-      d3.select("#bottom").attr("id", "bottom_" + this.boxId);
+        .style("width", this.contentWidth + "px")
+        .style("height", this.contentWidth + "px")
+        .style("top", (20 * this.boxWidth) / 200 + "px");
+      d3.select("#center")
+        .attr("id", "center_" + this.boxId)
+        .style("width", (80 * this.boxWidth) / 200 + "px")
+        .style("height", (80 * this.boxWidth) / 200 + "px")
+        .style("left", (60 * this.boxWidth) / 200 + "px")
+        .style("top", (60 * this.boxWidth) / 200 + "px");
+      d3.select("#left")
+        .attr("id", "left_" + this.boxId)
+        .style("width", (60 * this.boxWidth) / 200 + "px")
+        .style("height", this.boxWidth + "px");
+      d3.select("#top")
+        .attr("id", "top_" + this.boxId)
+        .style("height", (60 * this.boxWidth) / 200 + "px")
+        .style("width", this.boxWidth + "px");
+      d3.select("#right")
+        .attr("id", "right_" + this.boxId)
+        .style("width", (60 * this.boxWidth) / 200 + "px")
+        .style("height", this.boxWidth + "px")
+        .style("left", (140 * this.boxWidth) / 200 + "px");
+      d3.select("#bottom")
+        .attr("id", "bottom_" + this.boxId)
+        .style("width", this.boxWidth + "px")
+        .style("height", (60 * this.boxWidth) / 200 + "px")
+        .style("top", (140 * this.boxWidth) / 200 + "px");
       d3.select("#tooltip").attr("id", "tooltip_" + this.boxId);
       d3.select("#icons").attr("id", "icons_" + this.boxId);
       this.centerSvg = d3
         .select("#center_" + this.boxId)
         .append("svg")
-        .attr("width", 80)
-        .attr("height", 80)
-        .attr("viewBox", [0, 0, 80, 80]);
+        .attr("width", (80 * this.boxWidth) / 200)
+        .attr("height", (80 * this.boxWidth) / 200)
+        .attr("viewBox", [
+          0,
+          0,
+          (80 * this.boxWidth) / 200,
+          (80 * this.boxWidth) / 200,
+        ]);
       this.leftSvg = d3
         .select("#left_" + this.boxId)
         .append("svg")
-        .attr("width", 60)
-        .attr("height", 200)
-        .attr("viewBox", [0, 0, 60, 200]);
+        .attr("width", (60 * this.boxWidth) / 200)
+        .attr("height", this.boxWidth)
+        .attr("viewBox", [0, 0, (60 * this.boxWidth) / 200, this.boxWidth]);
       this.topSvg = d3
         .select("#top_" + this.boxId)
         .append("svg")
-        .attr("width", 200)
-        .attr("height", 60)
-        .attr("viewBox", [0, 0, 200, 60]);
+        .attr("width", this.boxWidth)
+        .attr("height", (60 * this.boxWidth) / 200)
+        .attr("viewBox", [0, 0, this.boxWidth, (60 * this.boxWidth) / 200]);
       this.rightSvg = d3
         .select("#right_" + this.boxId)
         .append("svg")
-        .attr("width", 60)
-        .attr("height", 200)
-        .attr("viewBox", [0, 0, 60, 200]);
+        .attr("width", (60 * this.boxWidth) / 200)
+        .attr("height", this.boxWidth)
+        .attr("viewBox", [0, 0, (60 * this.boxWidth) / 200, this.boxWidth]);
       this.bottomSvg = d3
         .select("#bottom_" + this.boxId)
         .append("svg")
-        .attr("width", 200)
-        .attr("height", 60)
-        .attr("viewBox", [0, 0, 200, 60]);
+        .attr("width", this.boxWidth)
+        .attr("height", (60 * this.boxWidth) / 200)
+        .attr("viewBox", [0, 0, this.boxWidth, (60 * this.boxWidth) / 200]);
     },
     renderUpdate() {
-      // version 1
-      // 占比
-      // gRatio
-      //   .append("rect")
-      //   .attr("x", 0)
-      //   .attr("y", 0)
-      //   .attr("width", 15)
-      //   .attr("height", 60)
-      //   .attr("fill", this.ratioColors.org)
-      // gRatio
-      //   .append("rect")
-      //   .attr("x", 0)
-      //   .attr("y", 60)
-      //   .attr("width", 15)
-      //   .attr("height", 70)
-      //   .attr("fill", this.ratioColors.person);
-
-      // 九宫格
-      // const gScale = this.svg.append("g").attr("transform", "translate(40, 20)");
-      // gScale
-      //   .append("rect")
-      //   .attr("x", 0)
-      //   .attr("y", 0)
-      //   .attr("width", 111)
-      //   .attr("height", 111)
-      //   .attr("stroke", "black")
-      //   .attr("fill", "white");
-      // gScale
-      //   .append("path")
-      //   .attr("d", "M 0 37 H 111")
-      //   .attr("stroke", "black");
-      // gScale
-      //   .append("path")
-      //   .attr("d", "M 0 74 H 111")
-      //   .attr("stroke", "black");
-      // gScale
-      //   .append("path")
-      //   .attr("d", "M 37 0 V 111")
-      //   .attr("stroke", "black");
-      // gScale
-      //   .append("path")
-      //   .attr("d", "M 74 0 V 111")
-      //   .attr("stroke", "black");
-
-      // 填色
-      // gScale.append("rect")
-      //   .attr("x", 0)
-      //   .attr("y", 0)
-      //   .attr("width", 37)
-      //   .attr("height", 37)
-      //   .attr("stroke", "black")
-      //   .attr("fill", this.rectColors.high);
-      // gScale.append("rect")
-      //   .attr("x", 37)
-      //   .attr("y", 0)
-      //   .attr("width", 37)
-      //   .attr("height", 37)
-      //   .attr("stroke", "black")
-      //   .attr("fill", this.rectColors.low);
-      // gScale.append("rect")
-      //   .attr("x", 0)
-      //   .attr("y", 37)
-      //   .attr("width", 37)
-      //   .attr("height", 37)
-      //   .attr("stroke", "black")
-      //   .attr("fill", this.rectColors.mid);
-
-      // version 2
-      // // 占比
-      // // eslint-disable-next-line no-prototype-builtins
-      // if (this.datum.hasOwnProperty("instl_weight") && this.datum.hasOwnProperty("retail_weight")) {
-      //   const instlWeight = this.datum["instl_weight"];
-      //   const gRatioInstl = this.svg.append("g").attr("transform", `translate(76, ${this.topMargin})`);
-      //   const degree = instlWeight * 180;
-      //   const rad = degree * Math.PI / 180;
-      //   let x1 = -this.outerRadius * Math.sin(rad).toFixed(2);
-      //   let y1 = (this.outerRadius - this.outerRadius * Math.cos(rad)).toFixed(2);
-      //   let x2 = -this.innerRadius * Math.sin(rad).toFixed(2);
-      //   let y2 = (this.outerRadius - this.innerRadius * Math.cos(rad)).toFixed(2);
-      //   let x3 = 0;
-      //   let y3 = this.outerRadius - this.innerRadius;
-      //   const d1 = ['M', 0, 0,
-      //               'A', this.outerRadius, this.outerRadius, 0, 0, 0, x1, y1,
-      //               'L', x2, y2,
-      //               'A', this.innerRadius, this.innerRadius, 0, 0, 1, x3, y3,
-      //               'L', 0, 0];
-      //   gRatioInstl
-      //     .append("path")
-      //     .attr("d", d1.join(' '))
-      //     .attr("fill", this.ratioColors.org);
-      //   const gRatioRetail = this.svg.append("g").attr("transform", `translate(76, ${this.topMargin + 2 * this.outerRadius})`);
-      //   y1 -= 2 * this.outerRadius;
-      //   y2 -= 2 * this.outerRadius;
-      //   y3 = -y3;
-      //   const d2 = ['M', 0, 0,
-      //               'A', this.outerRadius, this.outerRadius, 0, 0, 1, x1, y1,
-      //               'L', x2, y2,
-      //               'A', this.innerRadius, this.innerRadius, 0, 0, 0, x3, y3,
-      //               'L', 0, 0];
-      //   gRatioRetail
-      //     .append("path")
-      //     .attr("d", d2.join(' '))
-      //     .attr("fill", this.ratioColors.person);
-      // }
-
-      // // 圆
-      // const gCircle = this.svg.append("g").attr("transform", `translate(76, ${this.topMargin + this.outerRadius - this.largeRadius})`);
-      // gCircle
-      //   .append("circle")
-      //   .attr("cx", 0)
-      //   .attr("cy", this.largeRadius)
-      //   .attr("r", this.largeRadius)
-      //   .attr("stroke", "black")
-      //   .attr("fill", "white");
-      // const tmp = (this.largeRadius - this.smallRadius) * Math.cos(Math.PI / 4).toFixed(2);
-      // const xPos = [0, this.smallRadius - this.largeRadius, this.largeRadius - this.smallRadius, 0, 0,
-      //               -tmp, tmp, -tmp, tmp];
-      // const yPos = [this.largeRadius, this.largeRadius, this.largeRadius, this.smallRadius, this.largeRadius * 2 - this.smallRadius,
-      //               this.largeRadius - tmp, this.largeRadius - tmp, this.largeRadius + tmp, this.largeRadius + tmp];
-      // for (let i = 0; i < xPos.length; i++) {
-      //   gCircle
-      //     .append("circle")
-      //     .attr("cx", xPos[i])
-      //     .attr("cy", yPos[i])
-      //     .attr("r", this.smallRadius)
-      //     .attr("stroke", "black")
-      //     .attr("fill", "white")
-      //     .attr("id", "circle_" + i);
-      // }
-      // d3.selectAll("#circle_5").attr("fill", this.circleColors.high);
-
-      // // 图标
-      // let sum = d3.sum(this.holdingDataSorted);
-      // let totalRad = Math.PI;
-      // let curRad = 0;
-      // let curSum = 0;
-      // this.holdingDataSorted.forEach((d, i) => {
-      //   curSum += d;
-      //   curRad = curSum / sum * totalRad;
-      //   let leftMargin = this.largeRadius * Math.sin(curRad);
-      //   let topMargin = Math.abs(this.largeRadius * Math.cos(curRad));
-      //   topMargin = (curRad < Math.PI / 2) ? (this.outerRadius - topMargin) : (this.outerRadius + topMargin);
-      //   let boxWidth = this.outerRadius - this.innerRadius + 2;
-      //   topMargin = (curRad < Math.PI / 2) ? (topMargin - boxWidth + this.topMargin) : (topMargin + this.topMargin);
-      //   leftMargin = (curRad < Math.PI / 2) ? (leftMargin + 5) : leftMargin;
-      //   let styleObject = {
-      //     position: "absolute",
-      //     top: topMargin + "px",
-      //     left: leftMargin + "px",
-      //     width: boxWidth + "px",
-      //     height: boxWidth + "px",
-      //   };
-      //   this.icons.push({
-      //     id: iconMap[this.holdingDataKeys[i]],
-      //     style: styleObject,
-      //   });
-      // });
-
-      // 2.26 version 3
-      // const gRects = this.svg.append("g");
-      // dataNames.forEach((d, i) => {
-      //   // this.yScale.domain(d3.extent(this.barData[d]));
-      //   this.yScale.domain([0, 1]);
-      //   gRects
-      //     .append("rect")
-      //     .attr("x", this.xScale(i))
-      //     .attr("y", this.yScale(this.barData[d][this.index]))
-      //     .attr("width", this.xScale.bandwidth())
-      //     .attr("height", this.yScale(0) - this.yScale(this.barData[d][this.index]))
-      //     .attr("fill", "steelblue");
-      // });
-      // this.svg.append("g")
-      //   .attr("transform", "translate(0, 111)")
-      //   .call(d3.axisBottom(this.xScale).tickFormat(i => dataNames[i]).tickSizeOuter(0));
-
       // version 4
       // treemap
       const root = this.treemap(
@@ -421,7 +225,9 @@ export default {
       let that = this;
       // tooltip
       // top
-      this.yScale.domain([0, 1]).range([60, this.barTopMargin]);
+      this.yScale
+        .domain([0, 1])
+        .range([(60 * this.boxWidth) / 200, this.barTopMargin]);
       const topDefs = this.topSvg.append("defs");
       topDefs
         .append("pattern")
@@ -446,7 +252,7 @@ export default {
         .attr("fill", `url(#top_pattern_stripe_${this.boxId})`);
       const gRectsTop = this.topSvg
         .append("g")
-        .attr("transform", "translate(60, 0)");
+        .attr("transform", `translate(${(60 * this.boxWidth) / 200}, 0)`);
       gRectsTop
         .append("rect")
         .attr("id", "nav_return-" + this.boxId)
@@ -457,14 +263,16 @@ export default {
             ? `url(#top_mask_stripe_${this.boxId})`
             : "none"
         )
-        .attr("x", 7)
+        .attr("x", (7 * this.boxWidth) / 200)
         .attr("y", this.yScale(Math.abs(this.nav_returnData.norm)))
-        .attr("width", 30)
+        .attr("width", (30 * this.boxWidth) / 200)
         .attr(
           "height",
           this.yScale(0) - this.yScale(Math.abs(this.nav_returnData.norm))
         );
-      this.yScale.domain([0, 1.1]).range([60, this.barTopMargin]);
+      this.yScale
+        .domain([0, 1.1])
+        .range([(60 * this.boxWidth) / 200, this.barTopMargin]);
       gRectsTop
         .append("rect")
         .attr("id", "risk-" + this.boxId)
@@ -475,29 +283,36 @@ export default {
             ? `url(#top_mask_stripe_${this.boxId})`
             : "none"
         )
-        .attr("x", 43)
+        .attr("x", (43 * this.boxWidth) / 200)
         .attr("y", this.yScale(Math.abs(this.riskData.norm)))
-        .attr("width", 30)
+        .attr("width", (30 * this.boxWidth) / 200)
         .attr(
           "height",
           this.yScale(0) - this.yScale(Math.abs(this.riskData.norm))
         );
-      this.yScale.domain([0, 1]).range([60, this.barTopMargin]);
+      this.yScale
+        .domain([0, 1])
+        .range([(60 * this.boxWidth) / 200, this.barTopMargin]);
       if (Math.abs(this.nav_returnData.norm) > Math.abs(this.hs300Data)) {
         gRectsTop
           .append("path")
           .attr("stroke-dasharray", "2, 2")
           .attr("stroke", "black")
-          .attr("d", `M 7 ${this.yScale(Math.abs(this.hs300Data))} H 37`);
+          .attr(
+            "d",
+            `M ${(7 * this.boxWidth) / 200} ${this.yScale(
+              Math.abs(this.hs300Data)
+            )} H ${(37 * this.boxWidth) / 200}`
+          );
       } else {
         gRectsTop
           .append("rect")
           .attr("fill", "none")
           .attr("stroke-dasharray", "2, 2")
           .attr("stroke", "black")
-          .attr("x", 7)
+          .attr("x", (7 * this.boxWidth) / 200)
           .attr("y", this.yScale(Math.abs(this.hs300Data)))
-          .attr("width", 30)
+          .attr("width", (30 * this.boxWidth) / 200)
           .attr(
             "height",
             this.yScale(Math.abs(this.nav_returnData.norm)) -
@@ -505,7 +320,9 @@ export default {
           );
       }
       // right
-      this.yScale.domain([0, 1]).range([0, 60 - this.barTopMargin]);
+      this.yScale
+        .domain([0, 1])
+        .range([0, ((60 - this.barTopMargin) * this.boxWidth) / 200]);
       const rightDefs = this.rightSvg.append("defs");
       rightDefs
         .append("pattern")
@@ -530,7 +347,7 @@ export default {
         .attr("fill", `url(#right_pattern_stripe_${this.boxId})`);
       const gRectsRight = this.rightSvg
         .append("g")
-        .attr("transform", "translate(0, 60)");
+        .attr("transform", `translate(0, ${(60 * this.boxWidth) / 200})`);
       gRectsRight
         .append("rect")
         .attr("id", "sharp_ratio-" + this.boxId)
@@ -542,12 +359,12 @@ export default {
             : "none"
         )
         .attr("x", 0)
-        .attr("y", 7)
+        .attr("y", (7 * this.boxWidth) / 200)
         .attr(
           "width",
           this.yScale(Math.abs(this.sharp_ratioData.norm)) - this.yScale(0)
         )
-        .attr("height", 30);
+        .attr("height", (30 * this.boxWidth) / 200);
       gRectsRight
         .append("rect")
         .attr("id", "information_ratio-" + this.boxId)
@@ -559,14 +376,17 @@ export default {
             : "none"
         )
         .attr("x", 0)
-        .attr("y", 43)
+        .attr("y", (43 * this.boxWidth) / 200)
         .attr(
           "width",
-          this.yScale(Math.abs(this.information_ratioData.norm)) - this.yScale(0)
+          this.yScale(Math.abs(this.information_ratioData.norm)) -
+            this.yScale(0)
         )
-        .attr("height", 30);
+        .attr("height", (30 * this.boxWidth) / 200);
       // bottom
-      this.yScale.domain([0, 1]).range([0, 60 - this.barTopMargin]);
+      this.yScale
+        .domain([0, 1])
+        .range([0, ((60 - this.barTopMargin) * this.boxWidth) / 200]);
       const bottomDefs = this.bottomSvg.append("defs");
       bottomDefs
         .append("pattern")
@@ -591,7 +411,7 @@ export default {
         .attr("fill", `url(#bottom_pattern_stripe_${this.boxId})`);
       const gRectsBottom = this.bottomSvg
         .append("g")
-        .attr("transform", "translate(60, 0)");
+        .attr("transform", `translate(${(60 * this.boxWidth) / 200}, 0)`);
       gRectsBottom
         .append("rect")
         .attr("id", "stock-" + this.boxId)
@@ -600,9 +420,9 @@ export default {
           "mask",
           this.stockData < 0 ? `url(#bottom_mask_stripe_${this.boxId})` : "none"
         )
-        .attr("x", 4)
+        .attr("x", (4 * this.boxWidth) / 200)
         .attr("y", 0)
-        .attr("width", 15)
+        .attr("width", (15 * this.boxWidth) / 200)
         .attr("height", this.yScale(Math.abs(this.stockData)) - this.yScale(0));
       gRectsBottom
         .append("rect")
@@ -612,9 +432,9 @@ export default {
           "mask",
           this.bondData < 0 ? `url(#bottom_mask_stripe_${this.boxId})` : "none"
         )
-        .attr("x", 23)
+        .attr("x", (23 * this.boxWidth) / 200)
         .attr("y", 0)
-        .attr("width", 15)
+        .attr("width", (15 * this.boxWidth) / 200)
         .attr("height", this.yScale(Math.abs(this.bondData)) - this.yScale(0));
       gRectsBottom
         .append("rect")
@@ -624,9 +444,9 @@ export default {
           "mask",
           this.cashData < 0 ? `url(#bottom_mask_stripe_${this.boxId})` : "none"
         )
-        .attr("x", 42)
+        .attr("x", (42 * this.boxWidth) / 200)
         .attr("y", 0)
-        .attr("width", 15)
+        .attr("width", (15 * this.boxWidth) / 200)
         .attr("height", this.yScale(Math.abs(this.cashData)) - this.yScale(0));
       gRectsBottom
         .append("rect")
@@ -636,12 +456,17 @@ export default {
           "mask",
           this.otherData < 0 ? `url(#bottom_mask_stripe_${this.boxId})` : "none"
         )
-        .attr("x", 61)
+        .attr("x", (61 * this.boxWidth) / 200)
         .attr("y", 0)
-        .attr("width", 15)
+        .attr("width", (15 * this.boxWidth) / 200)
         .attr("height", this.yScale(Math.abs(this.otherData)) - this.yScale(0));
       // left
-      this.yScale.domain([0, 1]).range([60, this.barTopMargin]);
+      this.yScale
+        .domain([0, 1])
+        .range([
+          (60 * this.boxWidth) / 200,
+          (this.barTopMargin * this.boxWidth) / 200,
+        ]);
       const leftDefs = this.leftSvg.append("defs");
       leftDefs
         .append("pattern")
@@ -666,7 +491,7 @@ export default {
         .attr("fill", `url(#left_pattern_stripe_${this.boxId})`);
       const gRectsLeft = this.leftSvg
         .append("g")
-        .attr("transform", "translate(0, 60)");
+        .attr("transform", `translate(0, ${(60 * this.boxWidth) / 200})`);
       gRectsLeft
         .append("rect")
         .attr("id", "alpha-" + this.boxId)
@@ -678,12 +503,12 @@ export default {
             : "none"
         )
         .attr("x", this.yScale(Math.abs(this.alphaData.norm)))
-        .attr("y", 7)
+        .attr("y", (7 * this.boxWidth) / 200)
         .attr(
           "width",
           this.yScale(0) - this.yScale(Math.abs(this.alphaData.norm))
         )
-        .attr("height", 30);
+        .attr("height", (30 * this.boxWidth) / 200);
       gRectsLeft
         .append("rect")
         .attr("id", "beta-" + this.boxId)
@@ -695,12 +520,12 @@ export default {
             : "none"
         )
         .attr("x", this.yScale(Math.abs(this.betaData.norm)))
-        .attr("y", 43)
+        .attr("y", (43 * this.boxWidth) / 200)
         .attr(
           "width",
           this.yScale(0) - this.yScale(Math.abs(this.betaData.norm))
         )
-        .attr("height", 30);
+        .attr("height", (30 * this.boxWidth) / 200);
 
       for (let dataName in colorMap) {
         d3.select(`#${dataName}-${this.boxId}`)
@@ -714,9 +539,14 @@ export default {
               .split("-")[0];
             let value;
             if (
-              ["nav_return", "risk", "alpha", "beta", "sharp_ratio", "information_ratio"].indexOf(
-                key
-              ) !== -1
+              [
+                "nav_return",
+                "risk",
+                "alpha",
+                "beta",
+                "sharp_ratio",
+                "information_ratio",
+              ].indexOf(key) !== -1
             )
               value = eval(`that.${key}Data.value`).toFixed(2);
             else value = eval(`that.${key}Data`).toFixed(2);
@@ -724,12 +554,14 @@ export default {
             let curOffsetY = e.offsetY;
             if (["nav_return", "risk"].indexOf(key) !== -1) {
               // top
-            } else if (["sharp_ratio", "information_ratio"].indexOf(key) !== -1) {
+            } else if (
+              ["sharp_ratio", "information_ratio"].indexOf(key) !== -1
+            ) {
               // right
-              curOffsetX += 80;
+              curOffsetX += (80 * this.boxWidth) / 200;
             } else if (["stock", "bond", "cash", "other"].indexOf(key) !== -1) {
               // bottom
-              curOffsetY += 80;
+              curOffsetY += (80 * this.boxWidth) / 200;
             } else {
               // left
             }
@@ -820,7 +652,9 @@ export default {
       if (["nav_return", "risk"].indexOf(type) !== -1) {
         // top
         this.midPointX =
-          parseFloat(dom.attr("width") / 2) + parseFloat(dom.attr("x")) + 60;
+          parseFloat(dom.attr("width") / 2) +
+          parseFloat(dom.attr("x")) +
+          (60 * this.boxWidth) / 200;
         this.midPointY = parseFloat(dom.attr("y"));
 
         relativeX =
@@ -830,28 +664,38 @@ export default {
         // right
         this.midPointX = parseFloat(dom.attr("width"));
         this.midPointY =
-          parseFloat(dom.attr("height") / 2) + parseFloat(dom.attr("y")) + 60;
+          parseFloat(dom.attr("height") / 2) +
+          parseFloat(dom.attr("y")) +
+          (60 * this.boxWidth) / 200;
 
         relativeX =
           parseFloat(dom.attr("height") / 2) + parseFloat(dom.attr("y"));
-        relativeY = 60 - parseFloat(dom.attr("width"));
+        relativeY = (60 * this.boxWidth) / 200 - parseFloat(dom.attr("width"));
       } else if (["stock", "bond", "cash", "other"].indexOf(type) !== -1) {
         // bottom
         this.midPointX =
-          parseFloat(dom.attr("x")) + parseFloat(dom.attr("width") / 2) + 60;
+          parseFloat(dom.attr("x")) +
+          parseFloat(dom.attr("width") / 2) +
+          (60 * this.boxWidth) / 200;
         this.midPointY = parseFloat(dom.attr("height"));
 
         relativeX =
-          80 - parseFloat(dom.attr("x")) - parseFloat(dom.attr("width") / 2);
-        relativeY = 60 - parseFloat(dom.attr("height"));
+          (80 * this.boxWidth) / 200 -
+          parseFloat(dom.attr("x")) -
+          parseFloat(dom.attr("width") / 2);
+        relativeY = (60 * this.boxWidth) / 200 - parseFloat(dom.attr("height"));
       } else {
         // left
         this.midPointX = parseFloat(dom.attr("x"));
         this.midPointY =
-          parseFloat(dom.attr("height") / 2) + parseFloat(dom.attr("y")) + 60;
+          parseFloat(dom.attr("height") / 2) +
+          parseFloat(dom.attr("y")) +
+          (60 * this.boxWidth) / 200;
 
         relativeX =
-          80 - parseFloat(dom.attr("y")) - parseFloat(dom.attr("height") / 2);
+          (80 * this.boxWidth) / 200 -
+          parseFloat(dom.attr("y")) -
+          parseFloat(dom.attr("height") / 2);
         relativeY = parseFloat(dom.attr("x"));
       }
       return [relativeX, relativeY];
@@ -904,7 +748,7 @@ export default {
           );
       }
     },
-    // 内部数据是正的，直接横穿
+    // 内部数据是负的，直接横穿
     drawTraverseDashline(startX, startY, endX, endY) {
       let curSvg = null;
       switch (this.curTopSide) {
@@ -942,9 +786,6 @@ export default {
   position: relative;
   height: 220px;
   width: 200px;
-  /* 2.26 */
-  /* width: 312px; */
-  /* border: 1px solid black; */
   margin-top: 5px;
   margin-left: 60px;
   flex-shrink: 0;
@@ -955,8 +796,6 @@ export default {
 .text {
   position: absolute;
   width: 200px;
-  /* 2.26 */
-  /* width: 304px; */
   height: 20px;
   text-align: center;
   font-size: 13px;
@@ -966,8 +805,6 @@ export default {
   position: absolute;
   height: 200px;
   width: 200px;
-  /* 2.26 */
-  /* width: 304px; */
   top: 20px;
   transition: transform 1s;
 }

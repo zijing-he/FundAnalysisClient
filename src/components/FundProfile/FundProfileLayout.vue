@@ -41,7 +41,7 @@ export default {
       console.log(val);
       this.isRequesting = true;
       this.getViewFunds();
-      if (val.length <= 3) this.eachHeight = 270;
+      if (val.length <= 3) this.eachHeight = this.totalHeight / 3;
       else this.eachHeight = this.totalHeight / val.length;
     },
   },

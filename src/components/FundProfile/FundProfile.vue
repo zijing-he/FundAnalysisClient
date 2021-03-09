@@ -1,6 +1,6 @@
 <template>
-  <div class="fund_profile">
-    <div class="buttons">
+  <div class="fund_profile" id="fund_profile">
+    <div class="buttons" id="buttons">
       <svg class="icon" aria-hidden="true" @click="turnCounterClockwise()">
         <use xlink:href="#iconnishizhenxuanzhuan"></use>
       </svg>
@@ -18,9 +18,6 @@
         :ref="item.boxId"
         :boxId="item.boxId"
         :boxText="item.boxText"
-        :innerRadius="item.innerRadius"
-        :outerRadius="item.outerRadius"
-        :datum="item.datum"
         :holdingData="item.holdingData"
         :max_drop_downData="item.max_drop_downData"
         :riskData="item.riskData"
@@ -49,9 +46,11 @@
       id="curve"
       ref="bottomElement"
       @scroll="bottomHandleScroll()"
-    ></div>
+    >
+      <div class="tooltip" id="tooltip_path"></div>
+    </div>
     <div class="rects" id="rects">
-      <div class="tooltip" id="tooltip"></div>
+      <div class="tooltip" id="tooltip_rects"></div>
     </div>
     <div class="select-box" id="selectBox">
       <a-select
@@ -60,7 +59,7 @@
         size="small"
         :allowClear="true"
         :maxTagCount="1"
-        style="width: 80%; margin-top: 2px;"
+        style="width: 90%; margin-top: 2px; font-size: 10px"
         :default-value="selectedRectsCN"
         @change="handleSelectChange"
       >
@@ -96,8 +95,6 @@ export default {
       svg: null,
       rectSvg: null,
       margin: { top: 10, right: 100, bottom: 100, left: 20 },
-      // 2.26
-      // margin: { top: 10, right: 160, bottom: 100, left: 20 },
       width: 900,
       height: 270,
       isSyncTop: false,
@@ -108,8 +105,6 @@ export default {
       sizeData: [],
       investStyleBoxes: [],
       emptyBoxes: [], // 为同步不同FundProfile的长度
-      maxOuterRadius: 70,
-      minOuterRadius: 55,
       thisReturnData: 0,
       thisCarData: 0,
       thisStockData: 0,
@@ -124,34 +119,9 @@ export default {
       thisInfoData: 0,
       thisRiskData: 0,
       thisWeightData: 0,
-      allReturnData: [],
-      allCarData: [],
-      allStockData: [],
-      allBondData: [],
-      allCashData: [],
-      allOtherData: [],
-      allSizeData: [],
-      allAlphaData: [],
-      allBetaData: [],
-      allSharpData: [],
-      allDropData: [],
-      allInfoData: [],
-      allRiskData: [],
-      allWeightData: [],
       rectMarginRight: 30,
-      // 2.26
-      // dropData_n: [],
-      // riskData_n: [],
-      // stockData_n: [],
-      // bondData_n: [],
-      // cashData_n: [],
-      // otherData_n: [],
-      // alphaData_n: [],
-      // betaData_n: [],
-      // sharpData_n: [],
-      // infoData_n: [],
-      investStyleBoxWidth: 200,
-      contentWidth: 200,
+      investStyleBoxWidth: (200 * this.boxHeight) / 270,
+      contentWidth: (200 * this.boxHeight) / 270,
       boxGap: 200,
       // version 4
       maxPathWidth: 60,
@@ -178,25 +148,6 @@ export default {
   },
 
   mounted: function() {
-    this.fundIds.forEach((d) => {
-      this.allReturnData.push(this.fundData["total"][d]["return"]);
-      this.allCarData.push(this.fundData["total"][d]["car"]);
-      this.allStockData.push(this.fundData["total"][d]["stock"]);
-      this.allBondData.push(this.fundData["total"][d]["bond"]);
-      this.allCashData.push(this.fundData["total"][d]["cash"]);
-      this.allOtherData.push(this.fundData["total"][d]["other"]);
-      this.allSizeData.push(this.fundData["total"][d]["size"].norm);
-      this.allAlphaData.push(this.fundData["total"][d]["alpha"].norm);
-      this.allBetaData.push(this.fundData["total"][d]["beta"].norm);
-      this.allSharpData.push(this.fundData["total"][d]["sharp_ratio"].norm);
-      this.allDropData.push(this.fundData["total"][d]["max_drop_down"]);
-      this.allInfoData.push(
-        this.fundData["total"][d]["information_ratio"].norm
-      );
-      this.allRiskData.push(this.fundData["total"][d]["risk"].norm);
-      this.allWeightData.push(this.fundData["total"][d]["instl_weight"]);
-    });
-
     for (let i in this.fundData["detail"][this.fundId]) {
       if (Object.keys(this.fundData["detail"][this.fundId][i]).length === 0) {
         this.emptyBoxes.push(i);
@@ -218,10 +169,6 @@ export default {
         ...this.detailNavReturnData,
         ...Object.values(tmpdetailNavReturnData),
       ];
-      // this.detailCarData = [
-      //   ...this.detailCarData,
-      //   ...Object.values(tmpDetailCarData),
-      // ];
       this.detailCarData.push(Object.values(tmpDetailCarData));
       let holdingData = this.fundData["detail"][this.fundId][i]["holding"];
       let holdingDataKeys = Object.keys(holdingData)
@@ -242,7 +189,6 @@ export default {
       this.investStyleBoxes.push({
         boxId: this.fundId + "_" + tmpDateData[tmpDateData.length - 1],
         boxText: tmpDateData[tmpDateData.length - 1],
-        datum: this.fundData["detail"][this.fundId][i],
         holdingData: thisHoldingData,
         nav_returnData: this.fundData["detail"][this.fundId][i]["nav_return"],
         hs300Data: this.fundData["detail"][this.fundId][i]["hs300_return"],
@@ -283,99 +229,62 @@ export default {
     this.rectObject = {
       nav_return: {
         color: "#ff7f00",
-        data: this.allReturnData,
         thisData: this.thisReturnData,
       },
       car: {
         color: "#fddaec",
-        data: this.allCarData,
         thisData: this.thisCarData,
       },
       stock: {
         color: "#a65628",
-        data: this.allStockData,
         thisData: this.thisStockData,
       },
       bond: {
         color: "#377eb8",
-        data: this.allBondData,
         thisData: this.thisBondData,
       },
       cash: {
         color: "#f781bf",
-        data: this.allCashData,
         thisData: this.thisCashData,
       },
       other: {
         color: "#999999",
-        data: this.allOtherData,
         thisData: this.thisOtherData,
       },
       size: {
         color: "#e5d8bd",
-        data: this.allSizeData,
         thisData: this.thisSizeData,
       },
       alpha: {
         color: "#ffff33",
-        data: this.allAlphaData,
         thisData: this.thisAlphaData,
       },
       beta: {
         color: "#ffffcc",
-        data: this.allBetaData,
         thisData: this.thisBetaData,
       },
       sharp_ratio: {
         color: "#984ea3",
-        data: this.allSharpData,
         thisData: this.thisSharpData,
       },
       max_drop_down: {
         color: "#b3cde3",
-        data: this.allDropData,
         thisData: this.thisDropData,
       },
       information_ratio: {
         color: "#decbe4",
-        data: this.allInfoData,
         thisData: this.thisInfoData,
       },
       risk: {
         color: "#fed9a6",
-        data: this.allRiskData,
         thisData: this.thisRiskData,
       },
       instl_weight: {
         color: "#f2f2f2",
-        data: this.allWeightData,
         thisData: this.thisWeightData,
       },
     };
 
-    let maxSize = Math.max(...this.sizeData);
-    let minSize = Math.min(...this.sizeData);
-    let kOuter =
-      (this.maxOuterRadius - this.minOuterRadius) / (maxSize - minSize);
-    let bOuter = this.maxOuterRadius - kOuter * maxSize;
-    this.investStyleBoxes.map((d, i) => {
-      d.outerRadius = kOuter * this.sizeData[i] + bOuter;
-      d.innerRadius = d.outerRadius * 0.8;
-      // 2.26
-      // d.dropData = this.dropData_n;
-      // d.riskData = this.riskData_n;
-      // d.stockData = this.stockData_n;
-      // d.bondData = this.bondData_n;
-      // d.cashData = this.cashData_n;
-      // d.otherData = this.otherData_n;
-      // d.sizeData = this.sizeData;
-      // d.alphaData = this.alphaData_n;
-      // d.betaData = this.betaData_n;
-      // d.sharpData = this.sharpData_n;
-      // d.infoData = this.infoData_n;
-      // d.index = i;
-      return d;
-    });
     this.renderInit();
     this.renderUpdate();
   },
@@ -504,17 +413,18 @@ export default {
             new Date(this.investStyleBoxes[selectedBoxIndices[i]].boxText)
           ) -
           this.investStyleBoxWidth / 2 +
-          60 +
+          (60 * this.investStyleBoxWidth) / 200 +
           startPoint[0];
-        const startY = 5 + 20 + startPoint[1];
+        const startY =
+          5 + (20 * this.investStyleBoxWidth) / 200 + startPoint[1];
         const endX =
           this.xScale(
             new Date(this.investStyleBoxes[selectedBoxIndices[i + 1]].boxText)
           ) -
           this.investStyleBoxWidth / 2 +
-          60 +
+          (60 * this.investStyleBoxWidth) / 200 +
           endPoint[0];
-        const endY = 5 + 20 + endPoint[1];
+        const endY = 5 + (20 * this.investStyleBoxWidth) / 200 + endPoint[1];
         gDashline
           .append("path")
           .attr("stroke-dasharray", "2, 2")
@@ -542,28 +452,40 @@ export default {
           if (["nav_return", "risk"].indexOf(type) !== -1) {
             // top
             traverseStartX = 0;
-            traverseStartY = traverseStartY - 20 - 5;
-            traverseEndX = 200;
-            traverseEndY = traverseEndY - 20 - 5;
+            traverseStartY =
+              traverseStartY - (20 * this.investStyleBoxWidth) / 200 - 5;
+            traverseEndX = this.investStyleBoxWidth;
+            traverseEndY =
+              traverseEndY - (20 * this.investStyleBoxWidth) / 200 - 5;
           } else if (
             ["sharp_ratio", "information_ratio"].indexOf(type) !== -1
           ) {
             // right
-            traverseStartX = 60 - (traverseStartY - 20 - 5);
+            traverseStartX =
+              (60 * this.investStyleBoxWidth) / 200 -
+              (traverseStartY - (20 * this.investStyleBoxWidth) / 200 - 5);
             traverseStartY = 0;
-            traverseEndX = 60 - (traverseEndY - 20 - 5);
-            traverseEndY = 200;
+            traverseEndX =
+              (60 * this.investStyleBoxWidth) / 200 -
+              (traverseEndY - (20 * this.investStyleBoxWidth) / 200 - 5);
+            traverseEndY = this.investStyleBoxWidth;
           } else if (["stock", "bond", "cash", "other"].indexOf(type) !== -1) {
             // bottom
-            traverseStartX = 200;
-            traverseStartY = 60 - (traverseStartY - 20 - 5);
+            traverseStartX = this.investStyleBoxWidth;
+            traverseStartY =
+              (60 * this.investStyleBoxWidth) / 200 -
+              (traverseStartY - (20 * this.investStyleBoxWidth) / 200 - 5);
             traverseEndX = 0;
-            traverseEndY = 60 - (traverseEndY - 20 - 5);
+            traverseEndY =
+              (60 * this.investStyleBoxWidth) / 200 -
+              (traverseEndY - (20 * this.investStyleBoxWidth) / 200 - 5);
           } else {
             // left
-            traverseStartX = traverseStartY - 20 - 5;
-            traverseStartY = 200;
-            traverseEndX = traverseEndY - 20 - 5;
+            traverseStartX =
+              traverseStartY - (20 * this.investStyleBoxWidth) / 200 - 5;
+            traverseStartY = this.investStyleBoxWidth;
+            traverseEndX =
+              traverseEndY - (20 * this.investStyleBoxWidth) / 200 - 5;
             traverseEndY = 0;
           }
           this.$refs[this.investStyleBoxes[j].boxId].drawTraverseDashline(
@@ -590,26 +512,34 @@ export default {
         if (["nav_return", "risk"].indexOf(type) !== -1) {
           // top
           thatX1 = 0;
-          thatY1 = thisY1 - 20 - 5;
-          thatX2 = 200;
-          thatY2 = thisY2 - 20 - 5;
+          thatY1 = thisY1 - (20 * this.investStyleBoxWidth) / 200 - 5;
+          thatX2 = this.investStyleBoxWidth;
+          thatY2 = thisY2 - (20 * this.investStyleBoxWidth) / 200 - 5;
         } else if (["sharp_ratio", "information_ratio"].indexOf(type) !== -1) {
           // right
-          thatX1 = 60 - (thisY1 - 20 - 5);
+          thatX1 =
+            (60 * this.investStyleBoxWidth) / 200 -
+            (thisY1 - (20 * this.investStyleBoxWidth) / 200 - 5);
           thatY1 = 0;
-          thatX2 = 60 - (thisY2 - 20 - 5);
-          thatY2 = 200;
+          thatX2 =
+            (60 * this.investStyleBoxWidth) / 200 -
+            (thisY2 - (20 * this.investStyleBoxWidth) / 200 - 5);
+          thatY2 = this.investStyleBoxWidth;
         } else if (["stock", "bond", "cash", "other"].indexOf(type) !== -1) {
           // bottom
-          thatX1 = 200;
-          thatY1 = 60 - (thisY1 - 20 - 5);
+          thatX1 = this.investStyleBoxWidth;
+          thatY1 =
+            (60 * this.investStyleBoxWidth) / 200 -
+            (thisY1 - (20 * this.investStyleBoxWidth) / 200 - 5);
           thatX2 = 0;
-          thatY2 = 60 - (thisY2 - 20 - 5);
+          thatY2 =
+            (60 * this.investStyleBoxWidth) / 200 -
+            (thisY2 - (20 * this.investStyleBoxWidth) / 200 - 5);
         } else {
           // left
-          thatX1 = thisY1 - 20 - 5;
-          thatY1 = 200;
-          thatX2 = thisY2 - 20 - 5;
+          thatX1 = thisY1 - (20 * this.investStyleBoxWidth) / 200 - 5;
+          thatY1 = this.investStyleBoxWidth;
+          thatX2 = thisY2 - (20 * this.investStyleBoxWidth) / 200 - 5;
           thatY2 = 0;
         }
         if (i === 0) {
@@ -638,19 +568,23 @@ export default {
       if (["nav_return", "risk"].indexOf(type) !== -1) {
         // top
         lastX = 0;
-        lastY = lastTmpY - 20 - 5;
+        lastY = lastTmpY - (20 * this.investStyleBoxWidth) / 200 - 5;
       } else if (["sharp_ratio", "information_ratio"].indexOf(type) !== -1) {
         // right
-        lastX = 60 - (lastTmpY - 20 - 5);
+        lastX =
+          (60 * this.investStyleBoxWidth) / 200 -
+          (lastTmpY - (20 * this.investStyleBoxWidth) / 200 - 5);
         lastY = 0;
       } else if (["stock", "bond", "cash", "other"].indexOf(type) !== -1) {
         // bottom
-        lastX = 200;
-        lastY = 60 - (lastTmpY - 20 - 5);
+        lastX = this.investStyleBoxWidth;
+        lastY =
+          (60 * this.investStyleBoxWidth) / 200 -
+          (lastTmpY - (20 * this.investStyleBoxWidth) / 200 - 5);
       } else {
         // left
-        lastX = lastTmpY - 20 - 5;
-        lastY = 200;
+        lastX = lastTmpY - (20 * this.investStyleBoxWidth) / 200 - 5;
+        lastY = this.investStyleBoxWidth;
       }
       this.$refs[
         this.investStyleBoxes[selectedBoxIndices[selectedBoxIndices.length - 1]]
@@ -658,6 +592,10 @@ export default {
       ].drawDashline(lastX, lastY, -1, -1, false, true);
     },
     topHandleScroll() {
+      console.log(
+        `${this.fundId} handle top`,
+        this.$refs.topElement.scrollLeft
+      );
       this.$emit("handleScroll", this.$refs.topElement.scrollLeft);
       if (!this.isSyncTop) {
         this.isSyncBottom = true;
@@ -666,6 +604,10 @@ export default {
       this.isSyncTop = false;
     },
     bottomHandleScroll() {
+      console.log(
+        `${this.fundId} handle bottom`,
+        this.$refs.bottomElement.scrollLeft
+      );
       this.$emit("handleScroll", this.$refs.bottomElement.scrollLeft);
       if (!this.isSyncBottom) {
         this.isSyncTop = true;
@@ -674,11 +616,11 @@ export default {
       this.isSyncBottom = false;
     },
     handleScroll(value) {
+      console.log(`${this.fundId} notify to scroll`, value);
       this.$refs.topElement.scrollLeft = this.$refs.bottomElement.scrollLeft = value;
     },
     renderInit() {
-      // this.width = (156 + 60) * this.sizeData.length + this.margin.left + this.margin.right - 78;
-      // 2.26
+      this.margin.right = this.investStyleBoxWidth / 2;
       this.width = Math.max(
         (this.investStyleBoxWidth + this.boxGap) *
           (this.investStyleBoxes.length + this.emptyBoxes.length) +
@@ -687,9 +629,22 @@ export default {
           this.investStyleBoxWidth / 2,
         this.width
       );
+      this.height = this.boxHeight;
+      this.maxPathWidth = (60 * this.investStyleBoxWidth) / 200;
+      this.minPathWidth = this.maxPathWidth / 2;
+      d3.select("#fund_profile")
+        .attr("id", `fund_profile_${this.fundId}`)
+        .style("height", this.height + "px");
+      d3.select("#buttons")
+        .attr("id", `buttons_${this.fundId}`)
+        .style("height", (30 * this.investStyleBoxWidth) / 200 + "px")
+        .style("left", (20 * this.investStyleBoxWidth) / 200 + "px")
+        .style("top", (25 * this.investStyleBoxWidth) / 200 + "px")
+        .style("font-size", (30 * this.investStyleBoxWidth) / 200 + "px");
       d3.select("#curve").attr("id", `curve_${this.fundId}`);
       d3.select("#rects").attr("id", `rects_${this.fundId}`);
-      d3.select("#tooltip").attr("id", `tooltip_${this.fundId}`);
+      d3.select("#tooltip_rects").attr("id", `tooltip_rects_${this.fundId}`);
+      d3.select("#tooltip_path").attr("id", `tooltip_path_${this.fundId}`);
       d3.select("#selectBox").attr("id", `selectBox_${this.fundId}`);
       this.svg = d3
         .select(`#curve_${this.fundId}`)
@@ -729,40 +684,11 @@ export default {
         .tickSizeOuter(0);
       this.svg
         .append("g")
-        .attr("transform", `translate(0, ${this.height - 20})`)
+        .attr(
+          "transform",
+          `translate(0, ${this.height - (15 * this.investStyleBoxWidth) / 200})`
+        )
         .call(xAxis);
-
-      // this.svg.append("path")
-      //   .attr("fill", "none")
-      //   .attr("stroke", "red")
-      //   .attr("stroke-width", 10)
-      //   .attr("stroke-linejoin", "round")
-      //   .attr("stroke-linecap", "round")
-      //   .attr("d", this.line(this.detailNavReturnData));
-
-      // for (let i = 0; i < this.detailCarData.length - 1; i++) {
-      //   if (this.detailCarData[i] < 0) {
-      //     let path = `M${this.xScale(new Date(this.dateData[i]))}, ${this.yScale(this.detailNavReturnData[i])}`;
-      //     path += `L${this.xScale(new Date(this.dateData[i + 1]))}, ${this.yScale(this.detailNavReturnData[i + 1])}`;
-      //     this.svg.append("path")
-      //       .attr("fill", "none")
-      //       .attr("stroke", "green")
-      //       .attr("stroke-width", 10)
-      //       .attr("stroke-linejoin", "round")
-      //       .attr("d", path);
-      //   }
-      // }
-
-      // version 4
-      // this.svg
-      //   .append("path")
-      //   .attr("fill", "none")
-      //   .attr("stroke", "red")
-      //   .attr("stroke-width", 30)
-      //   .attr(
-      //     "d",
-      //     `M ${this.margin.left} 125 H ${this.width - this.margin.right}`
-      //   );
     },
     updateMargin() {
       d3.select(`#invest_style_box_${this.investStyleBoxes[0].boxId}`).style(
@@ -782,18 +708,6 @@ export default {
         );
         lastPos = this.xScale(new Date(this.investStyleBoxes[i].boxText));
       }
-      // console.log(this.emptyBoxes);
-      // this.investStyleBoxes.forEach((d) => {
-      //   console.log(d.boxText);
-      //   d3.select("#invest_style_box_" + d.boxId).style(
-      //     "margin-left",
-      //     this.xScale(new Date(d.boxText)) -
-      //       this.investStyleBoxWidth / 2 -
-      //       (lastPos + this.investStyleBoxWidth / 2) +
-      //       "px"
-      //   );
-      //   lastPos = this.xScale(new Date(d.boxText));
-      // });
     },
     updateRects() {
       let that = this;
@@ -822,17 +736,12 @@ export default {
         .attr("fill", `url(#pattern_stripe_${this.fundId})`);
       const gRects = this.rectSvg
         .append("g")
-        .attr("transform", "translate(0, 54)");
-      const rectHeight = 162 / this.selectedRectKeys.length;
+        .attr("transform", `translate(0, ${this.height / 5})`);
+      const rectHeight = (this.height * 0.6) / this.selectedRectKeys.length;
       for (let i = 0; i < this.selectedRectKeys.length; i++) {
         if (["size", "risk"].indexOf(this.selectedRectKeys[i]) !== -1)
           this.rectXScale.domain([0, 1.1]);
-        else
-          this.rectXScale.domain([0, 1]);
-        // this.rectXScale.domain([
-        //   d3.min(this.rectObject[this.selectedRectKeys[i]].data),
-        //   d3.max(this.rectObject[this.selectedRectKeys[i]].data),
-        // ]);
+        else this.rectXScale.domain([0, 1]);
         let thisData, value;
         if (
           [
@@ -852,28 +761,33 @@ export default {
           thisData = this.rectObject[this.selectedRectKeys[i]].thisData;
           value = thisData.toFixed(2);
         }
-        console.log(this.selectedRectKeys[i], thisData);
         gRects
           .append("rect")
           .attr("fill", this.rectObject[this.selectedRectKeys[i]].color)
-          .attr("mask", thisData < 0 ? `url(#mask_stripe_${this.fundId})` : "none")
+          .attr(
+            "mask",
+            thisData < 0 ? `url(#mask_stripe_${this.fundId})` : "none"
+          )
           .attr("stroke", "black")
           .attr("x", 0)
           .attr("y", 0 + i * rectHeight)
           .attr("width", this.rectXScale(Math.abs(thisData)))
           .attr("height", rectHeight)
           .on("mouseover", function() {
-            d3.select(`#tooltip_${that.fundId}`).style("display", "block");
+            d3.select(`#tooltip_rects_${that.fundId}`).style(
+              "display",
+              "block"
+            );
           })
           .on("mousemove", function(e) {
             let key = that.selectedRectsCN[i];
-            d3.select(`#tooltip_${that.fundId}`)
+            d3.select(`#tooltip_rects_${that.fundId}`)
               .html(key + "<br>" + value)
               .style("left", e.offsetX + 10 + "px")
               .style("top", e.offsetY + 10 + "px");
           })
           .on("mouseout", function() {
-            d3.select(`#tooltip_${that.fundId}`).style("display", "none");
+            d3.select(`#tooltip_rects_${that.fundId}`).style("display", "none");
           });
       }
     },
@@ -883,6 +797,7 @@ export default {
       const k = (this.maxPathWidth - this.minPathWidth) / (maxSize - minSize);
       const b = this.maxPathWidth - k * maxSize;
       let tmpSum = 0;
+      let that = this;
       for (let i = 0; i < this.investStyleBoxes.length; i++) {
         let thisPathWidth = k * this.sizeData[i] + b;
         if (this.investStyleBoxes.length === 1)
@@ -893,6 +808,8 @@ export default {
           tmpSum + j < this.dateData.length - 1;
           j++
         ) {
+          let key = this.dateData[tmpSum + j];
+          let value = this.detailCarData[i][j].value.toFixed(2);
           this.svg
             .append("path")
             .attr("fill", "none")
@@ -900,9 +817,45 @@ export default {
             .attr("stroke-width", thisPathWidth)
             .attr(
               "d",
-              `M ${this.xScale(new Date(this.dateData[tmpSum + j]))} 125
+              `M ${this.xScale(new Date(this.dateData[tmpSum + j]))} ${(this
+                .height -
+                6) /
+                2}
               H ${this.xScale(new Date(this.dateData[tmpSum + j + 1]))}`
-            );
+            )
+            .on("mouseover", function() {
+              d3.select(`#tooltip_path_${that.fundId}`).style(
+                "display",
+                "block"
+              );
+            })
+            .on("mousemove", function(e) {
+              let offsetX = e.offsetX - 42.5;
+              if (
+                e.offsetX + 42.5 >
+                that.xScale(new Date(that.investStyleBoxes[i].boxText)) -
+                  that.investStyleBoxWidth / 2
+              )
+                offsetX -= 45;
+              if (
+                i !== 0 &&
+                e.offsetX - 42.5 <
+                  that.xScale(new Date(that.investStyleBoxes[i - 1].boxText)) +
+                    that.investStyleBoxWidth / 2
+              )
+                offsetX += 45;
+              d3.select(`#tooltip_path_${that.fundId}`)
+                .html(key + "<br>" + value)
+                .style("width", "85px")
+                .style("left", offsetX + "px")
+                .style("top", e.offsetY + 15 + "px");
+            })
+            .on("mouseout", function() {
+              d3.select(`#tooltip_path_${that.fundId}`).style(
+                "display",
+                "none"
+              );
+            });
         }
         tmpSum += this.detailCarData[i].length;
       }
@@ -916,8 +869,6 @@ export default {
   position: relative;
   height: 270px;
   width: 100%;
-  /* border: 1px solid black; */
-  /* margin: 5px 0; */
 }
 
 .invest_style_boxes {
@@ -948,8 +899,18 @@ export default {
   z-index: 1;
 }
 
-.invest_style_boxes::-webkit-scrollbar {
-  display: none;
+/* 设置滚动条的样式 */
+::-webkit-scrollbar {
+  height: 6px;
+}
+/* 滚动槽 */
+::-webkit-scrollbar-track {
+  border-radius: 10px;
+}
+/* 滚动条滑块 */
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.1);
 }
 
 .buttons {
@@ -958,7 +919,7 @@ export default {
   width: 80px;
   height: 30px;
   left: 20px;
-  top: 22px;
+  top: 25px;
   font-size: 30px;
   z-index: 999;
   justify-content: space-around;
