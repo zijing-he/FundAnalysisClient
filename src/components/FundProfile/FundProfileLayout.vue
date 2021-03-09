@@ -37,12 +37,23 @@ export default {
     end_date: String,
   },
   watch: {
-    fundsID: function(val) {
-      console.log(val);
+    start_date: function (val) {
+      //限制第一次是因为id获取慢于起止点，会报错
+      if (!this.isFirst) {
+        this.getViewFunds();
+      }
+    },
+    fundsID: function (val) {
+      if (this.isFirst) {
+        this.isFirst = false;
+      }
       this.isRequesting = true;
       this.getViewFunds();
-      if (val.length <= 3) this.eachHeight = this.totalHeight / 3;
-      else this.eachHeight = this.totalHeight / val.length;
+      if (val.length <= 3) {
+        this.eachHeight = this.totalHeight / 3;
+      } else {
+        this.eachHeight = this.totalHeight / val.length;
+      }
     },
   },
   data() {
@@ -52,6 +63,7 @@ export default {
       isRequesting: true,
       totalHeight: 905,
       eachHeight: 270,
+      isFirst: true,
     };
   },
   components: {
@@ -67,7 +79,7 @@ export default {
           end_date: this.end_date,
         },
         (data) => {
-          console.log(data);
+          console.log("get_view_funds", data);
           this.fundData = data;
           this.isRequesting = false;
         }

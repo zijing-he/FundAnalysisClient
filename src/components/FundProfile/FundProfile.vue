@@ -592,10 +592,10 @@ export default {
       ].drawDashline(lastX, lastY, -1, -1, false, true);
     },
     topHandleScroll() {
-      console.log(
-        `${this.fundId} handle top`,
-        this.$refs.topElement.scrollLeft
-      );
+      // console.log(
+      //   `${this.fundId} handle top`,
+      //   this.$refs.topElement.scrollLeft
+      // );
       this.$emit("handleScroll", this.$refs.topElement.scrollLeft);
       if (!this.isSyncTop) {
         this.isSyncBottom = true;
@@ -604,10 +604,10 @@ export default {
       this.isSyncTop = false;
     },
     bottomHandleScroll() {
-      console.log(
-        `${this.fundId} handle bottom`,
-        this.$refs.bottomElement.scrollLeft
-      );
+      // console.log(
+      //   `${this.fundId} handle bottom`,
+      //   this.$refs.bottomElement.scrollLeft
+      // );
       this.$emit("handleScroll", this.$refs.bottomElement.scrollLeft);
       if (!this.isSyncBottom) {
         this.isSyncTop = true;
@@ -616,7 +616,7 @@ export default {
       this.isSyncBottom = false;
     },
     handleScroll(value) {
-      console.log(`${this.fundId} notify to scroll`, value);
+      // console.log(`${this.fundId} notify to scroll`, value);
       this.$refs.topElement.scrollLeft = this.$refs.bottomElement.scrollLeft = value;
     },
     renderInit() {
