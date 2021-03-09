@@ -69,12 +69,6 @@ export default {
         (data) => {
           console.log(data);
           this.fundData = data;
-          console.log(
-            this.start_date,
-            this.end_date,
-            this.fundsID,
-            this.fundData
-          );
           this.isRequesting = false;
         }
       );

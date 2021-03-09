@@ -94,6 +94,7 @@ export default {
       if (!this.startDate && !this.endDate) {
         this.getTimeBoundary();
       } else {
+        this.needFundsID = this.fundsID;
         this.getFundManagers();
       }
     },

@@ -10,6 +10,8 @@ export default {
   name: "ControlPanelRaderChart2",
 
   components: {},
+  emits: ["updateUserData"],
+
   data() {
     return {
       svg: null,
@@ -289,6 +291,18 @@ export default {
 
           d.value = newValue;
 
+          //更新数值
+          d3.select(".update_value_weight")
+            .text(d.axis)
+            .style("text-align", "center")
+            .style("margin", "8px 0 0px 0");
+
+          d3.select(".update_value_value")
+            .text((newValue - 2).toFixed(2))
+            .style("display", "block")
+            .style("text-align", "center")
+            .style("visibility", "visible");
+
           updatePoly();
         } else {
           if (newValue <= 1) {
@@ -333,6 +347,11 @@ export default {
 
       let dragended = function (event, d) {
         d3.select(this).attr("stroke", null);
+        d3.select(".update_value_weight")
+          .style("margin-top", "2px")
+          .text("Drag a Point to Edit");
+
+        d3.select(".update_value_value").style("visibility", "hidden");
       };
       let nodesGroup = this.raderChart
         .append("g")
@@ -371,18 +390,23 @@ export default {
             .on("drag", move)
             .on("end", dragended)
         );
-
-      let toolTip = this.svg
+      //添加中心数值查看框
+      let toolTip = d3.select(".update_value");
+      toolTip
         .append("g")
-        .attr("id", "toolTip")
-
-        .attr("width", "30px")
-        .attr("height", "30px")
-        .append("div")
+        .attr("class", "update_value_weight")
         .style("display", "block")
         .style("text-align", "center")
-        .style("margin-top", "13px")
+        .style("font-size", "11px")
+        .style("margin-top", "2px")
         .text("Drag a Point to Edit");
+      toolTip.append("g").attr("class", "update_value_value");
+
+      toolTip
+        .transition()
+        .duration(500)
+        .style("opacity", 1)
+        .style("visibility", "visible");
     },
   },
 };
@@ -391,13 +415,14 @@ export default {
 <style scoped>
 .update_value {
   position: absolute;
-  left: 180px;
-  top: 89px;
-  width: 45px;
-  height: 45px;
+  left: 176px;
+  top: 85px;
+  width: 53px;
+  height: 53px;
   background-color: #a8a8a8;
   color: white;
   border-radius: 50%;
   opacity: 1;
+  z-index: 1;
 }
 </style>

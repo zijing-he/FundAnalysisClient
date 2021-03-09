@@ -164,7 +164,7 @@ export default {
     },
     onSelectChange(selectedRowKeys) {
       //点击之后的反应
-      console.log("selectedRowKeys changed: ", selectedRowKeys);
+      // console.log("selectedRowKeys changed: ", selectedRowKeys);
       if (selectedRowKeys.length <= 5) {
         this.selectedRowKeys = selectedRowKeys;
       } else {
@@ -174,7 +174,7 @@ export default {
     },
     handleClick() {
       this.loading = true;
-      console.log("选择的基金序号", this.selectedRowKeys);
+      // console.log("选择的基金序号", this.selectedRowKeys);
 
       // let fundId = [];
       //选择的基金id
