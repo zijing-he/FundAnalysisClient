@@ -46,8 +46,8 @@ export default {
     return {
       fundsData: null,
       fundsID: null,
-      startDate: undefined,
-      endDate: undefined,
+      startDate: "20110331",  //默认起始值
+      endDate: "20191231",
       userWeight: null,
       needFundsID: null,
     };
@@ -59,6 +59,7 @@ export default {
         "get_fund_time_border",
         { f_ids: this.fundsID },
         (data) => {
+          console.log(data);
           this.startDate = data["start_date"].toString();
           this.endDate = data["end_date"].toString();
           this.needFundsID = this.fundsID;
@@ -95,12 +96,13 @@ export default {
     handleUpdateWeightsAndId(fundsID, userWeight) {
       this.fundsID = fundsID;
       this.userWeight = userWeight;
-      if (!this.startDate && !this.endDate) {
-        this.getTimeBoundary();
-      } else {
+      // if (!this.startDate && !this.endDate) {
+      // if (this.startDate == "20110331" && this.endDate == "20191231") {
+      //   this.getTimeBoundary();
+      // } else {
         this.needFundsID = this.fundsID;
         this.getFundManagers();
-      }
+      // }
     },
   },
 };

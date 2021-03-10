@@ -7,7 +7,7 @@
       style="margin-top: 105px; margin-bottom: 105px"
     />
     <div v-if="!isRequesting">
-      <component
+      <!-- <component
         :is="componentName"
         :ref="item"
         :fundData="fundData"
@@ -21,7 +21,7 @@
         @handleSelect="handleSelect"
         v-for="item in fundsID"
       >
-      </component>
+      </component> -->
     </div>
   </div>
 </template>
@@ -67,7 +67,7 @@ export default {
     };
   },
   components: {
-    FundProfile,
+    // FundProfile,
   },
   methods: {
     getViewFunds() {

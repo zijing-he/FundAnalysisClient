@@ -2,18 +2,52 @@
 <template>
   <div>
     <!-- justify="end" -->
-    <a-row type="flex">
-      <a-col :span="24">
+    <a-row type="flex" justify="center">
+      <a-col :span="4">
+        <a-dropdown>
+          <template #overlay>
+            <a-menu @click="handleMenuClick">
+              <a-menu-item :key="item" v-for="item in sectors">
+                <!-- <UserOutlined /> -->
+                <svg class="icon" aria-hidden="true">
+                  <use xlink:href="#icontesila"></use>
+                </svg>
+                {{ item }}
+              </a-menu-item>
+            </a-menu>
+          </template>
+          <a-button>
+            选择您所关注的行业
+            <DownOutlined />
+          </a-button>
+        </a-dropdown>
+      </a-col>
+      <a-col :span="12">
+        <a-button
+          :key="item"
+          v-for="item in selectedIndustries"
+          @click="handleButtonClick"
+        >
+          <div :style="activationButton(item)">{{ item }}</div>
+        </a-button>
+      </a-col>
+      
+      <a-col :span="8">
         <a-select
           v-model:value="selectedIndustries"
-          mode="tags"
+          mode="multiple"
           showArrow
           style="width: 100%"
           placeholder="选择您所关注的行业"
           @change="handleChange"
         >
-          <a-select-option v-for="item in sectors" :key="item" :value="item">
-            {{ item }}
+          <a-select-option
+            v-for="item in sectors"
+            :key="item"
+            :value="item"
+          >
+            <!-- {{ item }} -->
+            <div :style="activationSelect(item)">{{ item }}</div>
           </a-select-option>
         </a-select>
       </a-col>
@@ -31,10 +65,14 @@ import * as d3 from "d3";
 import dataJSON from "@/data/StreamGraph/market_date_sector.json";
 import sectorJSON from "@/data/StreamGraph/market_sector_date.json";
 import sectorDict from "@/data/StreamGraph/sector_dict.json";
+import { UserOutlined, DownOutlined } from "@ant-design/icons-vue";
 export default {
   name: "MarketAnalysisStramGraph",
   props: {},
-  components: {},
+  components: {
+    // UserOutlined,
+    DownOutlined,
+  },
   data() {
     return {
       svg: null,
@@ -51,12 +89,22 @@ export default {
   },
 
   mounted: function () {
-    console.log(sectorDict);
-
     this.renderInit();
     this.renderUpdate();
   },
   computed: {
+    //根据内容不同改变颜色
+    activationButton() {
+      return (item) => {
+        return { color: sectorDict[item].color };
+      };
+    },
+    activationSelect() {
+      return (item) => {
+        return { "background-color": sectorDict[item].color, color: "black" };
+        // return { color: sectorDict[item].color };
+      };
+    },
     innerWidth() {
       return this.width - this.margin.left - this.margin.right;
     },
@@ -101,7 +149,20 @@ export default {
   },
   methods: {
     handleChange(value) {
-      console.log(`selected：`, value);
+      this.renderUpdate();
+    },
+    handleMenuClick(e) {
+      // console.log("click", e);
+      this.selectedIndustries.push(e.key);
+      this.selectedIndustries = Array.from(new Set(this.selectedIndustries));
+      this.renderUpdate();
+    },
+    handleButtonClick(event) {
+      //点击删除相应的行业
+      this.selectedIndustries.splice(
+        this.selectedIndustries.indexOf(event.toElement.innerText),
+        1
+      );
       this.renderUpdate();
     },
     renderInit() {
@@ -134,7 +195,7 @@ export default {
       // .select(".domain")
       // .remove();
       // Customization
-      // this.svg.selectAll(".tick line").attr("stroke", "black");
+      this.svg.selectAll(".tick line").attr("stroke", "#595959");
       // Add X axis label:
       // this.svg
       //   .append("text")
@@ -196,7 +257,7 @@ export default {
           .attr("class", "line-path-sector")
           .attr("d", this.linePath(Object.values(this.sector_data[item])))
           .attr("fill", "none")
-          .attr("stroke-width", 1.5)
+          .attr("stroke-width", "2px")
           .attr("stroke", sectorDict[item].color);
       }
     },
@@ -208,6 +269,16 @@ export default {
 #market_streamgraph {
   height: 110px;
   width: 50%;
+}
+
+.icon {
+  width: 1.2em;
+  height: 1.2em;
+  margin-top: 0.2em;
+  margin-right: 0.5em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
 }
 
 </style>
