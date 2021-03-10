@@ -45,6 +45,10 @@ import DataService from "@/utils/data-service";
 
 export default {
   name: "ControlPanelLayout",
+  props: {
+    start_date: String,
+    end_date: String,
+  },
   data() {
     return {
       //默认值
@@ -76,9 +80,17 @@ export default {
   methods: {
     handleClick() {
       //点击传值
-      DataService.post("get_fund_ranks", { weights: this.weight }, (data) => {
-        this.sortedList = data.ranks.slice(0, 10);
-      });
+      DataService.post(
+        "get_fund_ranks",
+        {
+          weights: this.weight,
+          start_date: this.start_date,
+          end_date: this.end_date,
+        },
+        (data) => {
+          this.sortedList = data.ranks.slice(0, 10);
+        }
+      );
 
       this.userWeight = this.weight;
     },

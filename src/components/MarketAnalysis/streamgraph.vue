@@ -51,8 +51,7 @@ export default {
   },
 
   mounted: function () {
-    // console.log(this.sectors);
-    // console.log(sectorJSON);
+    console.log(sectorDict);
 
     this.renderInit();
     this.renderUpdate();
@@ -97,16 +96,13 @@ export default {
     },
     stackedData() {
       // offset(d3.stackOffsetSilhouette) ——>河流图
-      return d3.stack().keys(this.keys)(
-        Object.values(this.data)
-        // .filter((d, i) => i % 2 != 0)
-      );
+      return d3.stack().keys(this.keys)(Object.values(this.data));
     },
   },
   methods: {
     handleChange(value) {
-      console.log(`selected：`,value);
-      console.log(this.selectedIndustries)
+      console.log(`selected：`, value);
+      this.renderUpdate();
     },
     renderInit() {
       this.sectors = Object.keys(sectorDict);
@@ -138,7 +134,7 @@ export default {
       // .select(".domain")
       // .remove();
       // Customization
-      this.svg.selectAll(".tick line").attr("stroke", "black");
+      // this.svg.selectAll(".tick line").attr("stroke", "black");
       // Add X axis label:
       // this.svg
       //   .append("text")
@@ -174,34 +170,35 @@ export default {
         .domain(this.keys)
         .range([...d3.schemeCategory10, ...d3.schemePaired, ...d3.schemeSet1]);
 
-      let streamGraph = this.svg.append("g");
+      this.svg.selectAll("#streamGraphLayers").remove();
+      let streamGraph = this.svg.append("g").attr("id", "streamGraphLayers");
 
+      this.yScale.domain([0, d3.max(Object.values(this.data), (d) => d.avg)]);
       streamGraph
         .append("path")
         .datum(Object.values(this.data))
         .attr("class", "streamGraphLayers")
-        .style("stroke", "#69b3a2")
-        .style("fill", "#cce5df")
+        .style("stroke", "#9F9D9D")
+        .style("fill", "#9F9D9D")
         // .style("stroke-width", "0.1px")
         // .style("fill", "#9F9D9D")
         .attr("d", this.area);
       //   .on("mouseenter", mouseenter)
       //   .on("mouseleave", mouseleave);
+      this.svg.selectAll("#sectorChartLayers").remove();
+      let sectorChart = this.svg.append("g").attr("id", "sectorChartLayers");
 
-      let sectorChart = this.svg.append("g");
-
-      this.yScale.domain([
-        0,
-        d3.max(Object.values(this.sector_data["医药生物"])),
-      ]);
-      sectorChart
-        .append("g")
-        .append("path")
-        .attr("class", "line-path-yiyao")
-        .attr("d", this.linePath(Object.values(this.sector_data["医药生物"])))
-        .attr("fill", "none")
-        .attr("stroke-width", 1.5)
-        .attr("stroke", "#FA2B2B");
+      this.yScale.domain([0, 154677212676.10007]);
+      for (let item of this.selectedIndustries) {
+        sectorChart
+          .append("g")
+          .append("path")
+          .attr("class", "line-path-sector")
+          .attr("d", this.linePath(Object.values(this.sector_data[item])))
+          .attr("fill", "none")
+          .attr("stroke-width", 1.5)
+          .attr("stroke", sectorDict[item].color);
+      }
     },
   },
 };
@@ -212,4 +209,5 @@ export default {
   height: 110px;
   width: 50%;
 }
+
 </style>

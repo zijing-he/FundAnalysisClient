@@ -1,7 +1,11 @@
 <template>
   <a-row :gutter="[8, 8]">
     <a-col :span="5">
-      <ControlPanelLayout v-on:updateWeightsAndId="handleUpdateWeightsAndId" />
+      <ControlPanelLayout
+        v-on:updateWeightsAndId="handleUpdateWeightsAndId"
+        :start_date="startDate"
+        :end_date="endDate"
+      />
     </a-col>
     <a-col :span="19">
       <a-row>
@@ -110,6 +114,6 @@ export default {
   text-align: center;
   width: 100%;
   height: 100%;
-  padding:5px;
+  padding: 5px;
 }
 </style>
