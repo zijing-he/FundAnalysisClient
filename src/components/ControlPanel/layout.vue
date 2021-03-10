@@ -49,20 +49,20 @@ export default {
     return {
       //默认值
       weight: {
+        size: "0.5000",
+        instl_weight: "0.5000",
         alpha: "0.5000",
         beta: "0.5000",
-        bond: "0.5000",
-        car: "0.5000",
-        cash: "0.5000",
-        information_ratio: "0.5000",
-        instl_weight: "0.5000",
-        max_drop_down: "0.5000",
-        nav_return: "0.5000",
-        other: "0.5000",
-        risk: "0.5000",
         sharp_ratio: "0.5000",
-        size: "0.5000",
-        stock: "0.5000",
+        max_drop_down: "0.5000",
+        information_ratio: "0.5000",
+        risk: "0.5000",
+        one_quarter_return: "0.5000",
+        one_year_return: "0.5000",
+        three_year_return: "0.5000",
+        one_quarter_car: "0.5000",
+        one_year_car: "0.5000",
+        three_year_car: "0.5000",
       },
       sortedList: null,
       userWeight: null,
@@ -97,13 +97,13 @@ export default {
 
 <style scoped>
 .topContainer {
-  height: 255px;
+  /* height: 300px; */
   width: 100%;
   border: 1px solid black;
 }
 .topContainer h4 {
   border-bottom: 1px solid black;
-  margin-bottom: 5px;
+  margin-bottom: 0px;
   font-weight: bold;
 }
 .sectror_ontainer {
@@ -117,8 +117,8 @@ export default {
 
 .bottomContainer {
   width: 100%;
-  height: 800px;
-  margin-top: 10px;
+  height: 76%;
+  margin-top: 5px;
   border: 1px solid black;
 }
 

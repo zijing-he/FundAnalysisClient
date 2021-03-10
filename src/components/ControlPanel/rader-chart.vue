@@ -5,7 +5,7 @@
 
 <script>
 import * as d3 from "d3";
-
+import nameDictionary from "@/data/RaderChart/weight_key.json";
 export default {
   name: "ControlPanelRaderChart2",
 
@@ -16,28 +16,28 @@ export default {
     return {
       svg: null,
       raderChart: null,
-      margin: { top: 45, right: 135, bottom: 60, left: 60 },
-      width: 165,
-      height: 165,
+      margin: { top: 45, right: 152, bottom: 60, left: 70 },
+      width: 200,
+      height: 200,
       factor: 1,
       levels: 15,
       maxValue: 3,
       radians: 2 * Math.PI,
       data: [
-        { axis: "stock", value: 2.5 },
-        { axis: "bond", value: 2.5 },
-        { axis: "cash", value: 2.5 },
-        { axis: "other", value: 2.5 },
         { axis: "size", value: 2.5 },
+        { axis: "instl_weight", value: 2.5 },
         { axis: "alpha", value: 2.5 },
         { axis: "beta", value: 2.5 },
         { axis: "sharp_ratio", value: 2.5 },
         { axis: "max_drop_down", value: 2.5 },
         { axis: "information_ratio", value: 2.5 },
-        { axis: "nav_return", value: 2.5 },
         { axis: "risk", value: 2.5 },
-        { axis: "instl_weight", value: 2.5 },
-        { axis: "car", value: 2.5 },
+        { axis: "one_quarter_return", value: 2.5 },
+        { axis: "one_year_return", value: 2.5 },
+        { axis: "three_year_return", value: 2.5 },
+        { axis: "one_quarter_car", value: 2.5 },
+        { axis: "one_year_car", value: 2.5 },
+        { axis: "three_year_car", value: 2.5 },
       ],
       dataValues: [],
       allAxis: [],
@@ -46,16 +46,6 @@ export default {
     };
   },
   watch: {
-    // value: function () {
-    //   this.data.forEach((d) => {
-    //     if (d.axis === this.axis) {
-    //       d.value = this.value;
-    //     }
-    //   });
-    //   this.svg.selectAll("polygon").remove();
-    //   this.svg.selectAll(".nodes").remove();
-    //   this.renderUpdate();
-    // },
   },
   mounted: function () {
     this.renderInit();
@@ -177,13 +167,13 @@ export default {
 
       axis
         .append("text")
-        .text((d) => d)
+        .text((d) => nameDictionary[d].cn_name)
         .attr("id", (d) => "text_" + d)
         .style("font-family", "sans-serif")
         .style("font-size", "11px")
         .attr("text-anchor", "middle")
         .attr("dy", "1.5em")
-        .attr("transform", "translate(0,-10)")
+        .attr("transform", "translate(3,-12)")
         .attr(
           "x",
           (d, i) =>
@@ -241,16 +231,26 @@ export default {
         .style("stroke", "#d62728")
         .style("fill", "#d62728")
         .style("fill-opacity", 0.2)
-        // .transition()
-        // .duration(2000)
         .attr("points", str);
 
       let dragstarted = function (event, d) {
         d3.select(this).raise().attr("stroke", "black");
+        d3.select(".update_value_weight")
+          .text(nameDictionary[d.axis].cn_name)
+          .style("margin-top", "8px");
+        if (nameDictionary[d.axis].cn_name.length <= 5) {
+          d3.select(".update_value_weight").style("margin-top", "16px");
+        }
+         d3.select(".update_value_value")
+            .text(d.value-2)
+            .style("display", "block")
+            .style("text-align", "center");
+          
+        toolTip.style("visibility", "visible");
       };
       let move = function (event, d) {
-        let width = 165;
-        let height = 165;
+        let width = 200; //this.width更新，这儿也要更新
+        let height = 200;
         const e = nodesGroup.nodes();
         const i = e.indexOf(this); //获取index
         let dragTarget = d3.select(this);
@@ -290,18 +290,13 @@ export default {
           dragTarget.attr("cx", newX + width / 2).attr("cy", height / 2 - newY);
 
           d.value = newValue;
-
           //更新数值
-          d3.select(".update_value_weight")
-            .text(d.axis)
-            .style("text-align", "center")
-            .style("margin", "8px 0 0px 0");
 
           d3.select(".update_value_value")
             .text((newValue - 2).toFixed(2))
             .style("display", "block")
             .style("text-align", "center")
-            .style("visibility", "visible");
+            // .style("visibility", "visible");
 
           updatePoly();
         } else {
@@ -347,11 +342,8 @@ export default {
 
       let dragended = function (event, d) {
         d3.select(this).attr("stroke", null);
-        d3.select(".update_value_weight")
-          .style("margin-top", "2px")
-          .text("Drag a Point to Edit");
-
-        d3.select(".update_value_value").style("visibility", "hidden");
+        toolTip.style("visibility", "hidden");
+        // d3.select(".update_value_value").style("visibility", "hidden");
       };
       let nodesGroup = this.raderChart
         .append("g")
@@ -398,15 +390,9 @@ export default {
         .style("display", "block")
         .style("text-align", "center")
         .style("font-size", "11px")
-        .style("margin-top", "2px")
-        .text("Drag a Point to Edit");
+        .style("margin-top", "14px");
       toolTip.append("g").attr("class", "update_value_value");
-
-      toolTip
-        .transition()
-        .duration(500)
-        .style("opacity", 1)
-        .style("visibility", "visible");
+      toolTip.style("visibility", "hidden");
     },
   },
 };
@@ -415,10 +401,10 @@ export default {
 <style scoped>
 .update_value {
   position: absolute;
-  left: 176px;
-  top: 85px;
-  width: 53px;
-  height: 53px;
+  left: 171px;
+  top: 95.5px;
+  width: 66px;
+  height: 66px;
   background-color: #a8a8a8;
   color: white;
   border-radius: 50%;

@@ -18,7 +18,7 @@ export default {
       svg: null,
       margin: { top: 10, right: 125, bottom: 20, left: 15 },
       width: 990,
-      height: 110,
+      height: 142,
       date: Object.keys(market_income),
       fund_size: Object.values(market_size),
       fund_number: Object.values(market_number),

@@ -43,7 +43,7 @@
     }"
     :columns="columns"
     :data-source="list"
-    :scroll="{ x: 1400 }"
+    :scroll="{ x: 1800 }"
   >
   </a-table>
 </template>
@@ -71,38 +71,23 @@ export default {
           fixed: "left",
         },
         {
-          title: "stock",
-          width: 70,
-          dataIndex: "stock",
-        },
-        {
-          title: "bond",
-          width: 70,
-          dataIndex: "bond",
-        },
-        {
-          title: "cash",
-          width: 70,
-          dataIndex: "cash",
-        },
-        {
-          title: "other",
-          width: 70,
-          dataIndex: "other",
-        },
-        {
-          title: "size",
-          width: 130,
+          title: "基金规模",
+          width: 90,
           dataIndex: "size",
         },
         {
-          title: "alpha",
-          width: 70,
+          title: "机构占比",
+          width: 90,
+          dataIndex: "instl_weight",
+        },
+        {
+          title: "阿尔法系数",
+          width: 110,
           dataIndex: "alpha",
         },
         {
-          title: "beta",
-          width: 70,
+          title: "贝塔系数",
+          width: 90,
           dataIndex: "beta",
         },
         {
@@ -121,23 +106,38 @@ export default {
           dataIndex: "information_ratio",
         },
         {
-          title: "nav_return",
-          width: 100,
-          dataIndex: "nav_return",
-        },
-        {
-          title: "risk",
-          width: 70,
+          title: "标准差",
+          width: 80,
           dataIndex: "risk",
         },
         {
-          title: "instl_weight",
-          width: 110,
-          dataIndex: "instl_weight",
+          title: "1个季度的收益率",
+          width: 140,
+          dataIndex: "one_quarter_return",
         },
         {
-          title: "car",
-          dataIndex: "car",
+          title: "1年的收益率",
+          width: 110,
+          dataIndex: "one_year_return",
+        },
+        {
+          title: "3年的收益率",
+          width: 110,
+          dataIndex: "three_year_return",
+        },
+        {
+          title: "1个季度的超额收益率",
+          width: 170,
+          dataIndex: "one_quarter_car",
+        },
+        {
+          title: "1年的超额收益率",
+          width: 140,
+          dataIndex: "one_year_car",
+        },
+        {
+          title: "3年的超额收益率",
+          dataIndex: "three_year_car",
         },
       ],
       selectedRowKeys: [],

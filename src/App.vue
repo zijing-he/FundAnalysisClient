@@ -110,7 +110,6 @@ export default {
   text-align: center;
   width: 100%;
   height: 100%;
-  padding: 10px;
-  /* border: 2px solid lightblue; */
+  padding:5px;
 }
 </style>

@@ -1,10 +1,14 @@
 <template>
   <div class="container">
     <h4>基金市场的演变</h4>
-     <div class="inner_container">
-    <MarketAnalysisCurveChart v-on:updateBrush="handleUpdateBrush"/>
-    <MarketAnalysisStramGraph />
-     </div>
+    <a-row>
+      <a-col :span="12">
+        <MarketAnalysisCurveChart v-on:updateBrush="handleUpdateBrush" />
+      </a-col>
+      <a-col :span="12">
+        <MarketAnalysisStramGraph />
+      </a-col>
+    </a-row>
   </div>
 </template>
 <script>
@@ -17,12 +21,12 @@ export default {
   },
   components: {
     MarketAnalysisCurveChart,
-    MarketAnalysisStramGraph
+    MarketAnalysisStramGraph,
   },
   methods: {
-    handleUpdateBrush(start,end){
-      this.$emit("updateTimeBoundary",start,end);
-    }
+    handleUpdateBrush(start, end) {
+      this.$emit("updateTimeBoundary", start, end);
+    },
   },
   mounted() {},
 };
@@ -38,7 +42,7 @@ export default {
   margin-bottom: 0;
   font-weight: bold;
 }
-.inner_container{
-  display:flex;
+.inner_container {
+  display: flex;
 }
 </style>
