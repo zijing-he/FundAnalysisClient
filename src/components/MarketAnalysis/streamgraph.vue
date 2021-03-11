@@ -2,13 +2,12 @@
 <template>
   <div>
     <!-- justify="end" -->
-    <a-row type="flex" justify="center">
-      <a-col :span="4">
+    <a-row type="flex" justify="start">
+      <!-- <a-col :span="4">
         <a-dropdown>
           <template #overlay>
             <a-menu @click="handleMenuClick">
               <a-menu-item :key="item" v-for="item in sectors">
-                <!-- <UserOutlined /> -->
                 <svg class="icon" aria-hidden="true">
                   <use xlink:href="#icontesila"></use>
                 </svg>
@@ -21,8 +20,8 @@
             <DownOutlined />
           </a-button>
         </a-dropdown>
-      </a-col>
-      <a-col :span="12">
+      </a-col> -->
+      <!-- <a-col :span="12">
         <a-button
           :key="item"
           v-for="item in selectedIndustries"
@@ -30,9 +29,9 @@
         >
           <div :style="activationButton(item)">{{ item }}</div>
         </a-button>
-      </a-col>
-      
-      <a-col :span="8">
+      </a-col> -->
+
+      <a-col :span="24">
         <a-select
           v-model:value="selectedIndustries"
           mode="multiple"
@@ -41,13 +40,12 @@
           placeholder="选择您所关注的行业"
           @change="handleChange"
         >
-          <a-select-option
-            v-for="item in sectors"
-            :key="item"
-            :value="item"
-          >
-            <!-- {{ item }} -->
-            <div :style="activationSelect(item)">{{ item }}</div>
+          <a-select-option v-for="item in sectors" :key="item" :value="item">
+            
+           <span>
+             <text :style="activationSelect(item)">██  </text>
+             <text>{{ item }}</text>
+           </span>
           </a-select-option>
         </a-select>
       </a-col>
@@ -71,7 +69,7 @@ export default {
   props: {},
   components: {
     // UserOutlined,
-    DownOutlined,
+    // DownOutlined,
   },
   data() {
     return {
@@ -101,7 +99,7 @@ export default {
     },
     activationSelect() {
       return (item) => {
-        return { "background-color": sectorDict[item].color, color: "black" };
+        return {  color:sectorDict[item].color };
         // return { color: sectorDict[item].color };
       };
     },
@@ -226,10 +224,10 @@ export default {
       //     .style("stroke", "none");
       // };
       // Show the areas
-      let color = d3
-        .scaleOrdinal()
-        .domain(this.keys)
-        .range([...d3.schemeCategory10, ...d3.schemePaired, ...d3.schemeSet1]);
+      // let color = d3
+      //   .scaleOrdinal()
+      //   .domain(this.keys)
+      //   .range([...d3.schemeCategory10, ...d3.schemePaired, ...d3.schemeSet1]);
 
       this.svg.selectAll("#streamGraphLayers").remove();
       let streamGraph = this.svg.append("g").attr("id", "streamGraphLayers");
@@ -247,19 +245,47 @@ export default {
       //   .on("mouseenter", mouseenter)
       //   .on("mouseleave", mouseleave);
       this.svg.selectAll("#sectorChartLayers").remove();
-      let sectorChart = this.svg.append("g").attr("id", "sectorChartLayers");
-
+      let sectorChart = this.svg
+        .append("g")
+        .attr("id", "sectorChartLayers")
+        .selectAll(".sectorLegend")
+        .data(this.selectedIndustries)
+        .enter();
       this.yScale.domain([0, 154677212676.10007]);
-      for (let item of this.selectedIndustries) {
-        sectorChart
-          .append("g")
-          .append("path")
-          .attr("class", "line-path-sector")
-          .attr("d", this.linePath(Object.values(this.sector_data[item])))
-          .attr("fill", "none")
-          .attr("stroke-width", "2px")
-          .attr("stroke", sectorDict[item].color);
-      }
+      // this.selectedIndustries.forEach((d, i) => {
+      //   sectorChart
+      //     .append("g")
+      //     .append("path")
+      //     .attr("class", "line-path-sector")
+      //     .attr("d", this.linePath(Object.values(this.sector_data[d])))
+      //     .attr("fill", "none")
+      //     .attr("stroke-width", "2px")
+      //     .attr("stroke", sectorDict[d].color);
+
+      // sectorChart
+      //   .append("rect")
+      //   .attr("x", i * 80)
+      //   .attr("y", 5)
+      //   .attr("width", 12)
+      //   .attr("height", 12)
+      //   .style("fill", sectorDict[d].color);
+
+      // sectorChart
+      //   .append("text")
+      //   .attr("x", 15 + i * 80)
+      //   .attr("y", 16)
+      //   .style("font-size", "12px")
+      //   .style("color", "black")
+      //   .text(d);
+      // });
+
+      sectorChart
+        .append("path")
+        .attr("class", "line-path-sector")
+        .attr("d", (d) => this.linePath(Object.values(this.sector_data[d])))
+        .attr("fill", "none")
+        .attr("stroke-width", "2px")
+        .attr("stroke", (d) => sectorDict[d].color);
     },
   },
 };
@@ -280,5 +306,4 @@ export default {
   fill: currentColor;
   overflow: hidden;
 }
-
 </style>
