@@ -14,8 +14,8 @@
 
 <script>
 import * as d3 from "d3";
-import sectorDict from "@/data/FundProfile/sector_dict.json";
-import weightKey from "@/data/FundProfile/weight_key.json";
+import sectorDict from "@/data/sector_dict.json";
+import weightKey from "@/data/weight_key.json";
 
 const colorMap = {
   alpha: "#ffff33",
@@ -26,8 +26,30 @@ const colorMap = {
   bond: "#377eb8",
   cash: "#f781bf",
   other: "#999999",
-  nav_return: "#ff7f00",
+  one_quarter_return: "#ff7f00",
+  one_year_return: "#ff7f00",
+  three_year_return: "#ff7f00",
   risk: "#fed9a6",
+};
+
+// 柱状图的起始x和宽度，根据每条边有多少根柱子而定 (以边长为80确定，后根据实际边长调整)
+const barAttrs = {
+  one: {
+    startX: [20],
+    width: 40,
+  },
+  two: {
+    startX: [7, 43],
+    width: 30,
+  },
+  three: {
+    startX: [4, 30, 56],
+    width: 20,
+  },
+  four: {
+    startX: [4, 23, 42, 61],
+    width: 15,
+  },
 };
 
 export default {
@@ -36,15 +58,18 @@ export default {
     boxId: String,
     boxText: String,
     holdingData: Object,
-    // 2.26
-    max_drop_downData: Number,
-    nav_returnData: Object,
-    hs300Data: Number,
+    max_drop_downData: Object,
+    one_quarter_returnData: Object,
+    one_quarter_hs300_returnData: Object,
+    one_year_returnData: Object,
+    one_year_hs300_returnData: Object,
+    three_year_returnData: Object,
+    three_year_hs300_returnData: Object,
     riskData: Object,
-    stockData: Number,
-    bondData: Number,
-    cashData: Number,
-    otherData: Number,
+    stockData: Object,
+    bondData: Object,
+    cashData: Object,
+    otherData: Object,
     sizeData: Object,
     alphaData: Object,
     betaData: Object,
@@ -66,6 +91,9 @@ export default {
       topSvg: null,
       rightSvg: null,
       bottomSvg: null,
+      initRightBars: ["sharp_ratio", "information_ratio"],
+      initBottomBars: ["stock", "bond", "cash", "other"],
+      initLeftBars: ["alpha", "beta"],
       barTopMargin: 5,
       curDegree: 0,
       lastTopBars: [],
@@ -89,20 +117,30 @@ export default {
         .round(true);
     },
     yScale() {
-      return d3.scaleLinear();
+      return d3.scaleLinear().domain([0, 1.1]);
+    },
+    initTopBars() {
+      // quarter, year, 3-year 有些可能为空，确定下具体有几个
+      let tmp = ["risk"];
+      if (this.one_quarter_returnData !== undefined)
+        tmp.push("one_quarter_return");
+      if (this.one_year_returnData !== undefined) tmp.push("one_year_return");
+      if (this.three_year_returnData !== undefined)
+        tmp.push("three_year_return");
+      return tmp;
     },
     curTopBars() {
       if (this.curDegree % 360 === 0) {
-        return ["nav_return", "risk"];
+        return this.initTopBars;
       } else if (this.curDegree % 360 === 90 || this.curDegree % 360 === -270) {
-        return ["alpha", "beta"];
+        return this.initLeftBars;
       } else if (
         this.curDegree % 360 === 180 ||
         this.curDegree % 360 === -180
       ) {
-        return ["stock", "bond", "cash", "other"];
+        return this.initBottomBars;
       } else {
-        return ["sharp_ratio", "information_ratio"];
+        return this.initRightBars;
       }
     },
     curTopSide() {
@@ -223,11 +261,9 @@ export default {
 
       // bars
       let that = this;
-      // tooltip
       // top
-      this.yScale
-        .domain([0, 1])
-        .range([(60 * this.boxWidth) / 200, this.barTopMargin]);
+      this.yScale.range([(60 * this.boxWidth) / 200, this.barTopMargin]);
+      // 条纹，下同
       const topDefs = this.topSvg.append("defs");
       topDefs
         .append("pattern")
@@ -253,76 +289,247 @@ export default {
       const gRectsTop = this.topSvg
         .append("g")
         .attr("transform", `translate(${(60 * this.boxWidth) / 200}, 0)`);
-      gRectsTop
-        .append("rect")
-        .attr("id", "nav_return-" + this.boxId)
-        .attr("fill", colorMap.nav_return)
-        .attr(
-          "mask",
-          this.nav_returnData.norm < 0
-            ? `url(#top_mask_stripe_${this.boxId})`
-            : "none"
-        )
-        .attr("x", (7 * this.boxWidth) / 200)
-        .attr("y", this.yScale(Math.abs(this.nav_returnData.norm)))
-        .attr("width", (30 * this.boxWidth) / 200)
-        .attr(
-          "height",
-          this.yScale(0) - this.yScale(Math.abs(this.nav_returnData.norm))
-        );
-      this.yScale
-        .domain([0, 1.1])
-        .range([(60 * this.boxWidth) / 200, this.barTopMargin]);
-      gRectsTop
-        .append("rect")
-        .attr("id", "risk-" + this.boxId)
-        .attr("fill", colorMap.risk)
-        .attr(
-          "mask",
-          this.riskData.norm < 0
-            ? `url(#top_mask_stripe_${this.boxId})`
-            : "none"
-        )
-        .attr("x", (43 * this.boxWidth) / 200)
-        .attr("y", this.yScale(Math.abs(this.riskData.norm)))
-        .attr("width", (30 * this.boxWidth) / 200)
-        .attr(
-          "height",
-          this.yScale(0) - this.yScale(Math.abs(this.riskData.norm))
-        );
-      this.yScale
-        .domain([0, 1])
-        .range([(60 * this.boxWidth) / 200, this.barTopMargin]);
-      if (Math.abs(this.nav_returnData.norm) > Math.abs(this.hs300Data)) {
-        gRectsTop
-          .append("path")
-          .attr("stroke-dasharray", "2, 2")
-          .attr("stroke", "black")
-          .attr(
-            "d",
-            `M ${(7 * this.boxWidth) / 200} ${this.yScale(
-              Math.abs(this.hs300Data)
-            )} H ${(37 * this.boxWidth) / 200}`
-          );
-      } else {
+      const returnToHs300 = {
+        one_quarter_return: this.one_quarter_hs300_returnData,
+        one_year_return: this.one_year_hs300_returnData,
+        three_year_return: this.three_year_hs300_returnData,
+      };
+      if (this.initTopBars.length === 1) {
         gRectsTop
           .append("rect")
-          .attr("fill", "none")
-          .attr("stroke-dasharray", "2, 2")
-          .attr("stroke", "black")
-          .attr("x", (7 * this.boxWidth) / 200)
-          .attr("y", this.yScale(Math.abs(this.hs300Data)))
-          .attr("width", (30 * this.boxWidth) / 200)
+          .attr("id", `risk-${this.boxId}`)
+          .attr("fill", colorMap.risk)
+          .attr("stroke", colorMap.risk)
+          .attr(
+            "mask",
+            this.riskData.norm < 0
+              ? `url(#top_mask_stripe_${this.boxId})`
+              : "none"
+          )
+          .attr("x", (barAttrs.one.startX[0] * this.boxWidth) / 200)
+          .attr("y", this.yScale(Math.abs(this.riskData.norm)))
+          .attr("width", (barAttrs.one.width * this.boxWidth) / 200)
           .attr(
             "height",
-            this.yScale(Math.abs(this.nav_returnData.norm)) -
-              this.yScale(Math.abs(this.hs300Data))
+            this.yScale(0) - this.yScale(Math.abs(this.riskData.norm))
           );
+      } else if (this.initTopBars.length === 2) {
+        for (let i = 0; i < this.initTopBars.length; i++) {
+          gRectsTop
+            .append("rect")
+            .attr("id", `${this.initTopBars[i]}-${this.boxId}`)
+            .attr("fill", eval(`colorMap.${this.initTopBars[i]}`))
+            .attr("stroke", eval(`colorMap.${this.initTopBars[i]}`))
+            .attr(
+              "mask",
+              eval(`this.${this.initTopBars[i]}Data.norm`) < 0
+                ? `url(#top_mask_stripe_${this.boxId})`
+                : "none"
+            )
+            .attr("x", (barAttrs.two.startX[i] * this.boxWidth) / 200)
+            .attr(
+              "y",
+              this.yScale(
+                Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`))
+              )
+            )
+            .attr("width", (barAttrs.two.width * this.boxWidth) / 200)
+            .attr(
+              "height",
+              this.yScale(0) -
+                this.yScale(
+                  Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`))
+                )
+            );
+          // 根据return和hs300的差值画虚线
+          if (i > 0 && i < this.initTopBars.length - 1) {
+            if (
+              Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`)) >
+              Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
+            ) {
+              gRectsTop
+                .append("path")
+                .attr("stroke-dasharray", "2, 2")
+                .attr("stroke", "black")
+                .attr(
+                  "d",
+                  `m ${(barAttrs.two.startX[i] * this.boxWidth) /
+                    200} ${this.yScale(
+                    Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
+                  )} h ${(barAttrs.two.width * this.boxWidth) / 200}`
+                );
+            } else {
+              gRectsTop
+                .append("rect")
+                .attr("fill", "none")
+                .attr("stroke-dasharray", "2, 2")
+                .attr("stroke", "black")
+                .attr("x", (barAttrs.two.startX[i] * this.boxWidth) / 200)
+                .attr(
+                  "y",
+                  this.yScale(
+                    Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
+                  )
+                )
+                .attr("width", (barAttrs.two.width * this.boxWidth) / 200)
+                .attr(
+                  "height",
+                  this.yScale(
+                    Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`))
+                  ) -
+                    this.yScale(
+                      Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
+                    )
+                );
+            }
+          }
+        }
+      } else if (this.initTopBars.length === 3) {
+        for (let i = 0; i < this.initTopBars.length; i++) {
+          gRectsTop
+            .append("rect")
+            .attr("id", `${this.initTopBars[i]}-${this.boxId}`)
+            .attr("fill", eval(`colorMap.${this.initTopBars[i]}`))
+            .attr("stroke", eval(`colorMap.${this.initTopBars[i]}`))
+            .attr(
+              "mask",
+              eval(`this.${this.initTopBars[i]}Data.norm`) < 0
+                ? `url(#top_mask_stripe_${this.boxId})`
+                : "none"
+            )
+            .attr("x", (barAttrs.three.startX[i] * this.boxWidth) / 200)
+            .attr(
+              "y",
+              this.yScale(
+                Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`))
+              )
+            )
+            .attr("width", (barAttrs.three.width * this.boxWidth) / 200)
+            .attr(
+              "height",
+              this.yScale(0) -
+                this.yScale(
+                  Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`))
+                )
+            );
+          // 根据return和hs300的差值画虚线
+          if (i > 0 && i < this.initTopBars.length - 1) {
+            if (
+              Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`)) >
+              Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
+            ) {
+              gRectsTop
+                .append("path")
+                .attr("stroke-dasharray", "2, 2")
+                .attr("stroke", "black")
+                .attr(
+                  "d",
+                  `m ${(barAttrs.three.startX[i] * this.boxWidth) /
+                    200} ${this.yScale(
+                    Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
+                  )} h ${(barAttrs.three.width * this.boxWidth) / 200}`
+                );
+            } else {
+              gRectsTop
+                .append("rect")
+                .attr("fill", "none")
+                .attr("stroke-dasharray", "2, 2")
+                .attr("stroke", "black")
+                .attr("x", (barAttrs.three.startX[i] * this.boxWidth) / 200)
+                .attr(
+                  "y",
+                  this.yScale(
+                    Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
+                  )
+                )
+                .attr("width", (barAttrs.three.width * this.boxWidth) / 200)
+                .attr(
+                  "height",
+                  this.yScale(
+                    Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`))
+                  ) -
+                    this.yScale(
+                      Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
+                    )
+                );
+            }
+          }
+        }
+      } else {
+        for (let i = 0; i < this.initTopBars.length; i++) {
+          gRectsTop
+            .append("rect")
+            .attr("id", `${this.initTopBars[i]}-${this.boxId}`)
+            .attr("fill", eval(`colorMap.${this.initTopBars[i]}`))
+            .attr("stroke", eval(`colorMap.${this.initTopBars[i]}`))
+            .attr(
+              "mask",
+              eval(`this.${this.initTopBars[i]}Data.norm`) < 0
+                ? `url(#top_mask_stripe_${this.boxId})`
+                : "none"
+            )
+            .attr("x", (barAttrs.four.startX[i] * this.boxWidth) / 200)
+            .attr(
+              "y",
+              this.yScale(
+                Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`))
+              )
+            )
+            .attr("width", (barAttrs.four.width * this.boxWidth) / 200)
+            .attr(
+              "height",
+              this.yScale(0) -
+                this.yScale(
+                  Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`))
+                )
+            );
+          // 根据return和hs300的差值画虚线
+          if (i > 0 && i < this.initTopBars.length - 1) {
+            if (
+              Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`)) >
+              Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
+            ) {
+              gRectsTop
+                .append("path")
+                .attr("stroke-dasharray", "2, 2")
+                .attr("stroke", "black")
+                .attr(
+                  "d",
+                  `m ${(barAttrs.four.startX[i] * this.boxWidth) /
+                    200} ${this.yScale(
+                    Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
+                  )} h ${(barAttrs.four.width * this.boxWidth) / 200}`
+                );
+            } else {
+              gRectsTop
+                .append("rect")
+                .attr("fill", "none")
+                .attr("stroke-dasharray", "2, 2")
+                .attr("stroke", "black")
+                .attr("x", (barAttrs.four.startX[i] * this.boxWidth) / 200)
+                .attr(
+                  "y",
+                  this.yScale(
+                    Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
+                  )
+                )
+                .attr("width", (barAttrs.four.width * this.boxWidth) / 200)
+                .attr(
+                  "height",
+                  this.yScale(
+                    Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`))
+                  ) -
+                    this.yScale(
+                      Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
+                    )
+                );
+            }
+          }
+        }
       }
+
       // right
-      this.yScale
-        .domain([0, 1])
-        .range([0, ((60 - this.barTopMargin) * this.boxWidth) / 200]);
+      this.yScale.range([0, ((60 - this.barTopMargin) * this.boxWidth) / 200]);
       const rightDefs = this.rightSvg.append("defs");
       rightDefs
         .append("pattern")
@@ -348,45 +555,31 @@ export default {
       const gRectsRight = this.rightSvg
         .append("g")
         .attr("transform", `translate(0, ${(60 * this.boxWidth) / 200})`);
-      gRectsRight
-        .append("rect")
-        .attr("id", "sharp_ratio-" + this.boxId)
-        .attr("fill", colorMap.sharp_ratio)
-        .attr(
-          "mask",
-          this.sharp_ratioData.norm < 0
-            ? `url(#right_mask_stripe_${this.boxId})`
-            : "none"
-        )
-        .attr("x", 0)
-        .attr("y", (7 * this.boxWidth) / 200)
-        .attr(
-          "width",
-          this.yScale(Math.abs(this.sharp_ratioData.norm)) - this.yScale(0)
-        )
-        .attr("height", (30 * this.boxWidth) / 200);
-      gRectsRight
-        .append("rect")
-        .attr("id", "information_ratio-" + this.boxId)
-        .attr("fill", colorMap.information_ratio)
-        .attr(
-          "mask",
-          this.information_ratioData.norm < 0
-            ? `url(#right_mask_stripe_${this.boxId})`
-            : "none"
-        )
-        .attr("x", 0)
-        .attr("y", (43 * this.boxWidth) / 200)
-        .attr(
-          "width",
-          this.yScale(Math.abs(this.information_ratioData.norm)) -
-            this.yScale(0)
-        )
-        .attr("height", (30 * this.boxWidth) / 200);
+      for (let i = 0; i < this.initRightBars.length; i++) {
+        gRectsRight
+          .append("rect")
+          .attr("id", `${this.initRightBars[i]}-${this.boxId}`)
+          .attr("fill", eval(`colorMap.${this.initRightBars[i]}`))
+          .attr("stroke", eval(`colorMap.${this.initRightBars[i]}`))
+          .attr(
+            "mask",
+            eval(`this.${this.initRightBars[i]}Data.norm`) < 0
+              ? `url(#right_mask_stripe_${this.boxId})`
+              : "none"
+          )
+          .attr("x", 0)
+          .attr("y", (barAttrs.two.startX[i] * this.boxWidth) / 200)
+          .attr(
+            "width",
+            this.yScale(
+              Math.abs(eval(`this.${this.initRightBars[i]}Data.norm`))
+            ) - this.yScale(0)
+          )
+          .attr("height", (barAttrs.two.width * this.boxWidth) / 200);
+      }
+
       // bottom
-      this.yScale
-        .domain([0, 1])
-        .range([0, ((60 - this.barTopMargin) * this.boxWidth) / 200]);
+      this.yScale.range([0, ((60 - this.barTopMargin) * this.boxWidth) / 200]);
       const bottomDefs = this.bottomSvg.append("defs");
       bottomDefs
         .append("pattern")
@@ -412,61 +605,34 @@ export default {
       const gRectsBottom = this.bottomSvg
         .append("g")
         .attr("transform", `translate(${(60 * this.boxWidth) / 200}, 0)`);
-      gRectsBottom
-        .append("rect")
-        .attr("id", "stock-" + this.boxId)
-        .attr("fill", colorMap.stock)
-        .attr(
-          "mask",
-          this.stockData < 0 ? `url(#bottom_mask_stripe_${this.boxId})` : "none"
-        )
-        .attr("x", (4 * this.boxWidth) / 200)
-        .attr("y", 0)
-        .attr("width", (15 * this.boxWidth) / 200)
-        .attr("height", this.yScale(Math.abs(this.stockData)) - this.yScale(0));
-      gRectsBottom
-        .append("rect")
-        .attr("id", "bond-" + this.boxId)
-        .attr("fill", colorMap.bond)
-        .attr(
-          "mask",
-          this.bondData < 0 ? `url(#bottom_mask_stripe_${this.boxId})` : "none"
-        )
-        .attr("x", (23 * this.boxWidth) / 200)
-        .attr("y", 0)
-        .attr("width", (15 * this.boxWidth) / 200)
-        .attr("height", this.yScale(Math.abs(this.bondData)) - this.yScale(0));
-      gRectsBottom
-        .append("rect")
-        .attr("id", "cash-" + this.boxId)
-        .attr("fill", colorMap.cash)
-        .attr(
-          "mask",
-          this.cashData < 0 ? `url(#bottom_mask_stripe_${this.boxId})` : "none"
-        )
-        .attr("x", (42 * this.boxWidth) / 200)
-        .attr("y", 0)
-        .attr("width", (15 * this.boxWidth) / 200)
-        .attr("height", this.yScale(Math.abs(this.cashData)) - this.yScale(0));
-      gRectsBottom
-        .append("rect")
-        .attr("id", "other-" + this.boxId)
-        .attr("fill", colorMap.other)
-        .attr(
-          "mask",
-          this.otherData < 0 ? `url(#bottom_mask_stripe_${this.boxId})` : "none"
-        )
-        .attr("x", (61 * this.boxWidth) / 200)
-        .attr("y", 0)
-        .attr("width", (15 * this.boxWidth) / 200)
-        .attr("height", this.yScale(Math.abs(this.otherData)) - this.yScale(0));
+      for (let i = 0; i < this.initBottomBars.length; i++) {
+        gRectsBottom
+          .append("rect")
+          .attr("id", `${this.initBottomBars[i]}-${this.boxId}`)
+          .attr("fill", eval(`colorMap.${this.initBottomBars[i]}`))
+          .attr("stroke", eval(`colorMap.${this.initBottomBars[i]}`))
+          .attr(
+            "mask",
+            eval(`this.${this.initBottomBars[i]}Data.norm`) < 0
+              ? `url(#bottom_mask_stripe_${this.boxId})`
+              : "none"
+          )
+          .attr("x", (barAttrs.four.startX[i] * this.boxWidth) / 200)
+          .attr("y", 0)
+          .attr("width", (barAttrs.four.width * this.boxWidth) / 200)
+          .attr(
+            "height",
+            this.yScale(
+              Math.abs(eval(`this.${this.initBottomBars[i]}Data.norm`))
+            ) - this.yScale(0)
+          );
+      }
+
       // left
-      this.yScale
-        .domain([0, 1])
-        .range([
-          (60 * this.boxWidth) / 200,
-          (this.barTopMargin * this.boxWidth) / 200,
-        ]);
+      this.yScale.range([
+        (60 * this.boxWidth) / 200,
+        (this.barTopMargin * this.boxWidth) / 200,
+      ]);
       const leftDefs = this.leftSvg.append("defs");
       leftDefs
         .append("pattern")
@@ -492,41 +658,34 @@ export default {
       const gRectsLeft = this.leftSvg
         .append("g")
         .attr("transform", `translate(0, ${(60 * this.boxWidth) / 200})`);
-      gRectsLeft
-        .append("rect")
-        .attr("id", "alpha-" + this.boxId)
-        .attr("fill", colorMap.alpha)
-        .attr(
-          "mask",
-          this.alphaData.norm < 0
-            ? `url(#left_mask_stripe_${this.boxId})`
-            : "none"
-        )
-        .attr("x", this.yScale(Math.abs(this.alphaData.norm)))
-        .attr("y", (7 * this.boxWidth) / 200)
-        .attr(
-          "width",
-          this.yScale(0) - this.yScale(Math.abs(this.alphaData.norm))
-        )
-        .attr("height", (30 * this.boxWidth) / 200);
-      gRectsLeft
-        .append("rect")
-        .attr("id", "beta-" + this.boxId)
-        .attr("fill", colorMap.beta)
-        .attr(
-          "mask",
-          this.betaData.norm < 0
-            ? `url(#left_mask_stripe_${this.boxId})`
-            : "none"
-        )
-        .attr("x", this.yScale(Math.abs(this.betaData.norm)))
-        .attr("y", (43 * this.boxWidth) / 200)
-        .attr(
-          "width",
-          this.yScale(0) - this.yScale(Math.abs(this.betaData.norm))
-        )
-        .attr("height", (30 * this.boxWidth) / 200);
+      for (let i = 0; i < this.initLeftBars.length; i++) {
+        gRectsLeft
+          .append("rect")
+          .attr("id", `${this.initLeftBars[i]}-${this.boxId}`)
+          .attr("fill", eval(`colorMap.${this.initLeftBars[i]}`))
+          .attr("stroke", eval(`colorMap.${this.initLeftBars[i]}`))
+          .attr(
+            "mask",
+            eval(`this.${this.initLeftBars[i]}Data.norm`) < 0
+              ? `url(#left_mask_stripe_${this.boxId})`
+              : "none"
+          )
+          .attr(
+            "x",
+            this.yScale(Math.abs(eval(`this.${this.initLeftBars[i]}Data.norm`)))
+          )
+          .attr("y", (barAttrs.two.startX[i] * this.boxWidth) / 200)
+          .attr(
+            "width",
+            this.yScale(0) -
+              this.yScale(
+                Math.abs(eval(`this.${this.initLeftBars[i]}Data.norm`))
+              )
+          )
+          .attr("height", (barAttrs.two.width * this.boxWidth) / 200);
+      }
 
+      // 添加tooltip
       for (let dataName in colorMap) {
         d3.select(`#${dataName}-${this.boxId}`)
           .on("mouseover", function() {
@@ -537,31 +696,17 @@ export default {
               .select(this)
               .attr("id")
               .split("-")[0];
-            let value;
-            if (
-              [
-                "nav_return",
-                "risk",
-                "alpha",
-                "beta",
-                "sharp_ratio",
-                "information_ratio",
-              ].indexOf(key) !== -1
-            )
-              value = eval(`that.${key}Data.value`).toFixed(2);
-            else value = eval(`that.${key}Data`).toFixed(2);
+            let value = eval(`that.${key}Data.value`).toFixed(2);
             let curOffsetX = e.offsetX;
             let curOffsetY = e.offsetY;
-            if (["nav_return", "risk"].indexOf(key) !== -1) {
+            if (that.initTopBars.indexOf(key) !== -1) {
               // top
-            } else if (
-              ["sharp_ratio", "information_ratio"].indexOf(key) !== -1
-            ) {
+            } else if (that.initRightBars.indexOf(key) !== -1) {
               // right
               curOffsetX += (80 * this.boxWidth) / 200;
-            } else if (["stock", "bond", "cash", "other"].indexOf(key) !== -1) {
+            } else if (that.initBottomBars.indexOf(key) !== -1) {
               // bottom
-              curOffsetY += (80 * this.boxWidth) / 200;
+              curOffsetY += (80 * that.boxWidth) / 200;
             } else {
               // left
             }
@@ -647,9 +792,10 @@ export default {
       this.lastTopBars = this.curTopBars;
     },
     getSelectedBarCenterPoint(type) {
+      // 获取该柱状图顶部中间点的相对坐标，用于画趋势虚线
       const dom = d3.select(`#${type}-${this.boxId}`);
       let relativeX, relativeY;
-      if (["nav_return", "risk"].indexOf(type) !== -1) {
+      if (this.initTopBars.indexOf(type) !== -1) {
         // top
         this.midPointX =
           parseFloat(dom.attr("width") / 2) +
@@ -660,7 +806,7 @@ export default {
         relativeX =
           parseFloat(dom.attr("width") / 2) + parseFloat(dom.attr("x"));
         relativeY = parseFloat(dom.attr("y"));
-      } else if (["sharp_ratio", "information_ratio"].indexOf(type) !== -1) {
+      } else if (this.initRightBars.indexOf(type) !== -1) {
         // right
         this.midPointX = parseFloat(dom.attr("width"));
         this.midPointY =
@@ -671,7 +817,7 @@ export default {
         relativeX =
           parseFloat(dom.attr("height") / 2) + parseFloat(dom.attr("y"));
         relativeY = (60 * this.boxWidth) / 200 - parseFloat(dom.attr("width"));
-      } else if (["stock", "bond", "cash", "other"].indexOf(type) !== -1) {
+      } else if (this.initBottomBars.indexOf(type) !== -1) {
         // bottom
         this.midPointX =
           parseFloat(dom.attr("x")) +
@@ -700,7 +846,7 @@ export default {
       }
       return [relativeX, relativeY];
     },
-    // 内部数据是正的
+    // 内部数据是正的，需要画两段虚线（除首尾的box）
     drawDashline(xPos1, yPos1, xPos2, yPos2, isFirst, isLast) {
       let curSvg = null;
       switch (this.curTopSide) {
@@ -854,12 +1000,13 @@ export default {
   position: absolute;
   text-align: center;
   max-width: 150px;
-  max-height: 50px;
+  max-height: 100px;
   padding: 6px;
   border: none;
   background: black;
   color: white;
   pointer-events: none;
   display: none;
+  font-size: 10px;
 }
 </style>

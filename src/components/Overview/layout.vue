@@ -37,6 +37,8 @@ export default {
   name: "OverViewLayout",
   props: {
     fundsData: Object,
+    totalWidth: Number,
+    scrollLeft: Number,
   },
   data() {
     return {

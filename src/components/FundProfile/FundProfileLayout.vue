@@ -7,7 +7,7 @@
       style="margin-top: 105px; margin-bottom: 105px"
     />
     <div v-if="!isRequesting">
-      <!-- <component
+      <component
         :is="componentName"
         :ref="item"
         :fundData="fundData"
@@ -19,9 +19,10 @@
         :key="item"
         @handleScroll="handleScroll"
         @handleSelect="handleSelect"
+        @updateWidth="updateWidth"
         v-for="item in fundsID"
       >
-      </component> -->
+      </component>
     </div>
   </div>
 </template>
@@ -38,8 +39,10 @@ export default {
   },
   watch: {
     start_date: function (val) {
+      console.log("In FundProfileLayout: ", val);
       //限制第一次是因为id获取慢于起止点，会报错
       if (!this.isFirst) {
+        this.isRequesting = true;
         this.getViewFunds();
       }
     },
@@ -67,7 +70,7 @@ export default {
     };
   },
   components: {
-    // FundProfile,
+    FundProfile,
   },
   methods: {
     getViewFunds() {
@@ -86,12 +89,16 @@ export default {
       );
     },
     handleScroll(value) {
+      this.$emit("updateScrollLeft", value);
       for (let i = 0; i < this.fundsID.length; i++)
         this.$refs[this.fundsID[i]].handleScroll(value);
     },
     handleSelect(value) {
       for (let i = 0; i < this.fundsID.length; i++)
         this.$refs[this.fundsID[i]].handleSelect(value);
+    },
+    updateWidth(value) {
+      this.$emit("updateWidth", value);
     },
   },
   mounted() {},
