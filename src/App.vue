@@ -25,6 +25,7 @@
           :fundsID="needFundsID"
           :start_date="startDate"
           :end_date="endDate"
+          ref="fundProfileLayout"
           @updateWidth="handleUpdateWidth"
           @updateScrollLeft="handleScrollLeft"
         />
@@ -76,7 +77,6 @@ export default {
         }
       );
     },
-
     getFundManagers() {
       //得到基金散点图和基金经理信息
       DataService.post(
@@ -113,12 +113,15 @@ export default {
       // }
     },
     handleUpdateWidth(width) {
-      console.log(width);
+      // console.log(width);
       this.totalWidth = width;
     },
     handleScrollLeft(value) {
-      console.log(value);
+      // console.log(value);
       this.scrollLeft = value;
+    },
+    getFundsLikeScore() {
+      return this.$refs["fundProfileLayout"].getHistoryFundsLikeScore();
     },
   },
 };
