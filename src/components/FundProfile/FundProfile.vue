@@ -720,6 +720,8 @@ export default {
           this.investStyleBoxWidth / 2,
         this.width
       );
+      // 将实际宽度传递给父组件进行同步
+      this.$emit("updateWidth", this.width);
       this.height = this.boxHeight;
       this.margin.top = this.margin.bottom = this.height / 4;
       // this.maxPathWidth = (60 * this.investStyleBoxWidth) / 200;

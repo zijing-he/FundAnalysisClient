@@ -19,6 +19,7 @@
         :key="item"
         @handleScroll="handleScroll"
         @handleSelect="handleSelect"
+        @updateWidth="updateWidth"
         v-for="item in fundsID"
       >
       </component>
@@ -88,12 +89,16 @@ export default {
       );
     },
     handleScroll(value) {
+      this.$emit("updateScrollLeft", value);
       for (let i = 0; i < this.fundsID.length; i++)
         this.$refs[this.fundsID[i]].handleScroll(value);
     },
     handleSelect(value) {
       for (let i = 0; i < this.fundsID.length; i++)
         this.$refs[this.fundsID[i]].handleSelect(value);
+    },
+    updateWidth(value) {
+      this.$emit("updateWidth", value);
     },
   },
   mounted() {},

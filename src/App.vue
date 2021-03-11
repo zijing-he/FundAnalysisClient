@@ -14,13 +14,19 @@
         />
       </a-row>
       <a-row>
-        <OverViewLayout :fundsData="fundsData" />
+        <OverViewLayout
+          :fundsData="fundsData"
+          :totalWidth="totalWidth"
+          :scrollLeft="scrollLeft"
+        />
       </a-row>
       <a-row>
         <FundProfileLayout
           :fundsID="needFundsID"
           :start_date="startDate"
           :end_date="endDate"
+          @updateWidth="handleUpdateWidth"
+          @updateScrollLeft="handleScrollLeft"
         />
       </a-row>
     </a-col>
@@ -46,10 +52,12 @@ export default {
     return {
       fundsData: null,
       fundsID: null,
-      startDate: "20110331",  //默认起始值
+      startDate: "20110331", //默认起始值
       endDate: "20191231",
       userWeight: null,
       needFundsID: null,
+      totalWidth: 900,
+      scrollLeft: 0,
     };
   },
   computed: {},
@@ -100,9 +108,17 @@ export default {
       // if (this.startDate == "20110331" && this.endDate == "20191231") {
       //   this.getTimeBoundary();
       // } else {
-        this.needFundsID = this.fundsID;
-        this.getFundManagers();
+      this.needFundsID = this.fundsID;
+      this.getFundManagers();
       // }
+    },
+    handleUpdateWidth(width) {
+      console.log(width);
+      this.totalWidth = width;
+    },
+    handleScrollLeft(value) {
+      console.log(value);
+      this.scrollLeft = value;
     },
   },
 };
