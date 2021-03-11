@@ -2,12 +2,10 @@
   <div class="container">
     <h4>基金市场的演变</h4>
     <a-row>
-      <a-col :span="12">
-        <MarketAnalysisCurveChart v-on:updateBrush="handleUpdateBrush" />
-      </a-col>
-      <a-col :span="12">
-        <MarketAnalysisStramGraph />
-      </a-col>
+      <MarketAnalysisCurveChart v-on:updateBrush="handleUpdateBrush" />
+    </a-row>
+    <a-row>
+      <MarketAnalysisStramGraph />
     </a-row>
   </div>
 </template>
@@ -34,6 +32,7 @@ export default {
 
 <style scoped>
 .container {
+  margin-top:10px;
   width: 100%;
   border: 1px solid black;
 }

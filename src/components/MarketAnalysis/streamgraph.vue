@@ -1,51 +1,22 @@
 
 <template>
-  <div>
-    <!-- justify="end" -->
-    <a-row type="flex" justify="start">
-      <!-- <a-col :span="4">
-        <a-dropdown>
-          <template #overlay>
-            <a-menu @click="handleMenuClick">
-              <a-menu-item :key="item" v-for="item in sectors">
-                <svg class="icon" aria-hidden="true">
-                  <use xlink:href="#icontesila"></use>
-                </svg>
-                {{ item }}
-              </a-menu-item>
-            </a-menu>
-          </template>
-          <a-button>
-            选择您所关注的行业
-            <DownOutlined />
-          </a-button>
-        </a-dropdown>
-      </a-col> -->
-      <!-- <a-col :span="12">
-        <a-button
-          :key="item"
-          v-for="item in selectedIndustries"
-          @click="handleButtonClick"
-        >
-          <div :style="activationButton(item)">{{ item }}</div>
-        </a-button>
-      </a-col> -->
-
+  <div class="selectedContainer">
+    <!-- type="flex" justify="start" -->
+    <a-row>
       <a-col :span="24">
         <a-select
           v-model:value="selectedIndustries"
           mode="multiple"
           showArrow
-          style="width: 100%"
+          style="width: 100%; margin-top: 20px"
           placeholder="选择您所关注的行业"
           @change="handleChange"
         >
           <a-select-option v-for="item in sectors" :key="item" :value="item">
-            
-           <span>
-             <text :style="activationSelect(item)">██  </text>
-             <text>{{ item }}</text>
-           </span>
+            <span>
+              <text :style="activationSelect(item)">██ </text>
+              <text>{{ item }}</text>
+            </span>
           </a-select-option>
         </a-select>
       </a-col>
@@ -63,20 +34,17 @@ import * as d3 from "d3";
 import dataJSON from "@/data/StreamGraph/market_date_sector.json";
 import sectorJSON from "@/data/market_sector_date.json";
 import sectorDict from "@/data/sector_dict.json";
-import { UserOutlined, DownOutlined } from "@ant-design/icons-vue";
 export default {
   name: "MarketAnalysisStramGraph",
   props: {},
   components: {
-    // UserOutlined,
-    // DownOutlined,
   },
   data() {
     return {
       svg: null,
-      margin: { top: 10, right: 20, bottom: 20, left: 15 },
-      width: 990,
-      height: 110,
+      margin: { top: 20, right: 20, bottom: 20, left: 15 },
+      width: 515,
+      height: 200,
       date: Object.keys(dataJSON),
       keys: [],
       data: dataJSON,
@@ -92,15 +60,9 @@ export default {
   },
   computed: {
     //根据内容不同改变颜色
-    activationButton() {
-      return (item) => {
-        return { color: sectorDict[item].color };
-      };
-    },
     activationSelect() {
       return (item) => {
-        return {  color:sectorDict[item].color };
-        // return { color: sectorDict[item].color };
+        return { color: sectorDict[item].color};
       };
     },
     innerWidth() {
@@ -117,14 +79,19 @@ export default {
         .nice();
     },
     yScale() {
-      return d3
-        .scaleLinear()
-        .domain([
-          0,
-          d3.max(Object.values(this.data), (d) => d.avg),
-          // d3.max(Object.values(this.data), (d) => d3.max(Object.values(d))),
-        ])
-        .range([this.innerHeight, 0]);
+      let yscale = d3.scaleLinear().range([this.innerHeight, 0]);
+      let maxArray = [d3.max(Object.values(this.data), (d) => d.avg)];
+      this.selectedIndustries.forEach((d) => {
+        maxArray.push(d3.max(Object.values(this.sector_data[d])));
+      });
+
+      return yscale.domain([
+        0,
+        d3.max(maxArray),
+        // d3.max(Object.values(this.data), (d) => d.avg),
+        // domain([0, 154677212676.10007])
+        // d3.max(Object.values(this.data), (d) => d3.max(Object.values(d))),
+      ]);
     },
     linePath() {
       return d3
@@ -232,7 +199,7 @@ export default {
       this.svg.selectAll("#streamGraphLayers").remove();
       let streamGraph = this.svg.append("g").attr("id", "streamGraphLayers");
 
-      this.yScale.domain([0, d3.max(Object.values(this.data), (d) => d.avg)]);
+      // this.yScale.domain([0, d3.max(Object.values(this.data), (d) => d.avg)]);
       streamGraph
         .append("path")
         .datum(Object.values(this.data))
@@ -251,50 +218,35 @@ export default {
         .selectAll(".sectorLegend")
         .data(this.selectedIndustries)
         .enter();
-      this.yScale.domain([0, 154677212676.10007]);
-      // this.selectedIndustries.forEach((d, i) => {
-      //   sectorChart
-      //     .append("g")
-      //     .append("path")
-      //     .attr("class", "line-path-sector")
-      //     .attr("d", this.linePath(Object.values(this.sector_data[d])))
-      //     .attr("fill", "none")
-      //     .attr("stroke-width", "2px")
-      //     .attr("stroke", sectorDict[d].color);
 
-      // sectorChart
-      //   .append("rect")
-      //   .attr("x", i * 80)
-      //   .attr("y", 5)
-      //   .attr("width", 12)
-      //   .attr("height", 12)
-      //   .style("fill", sectorDict[d].color);
+      // this.yScale.domain([0, 154677212676.10007]);
 
-      // sectorChart
-      //   .append("text")
-      //   .attr("x", 15 + i * 80)
-      //   .attr("y", 16)
-      //   .style("font-size", "12px")
-      //   .style("color", "black")
-      //   .text(d);
-      // });
-
+      let handleMouseover = function (event, d) {
+        console.log(event, d);
+        d3.selectAll("line-path-sector").attr("stroke", "black");
+        d3.select(this).attr("stroke", (d) => sectorDict[d].color);
+      };
       sectorChart
         .append("path")
         .attr("class", "line-path-sector")
         .attr("d", (d) => this.linePath(Object.values(this.sector_data[d])))
         .attr("fill", "none")
         .attr("stroke-width", "2px")
-        .attr("stroke", (d) => sectorDict[d].color);
+        .attr("stroke", (d) => sectorDict[d].color)
+        .on("mouseover", handleMouseover);
     },
   },
 };
 </script>
 
 <style scoped>
+.selectedContainer {
+  width: 100%;
+  /* border: 1px solid red; */
+}
 #market_streamgraph {
-  height: 110px;
-  width: 50%;
+  height: 200px;
+  width: 100%;
 }
 
 .icon {

@@ -8,7 +8,9 @@ import * as d3 from "d3";
 import nameDictionary from "@/data/weight_key.json";
 export default {
   name: "ControlPanelRaderChart2",
-
+  props: {
+    proData: Array,
+  },
   components: {},
   emits: ["updateUserData"],
 
@@ -46,8 +48,21 @@ export default {
     };
   },
   watch: {
+    proData: function (value) {
+      this.data = value;
+      this.svg.selectAll("g").remove();
+      this.renderInit();
+      this.renderUpdate();
+    },
   },
   mounted: function () {
+    this.svg = d3
+      .select("#market_raderchart")
+      .append("svg")
+      .attr("width", this.width + this.margin.right)
+      .attr("height", this.height + this.margin.bottom)
+      .append("g")
+      .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
     this.renderInit();
     this.renderUpdate();
   },
@@ -70,14 +85,6 @@ export default {
       );
       this.total = this.allAxis.length;
       this.radius = this.factor * Math.min(this.width / 2, this.height / 2);
-
-      this.svg = d3
-        .select("#market_raderchart")
-        .append("svg")
-        .attr("width", this.width + this.margin.right)
-        .attr("height", this.height + this.margin.bottom)
-        .append("g")
-        .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
 
       this.raderChart = this.svg.append("g").attr("id", "raderChartGroup");
 
@@ -194,6 +201,7 @@ export default {
     renderUpdate() {
       let maxDataValues = [];
       //计算value的坐标
+      this.dataValues = [];
       this.data.forEach((d, i) => {
         this.dataValues.push([
           (this.width / 2) *
@@ -220,7 +228,13 @@ export default {
         str = str + this.dataValues[i][0] + "," + this.dataValues[i][1] + " ";
       }
 
+      // console.log(this.raderChart.select(".radar-chart-area"));
+      // console.log(this.raderChart.select("#nodesGroup"));
+      // this.raderChart.select(".radar-chart-area").remove();
+      // this.raderChart.select("#nodesGroup").remove();
+
       this.raderChart
+        .append("g")
         .selectAll(".area")
         .data([this.dataValues])
         .enter()
@@ -241,11 +255,11 @@ export default {
         if (nameDictionary[d.axis].cn_name.length <= 5) {
           d3.select(".update_value_weight").style("margin-top", "16px");
         }
-         d3.select(".update_value_value")
-            .text(d.value-2)
-            .style("display", "block")
-            .style("text-align", "center");
-          
+        d3.select(".update_value_value")
+          .text(d.value - 2)
+          .style("display", "block")
+          .style("text-align", "center");
+
         toolTip.style("visibility", "visible");
       };
       let move = function (event, d) {
@@ -295,8 +309,8 @@ export default {
           d3.select(".update_value_value")
             .text((newValue - 2).toFixed(2))
             .style("display", "block")
-            .style("text-align", "center")
-            // .style("visibility", "visible");
+            .style("text-align", "center");
+          // .style("visibility", "visible");
 
           updatePoly();
         } else {
@@ -347,6 +361,7 @@ export default {
       };
       let nodesGroup = this.raderChart
         .append("g")
+        .attr("id", "nodesGroup")
         .selectAll(".nodes")
         .data(this.data)
         .enter()
@@ -401,8 +416,8 @@ export default {
 <style scoped>
 .update_value {
   position: absolute;
-  left: 171px;
-  top: 95.5px;
+  left: 177px;
+  top: 112px;
   width: 66px;
   height: 66px;
   background-color: #a8a8a8;

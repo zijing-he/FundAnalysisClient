@@ -73,7 +73,6 @@ export default {
 <style scoped>
 .container {
   width: 100%;
-  margin-top: 10px;
   border: 1px solid black;
 }
 h4 {

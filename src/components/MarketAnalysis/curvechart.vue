@@ -16,15 +16,15 @@ export default {
   data() {
     return {
       svg: null,
-      margin: { top: 10, right: 125, bottom: 20, left: 15 },
-      width: 990,
-      height: 142,
+      margin: { top: 15, right: 20, bottom: 20, left: 15 },
+      width: 515,
+      height: 200,
       date: Object.keys(market_income),
       fund_size: Object.values(market_size),
       fund_number: Object.values(market_number),
       fund_income: Object.values(market_income),
       fund_hs300: Object.values(market_hs300),
-      keys: ["基金规模", "基金数量", "基金平均收益", "沪深300"],
+      keys: ["基金规模", "沪深300","基金平均收益",],
     };
   },
 
@@ -61,7 +61,7 @@ export default {
       return d3
         .scaleOrdinal()
         .domain(this.keys) //["基金规模", "基金数量", "基金平均收益","沪深三百"]
-        .range(["#928a97", "#fbe8d3", "#f85f73", "#283c63"]);
+        .range(["#928a97", "#283c63", "#f85f73"]);
     },
   },
 
@@ -138,15 +138,15 @@ export default {
       //   .attr("fill", "red");
 
       // fund_number
-      this.yScale.domain(d3.extent(this.fund_number));
-      curveChart
-        .append("g")
-        .append("path")
-        .attr("class", "line-path-number")
-        .attr("d", this.linePath(this.fund_number))
-        .attr("fill", "none")
-        .attr("stroke-width", 2)
-        .attr("stroke", "#fbe8d3");
+      // this.yScale.domain(d3.extent(this.fund_number));
+      // curveChart
+      //   .append("g")
+      //   .append("path")
+      //   .attr("class", "line-path-number")
+      //   .attr("d", this.linePath(this.fund_number))
+      //   .attr("fill", "none")
+      //   .attr("stroke-width", 2)
+      //   .attr("stroke", "#fbe8d3");
 
       //fund_income
       this.yScale.domain(d3.extent(this.fund_income));
@@ -172,27 +172,23 @@ export default {
 
       curveChart.append("g").attr("class", "brush").call(brush);
 
-      // function updateChart({ selection }) {
-      //   console.log(selection); //打印选中的像素点
-      // }
-
       //legend
       this.svg
         .selectAll(".legend")
         .data(this.keys)
         .enter()
         .append("circle")
-        .attr("cx", this.innerWidth + 15)
-        .attr("cy", (d, i) => 5 + i * 18)
-        .attr("r", 3)
+        .attr("cx", (d, i) => 5 + i * 75)
+        .attr("cy", -2)
+        .attr("r", 4)
         .style("fill", (d) => this.colorScale(d));
       this.svg
         .selectAll(".labels")
         .data(this.keys)
         .enter()
         .append("text")
-        .attr("x", this.innerWidth + 25)
-        .attr("y", (d, i) => 5 + i * 18)
+        .attr("x", (d, i) => 15 + i * 75)
+        .attr("y", -2)
         .style("fill", (d) => this.colorScale(d))
         .text((d) => d)
         .attr("text-anchor", "left")
@@ -204,7 +200,8 @@ export default {
 
 <style scoped>
 #market_curvechart {
-  height: 110px;
-  width: 50%;
+  height: 200px;
+  width: 100%;
+  margin-top:10px;
 }
 </style>
