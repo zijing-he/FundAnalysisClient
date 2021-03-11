@@ -7,6 +7,12 @@
       <svg class="icon" aria-hidden="true" @click="turnClockwise()">
         <use xlink:href="#iconshunshizhenxuanzhuan"></use>
       </svg>
+      <svg class="icon" aria-hidden="true" @click="likeFund()">
+        <use xlink:href="#iconheart-line"></use>
+      </svg>
+      <svg class="icon" aria-hidden="true" @click="dislikeFund()">
+        <use xlink:href="#icondislike-line"></use>
+      </svg>
     </div>
     <div
       class="invest_style_boxes"
@@ -89,6 +95,7 @@ export default {
     startDate: String,
     endDate: String,
     boxHeight: Number,
+    fundLikeScore: Number,
   },
   components: {
     InvestStyleBox,
@@ -149,6 +156,7 @@ export default {
       ],
       rectObject: {},
       selectedRectKeys: ["alpha", "beta", "sharp_ratio"],
+      thisFundLikeScore: this.fundLikeScore,
     };
   },
 
@@ -165,6 +173,7 @@ export default {
     // console.log(
     //   `mounted ${this.fundId} startDate: ${this.startDate} endDate: ${this.endDate}`
     // );
+    console.log(this.thisFundLikeScore);
     for (let i in this.fundData["detail"][this.fundId]) {
       if (Object.keys(this.fundData["detail"][this.fundId][i]).length === 0) {
         this.emptyBoxes.push(i);
@@ -363,6 +372,10 @@ export default {
     this.renderUpdate();
   },
 
+  beforeUnmount: function() {
+    this.$emit("updateFundLikeScore", this.fundId, this.thisFundLikeScore);
+  },
+
   updated: function() {
     this.updateMargin();
     this.updateRects();
@@ -438,6 +451,14 @@ export default {
         this.$refs[d.boxId].removeDashline();
         this.$refs[d.boxId].turnCounterClockwise();
       });
+    },
+    likeFund() {
+      this.thisFundLikeScore++;
+      console.log(`${this.fundId}: ${this.thisFundLikeScore}`);
+    },
+    dislikeFund() {
+      this.thisFundLikeScore--;
+      console.log(`${this.fundId}: ${this.thisFundLikeScore}`);
     },
     clickBar(type) {
       this.svg.select("#dashline").remove();
@@ -1008,7 +1029,7 @@ export default {
 .buttons {
   position: absolute;
   display: flex;
-  width: 80px;
+  width: 160px;
   height: 30px;
   left: calc(15% + 20px);
   top: 25px;

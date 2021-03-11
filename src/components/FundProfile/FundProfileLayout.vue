@@ -16,10 +16,12 @@
         :startDate="start_date"
         :endDate="end_date"
         :boxHeight="eachHeight"
+        :fundLikeScore="fundsLikeScore[item]"
         :key="item"
         @handleScroll="handleScroll"
         @handleSelect="handleSelect"
         @updateWidth="updateWidth"
+        @updateFundLikeScore="updateFundLikeScore"
         v-for="item in fundsID"
       >
       </component>
@@ -38,7 +40,7 @@ export default {
     end_date: String,
   },
   watch: {
-    start_date: function (val) {
+    start_date: function(val) {
       console.log("In FundProfileLayout: ", val);
       //限制第一次是因为id获取慢于起止点，会报错
       if (!this.isFirst) {
@@ -46,7 +48,8 @@ export default {
         this.getViewFunds();
       }
     },
-    fundsID: function (val) {
+    fundsID: function(val) {
+      console.log(val);
       if (this.isFirst) {
         this.isFirst = false;
       }
@@ -57,6 +60,9 @@ export default {
       } else {
         this.eachHeight = this.totalHeight / val.length;
       }
+      // 重置基金喜好分数
+      this.fundsLikeScore = {};
+      for (let i = 0; i < val.length; i++) this.fundsLikeScore[val[i]] = 0;
     },
   },
   data() {
@@ -67,6 +73,8 @@ export default {
       totalHeight: 905,
       eachHeight: 270,
       isFirst: true,
+      fundsLikeScore: {},
+      historyFundsLikeScore: [],
     };
   },
   components: {
@@ -100,7 +108,28 @@ export default {
     updateWidth(value) {
       this.$emit("updateWidth", value);
     },
+    updateFundLikeScore(key, value) {
+      this.fundsLikeScore[key] = value;
+    },
+    getHistoryFundsLikeScore() {
+      // 点了提交，主动获取每个基金此时的score
+      for (let i = 0; i < this.fundsID.length; i++) {
+        this.fundsLikeScore[this.fundsID[i]] = this.$refs[
+          this.fundsID[i]
+        ].thisFundLikeScore;
+      }
+      this.historyFundsLikeScore.push(this.fundsLikeScore);
+      return this.historyFundsLikeScore;
+    },
   },
+  // beforeUpdate() {
+  //   // if (Object.keys(this.fundsLikeScore).length !== 0)
+  //   //   this.historyFundsLikeScore.push(this.fundsLikeScore);
+  //   // console.log(this.historyFundsLikeScore);
+  //   for (let i = 0; i < this.fundsID.length; i++) {
+  //     console.log("before update ", this.fundsID[i], this.$refs[this.fundsID[i]].thisFundLikeScore);
+  //   }
+  // },
   mounted() {},
 };
 </script>
