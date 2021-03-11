@@ -5,7 +5,7 @@
 
 <script>
 import * as d3 from "d3";
-import nameDictionary from "@/data/RaderChart/weight_key.json";
+import nameDictionary from "@/data/weight_key.json";
 export default {
   name: "ControlPanelRaderChart2",
 

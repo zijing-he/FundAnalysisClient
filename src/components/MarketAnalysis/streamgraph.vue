@@ -63,8 +63,8 @@
 <script>
 import * as d3 from "d3";
 import dataJSON from "@/data/StreamGraph/market_date_sector.json";
-import sectorJSON from "@/data/StreamGraph/market_sector_date.json";
-import sectorDict from "@/data/StreamGraph/sector_dict.json";
+import sectorJSON from "@/data/market_sector_date.json";
+import sectorDict from "@/data/sector_dict.json";
 import { UserOutlined, DownOutlined } from "@ant-design/icons-vue";
 export default {
   name: "MarketAnalysisStramGraph",

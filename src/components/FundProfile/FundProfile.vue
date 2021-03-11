@@ -21,8 +21,12 @@
         :holdingData="item.holdingData"
         :max_drop_downData="item.max_drop_downData"
         :riskData="item.riskData"
-        :nav_returnData="item.nav_returnData"
-        :hs300Data="item.hs300Data"
+        :one_quarter_returnData="item.one_quarter_returnData"
+        :one_quarter_hs300_returnData="item.one_quarter_hs300_returnData"
+        :one_year_returnData="item.one_year_returnData"
+        :one_year_hs300_returnData="item.one_year_hs300_returnData"
+        :three_year_returnData="item.three_year_returnData"
+        :three_year_hs300_returnData="item.three_year_hs300_returnData"
         :stockData="item.stockData"
         :bondData="item.bondData"
         :cashData="item.cashData"
@@ -74,7 +78,7 @@
 <script>
 import * as d3 from "d3";
 import InvestStyleBox from "./InvestStyleBox";
-import weightKey from "@/data/FundProfile/weight_key.json";
+import weightKey from "@/data/weight_key.json";
 
 export default {
   name: "FundProfile",
@@ -94,19 +98,21 @@ export default {
       componentName: "invest-style-box",
       svg: null,
       rectSvg: null,
-      margin: { top: 10, right: 100, bottom: 100, left: 20 },
+      margin: { top: 10, right: 100, bottom: 100, left: 70 },
       width: 900,
       height: 270,
       isSyncTop: false,
       isSyncBottom: false,
       dateData: [],
-      detailNavReturnData: [],
+      detailChangeRateData: [],
       detailCarData: [],
       sizeData: [],
       investStyleBoxes: [],
       emptyBoxes: [], // 为同步不同FundProfile的长度
-      thisReturnData: 0,
-      thisCarData: 0,
+      thisQuarterReturnData: 0,
+      thisYearReturnData: 0,
+      this3YearReturnData: 0,
+      thisAllReturnData: 0,
       thisStockData: 0,
       thisBondData: 0,
       thisCashData: 0,
@@ -119,16 +125,14 @@ export default {
       thisInfoData: 0,
       thisRiskData: 0,
       thisWeightData: 0,
-      rectMarginRight: 30,
+      rectMarginLeft: 30,
       investStyleBoxWidth: (200 * this.boxHeight) / 270,
       contentWidth: (200 * this.boxHeight) / 270,
       boxGap: 200,
       // version 4
-      maxPathWidth: 60,
-      minPathWidth: 30,
+      // maxPathWidth: 60,
+      // minPathWidth: 30,
       rectDataKeys: [
-        "nav_return",
-        "car",
         "stock",
         "bond",
         "cash",
@@ -140,14 +144,27 @@ export default {
         "max_drop_down",
         "information_ratio",
         "risk",
-        "instl_weight",
+        // "instl_weight",
+        "all_return",
       ],
       rectObject: {},
       selectedRectKeys: ["alpha", "beta", "sharp_ratio"],
     };
   },
 
+  // watch: {
+  //   startDate: function(val) {
+  //     console.log("In FundProfile(startDate): ", val);
+  //   },
+  //   fundData: function(val) {
+  //     console.log("In FundProfile(fundData): ", val);
+  //   },
+  // },
+
   mounted: function() {
+    // console.log(
+    //   `mounted ${this.fundId} startDate: ${this.startDate} endDate: ${this.endDate}`
+    // );
     for (let i in this.fundData["detail"][this.fundId]) {
       if (Object.keys(this.fundData["detail"][this.fundId][i]).length === 0) {
         this.emptyBoxes.push(i);
@@ -156,8 +173,8 @@ export default {
       let tmpDetailCarData = this.fundData["detail"][this.fundId][i][
         "detail_car"
       ];
-      let tmpdetailNavReturnData = this.fundData["detail"][this.fundId][i][
-        "detail_nav_return"
+      let tmpDetailChangeRateData = this.fundData["detail"][this.fundId][i][
+        "detail_change_rate"
       ];
       let tmpDateData = Object.keys(tmpDetailCarData);
       tmpDateData = tmpDateData.map(
@@ -165,10 +182,7 @@ export default {
       );
       this.sizeData.push(this.fundData["detail"][this.fundId][i]["size"].norm);
       this.dateData = [...this.dateData, ...tmpDateData];
-      this.detailNavReturnData = [
-        ...this.detailNavReturnData,
-        ...Object.values(tmpdetailNavReturnData),
-      ];
+      this.detailChangeRateData.push(Object.values(tmpDetailChangeRateData));
       this.detailCarData.push(Object.values(tmpDetailCarData));
       let holdingData = this.fundData["detail"][this.fundId][i]["holding"];
       let holdingDataKeys = Object.keys(holdingData)
@@ -190,8 +204,32 @@ export default {
         boxId: this.fundId + "_" + tmpDateData[tmpDateData.length - 1],
         boxText: tmpDateData[tmpDateData.length - 1],
         holdingData: thisHoldingData,
-        nav_returnData: this.fundData["detail"][this.fundId][i]["nav_return"],
-        hs300Data: this.fundData["detail"][this.fundId][i]["hs300_return"],
+        one_quarter_returnData:
+          "one_quarter_return" in this.fundData["detail"][this.fundId][i]
+            ? this.fundData["detail"][this.fundId][i]["one_quarter_return"]
+            : undefined,
+        one_quarter_hs300_returnData:
+          "one_quarter_hs300_return" in this.fundData["detail"][this.fundId][i]
+            ? this.fundData["detail"][this.fundId][i][
+                "one_quarter_hs300_return"
+              ]
+            : undefined,
+        one_year_returnData:
+          "one_year_return" in this.fundData["detail"][this.fundId][i]
+            ? this.fundData["detail"][this.fundId][i]["one_year_return"]
+            : undefined,
+        one_year_hs300_returnData:
+          "one_year_hs300_return" in this.fundData["detail"][this.fundId][i]
+            ? this.fundData["detail"][this.fundId][i]["one_year_hs300_return"]
+            : undefined,
+        three_year_returnData:
+          "three_year_return" in this.fundData["detail"][this.fundId][i]
+            ? this.fundData["detail"][this.fundId][i]["three_year_return"]
+            : undefined,
+        three_year_hs300_returnData:
+          "three_year_hs300_return" in this.fundData["detail"][this.fundId][i]
+            ? this.fundData["detail"][this.fundId][i]["three_year_hs300_return"]
+            : undefined,
         max_drop_downData: this.fundData["detail"][this.fundId][i][
           "max_drop_down"
         ],
@@ -209,8 +247,36 @@ export default {
       });
     }
 
-    this.thisReturnData = this.fundData["total"][this.fundId]["return"];
-    this.thisCarData = this.fundData["total"][this.fundId]["car"];
+    let hasQuarter = true,
+      hasYear = true,
+      has3Year = true;
+    for (let i = 0; i < this.fundIds.length; i++) {
+      if (!("one_quarter_return" in this.fundData["total"][this.fundIds[i]]))
+        hasQuarter = false;
+      if (!("one_year_return" in this.fundData["total"][this.fundIds[i]]))
+        hasYear = false;
+      if (!("three_year_return" in this.fundData["total"][this.fundIds[i]]))
+        has3Year = false;
+    }
+    if (hasQuarter) {
+      this.rectDataKeys.push("one_quarter_return");
+      this.thisQuarterReturnData = this.fundData["total"][this.fundId][
+        "one_quarter_return"
+      ];
+    }
+    if (hasYear) {
+      this.rectDataKeys.push("one_year_return");
+      this.thisYearReturnData = this.fundData["total"][this.fundId][
+        "one_year_return"
+      ];
+    }
+    if (has3Year) {
+      this.rectDataKeys.push("three_year_return");
+      this.this3YearReturnData = this.fundData["total"][this.fundId][
+        "three_year_return"
+      ];
+    }
+    this.thisAllReturnData = this.fundData["total"][this.fundId]["all_return"];
     this.thisStockData = this.fundData["total"][this.fundId]["stock"];
     this.thisBondData = this.fundData["total"][this.fundId]["bond"];
     this.thisCashData = this.fundData["total"][this.fundId]["cash"];
@@ -227,13 +293,21 @@ export default {
     this.thisWeightData = this.fundData["total"][this.fundId]["instl_weight"];
 
     this.rectObject = {
-      nav_return: {
-        color: "#ff7f00",
-        thisData: this.thisReturnData,
-      },
-      car: {
+      one_quarter_return: {
         color: "#fddaec",
-        thisData: this.thisCarData,
+        thisData: this.thisQuarterReturnData,
+      },
+      one_year_return: {
+        color: "#fddaec",
+        thisData: this.thisYearReturnData,
+      },
+      three_year_return: {
+        color: "#fddaec",
+        thisData: this.this3YearReturnData,
+      },
+      all_return: {
+        color: "#fddaec",
+        thisData: this.thisAllReturnData,
       },
       stock: {
         color: "#a65628",
@@ -292,7 +366,7 @@ export default {
   updated: function() {
     this.updateMargin();
     this.updateRects();
-    this.updateGapPath();
+    this.updateCurve();
   },
 
   computed: {
@@ -300,28 +374,24 @@ export default {
       return d3
         .scaleTime()
         .domain([
-          new Date(
-            `${this.startDate.substring(0, 4)}-${this.startDate.substring(
-              4,
-              6
-            )}-${this.startDate.substring(6)}`
-          ),
-          new Date(
-            `${this.endDate.substring(0, 4)}-${this.endDate.substring(
-              4,
-              6
-            )}-${this.endDate.substring(6)}`
-          ),
+          new Date(this.dateData[0]),
+          new Date(this.dateData[this.dateData.length - 1]),
         ])
         .range([this.margin.left, this.width - this.margin.right]);
+    },
+    yScale() {
+      return d3
+        .scaleLinear()
+        .domain([-1, 1])
+        .range([this.height - this.margin.bottom, this.margin.top]);
     },
     rectXScale() {
       return d3
         .scaleLinear()
+        .domain([0, 1.1])
         .range([
-          0,
-          document.getElementById(`rects_${this.fundId}`).clientWidth -
-            this.rectMarginRight,
+          document.getElementById(`rects_${this.fundId}`).clientWidth,
+          this.rectMarginLeft,
         ]);
     },
     selectedRectsEN() {
@@ -380,21 +450,9 @@ export default {
       // only consider nonnegative values
       let selectedBoxIndices = [];
       for (let i = 0; i < this.investStyleBoxes.length; i++) {
-        let value;
-        if (
-          [
-            "nav_return",
-            "risk",
-            "alpha",
-            "beta",
-            "sharp_ratio",
-            "information_ratio",
-          ].indexOf(type) !== -1
-        )
-          value = eval(`this.investStyleBoxes[${i}].${type}Data.norm`).toFixed(
-            2
-          );
-        else value = eval(`this.investStyleBoxes[${i}].${type}Data`).toFixed(2);
+        let value = eval(
+          `this.investStyleBoxes[${i}].${type}Data.norm`
+        ).toFixed(2);
         if (value >= 0) {
           selectedBoxIndices.push(i);
         }
@@ -408,6 +466,7 @@ export default {
         const endPoint = this.$refs[
           this.investStyleBoxes[selectedBoxIndices[i + 1]].boxId
         ].getSelectedBarCenterPoint(type);
+        // 坐标转换
         const startX =
           this.xScale(
             new Date(this.investStyleBoxes[selectedBoxIndices[i]].boxText)
@@ -449,7 +508,18 @@ export default {
             this.investStyleBoxWidth / 2;
           let traverseStartY = thisK * traverseStartX + thisB;
           let traverseEndY = thisK * traverseEndX + thisB;
-          if (["nav_return", "risk"].indexOf(type) !== -1) {
+          // 坐标转换
+          if (
+            [
+              "one_quarter_return",
+              "one_quarter_hs300_return",
+              "one_year_return",
+              "one_year_hs300_return",
+              "three_year_return",
+              "three_year_hs300_return",
+              "risk",
+            ].indexOf(type) !== -1
+          ) {
             // top
             traverseStartX = 0;
             traverseStartY =
@@ -509,7 +579,17 @@ export default {
           this.investStyleBoxWidth / 2;
         let thisY2 = thisK * thisX2 + thisB;
         let thatX1, thatY1, thatX2, thatY2;
-        if (["nav_return", "risk"].indexOf(type) !== -1) {
+        if (
+          [
+            "one_quarter_return",
+            "one_quarter_hs300_return",
+            "one_year_return",
+            "one_year_hs300_return",
+            "three_year_return",
+            "three_year_hs300_return",
+            "risk",
+          ].indexOf(type) !== -1
+        ) {
           // top
           thatX1 = 0;
           thatY1 = thisY1 - (20 * this.investStyleBoxWidth) / 200 - 5;
@@ -554,6 +634,7 @@ export default {
         lastK = thisK;
         lastB = thisB;
       }
+      // 最后一个invest_style_box内的虚线需要单独处理
       let lastTmpX =
         this.xScale(
           new Date(
@@ -565,7 +646,17 @@ export default {
         this.investStyleBoxWidth / 2;
       let lastTmpY = lastK * lastTmpX + lastB;
       let lastX, lastY;
-      if (["nav_return", "risk"].indexOf(type) !== -1) {
+      if (
+        [
+          "one_quarter_return",
+          "one_quarter_hs300_return",
+          "one_year_return",
+          "one_year_hs300_return",
+          "three_year_return",
+          "three_year_hs300_return",
+          "risk",
+        ].indexOf(type) !== -1
+      ) {
         // top
         lastX = 0;
         lastY = lastTmpY - (20 * this.investStyleBoxWidth) / 200 - 5;
@@ -630,15 +721,21 @@ export default {
         this.width
       );
       this.height = this.boxHeight;
-      this.maxPathWidth = (60 * this.investStyleBoxWidth) / 200;
-      this.minPathWidth = this.maxPathWidth / 2;
+      this.margin.top = this.margin.bottom = this.height / 4;
+      // this.maxPathWidth = (60 * this.investStyleBoxWidth) / 200;
+      // this.minPathWidth = this.maxPathWidth / 2;
       d3.select("#fund_profile")
         .attr("id", `fund_profile_${this.fundId}`)
         .style("height", this.height + "px");
       d3.select("#buttons")
         .attr("id", `buttons_${this.fundId}`)
         .style("height", (30 * this.investStyleBoxWidth) / 200 + "px")
-        .style("left", (20 * this.investStyleBoxWidth) / 200 + "px")
+        .style(
+          "left",
+          document.getElementById("rects").clientWidth +
+            (20 * this.investStyleBoxWidth) / 200 +
+            "px"
+        )
         .style("top", (25 * this.investStyleBoxWidth) / 200 + "px")
         .style("font-size", (30 * this.investStyleBoxWidth) / 200 + "px");
       d3.select("#curve").attr("id", `curve_${this.fundId}`);
@@ -739,28 +836,10 @@ export default {
         .attr("transform", `translate(0, ${this.height / 5})`);
       const rectHeight = (this.height * 0.6) / this.selectedRectKeys.length;
       for (let i = 0; i < this.selectedRectKeys.length; i++) {
-        if (["size", "risk"].indexOf(this.selectedRectKeys[i]) !== -1)
-          this.rectXScale.domain([0, 1.1]);
-        else this.rectXScale.domain([0, 1]);
-        let thisData, value;
-        if (
-          [
-            "size",
-            "risk",
-            "alpha",
-            "beta",
-            "sharp_ratio",
-            "information_ratio",
-          ].indexOf(this.selectedRectKeys[i]) !== -1
-        ) {
-          thisData = this.rectObject[this.selectedRectKeys[i]].thisData.norm;
-          value = this.rectObject[
-            this.selectedRectKeys[i]
-          ].thisData.value.toFixed(2);
-        } else {
-          thisData = this.rectObject[this.selectedRectKeys[i]].thisData;
-          value = thisData.toFixed(2);
-        }
+        let thisData = this.rectObject[this.selectedRectKeys[i]].thisData.norm;
+        let value = this.rectObject[
+          this.selectedRectKeys[i]
+        ].thisData.value.toFixed(2);
         gRects
           .append("rect")
           .attr("fill", this.rectObject[this.selectedRectKeys[i]].color)
@@ -769,9 +848,13 @@ export default {
             thisData < 0 ? `url(#mask_stripe_${this.fundId})` : "none"
           )
           .attr("stroke", "black")
-          .attr("x", 0)
+          .attr("x", this.rectXScale(Math.abs(thisData)))
           .attr("y", 0 + i * rectHeight)
-          .attr("width", this.rectXScale(Math.abs(thisData)))
+          .attr(
+            "width",
+            document.getElementById(`rects_${this.fundId}`).clientWidth -
+              this.rectXScale(Math.abs(thisData))
+          )
           .attr("height", rectHeight)
           .on("mouseover", function() {
             d3.select(`#tooltip_rects_${that.fundId}`).style(
@@ -791,37 +874,38 @@ export default {
           });
       }
     },
-    updateGapPath() {
-      const maxSize = Math.max(...this.sizeData);
-      const minSize = Math.min(...this.sizeData);
-      const k = (this.maxPathWidth - this.minPathWidth) / (maxSize - minSize);
-      const b = this.maxPathWidth - k * maxSize;
+    updateCurve() {
+      // const maxSize = Math.max(...this.sizeData);
+      // const minSize = Math.min(...this.sizeData);
+      // const k = (this.maxPathWidth - this.minPathWidth) / (maxSize - minSize);
+      // const b = this.maxPathWidth - k * maxSize;
       let tmpSum = 0;
       let that = this;
       for (let i = 0; i < this.investStyleBoxes.length; i++) {
-        let thisPathWidth = k * this.sizeData[i] + b;
-        if (this.investStyleBoxes.length === 1)
-          thisPathWidth = this.maxPathWidth;
+        // let thisPathWidth = k * this.sizeData[i] + b;
+        // if (this.investStyleBoxes.length === 1)
+        //   thisPathWidth = this.maxPathWidth;
         for (
           let j = 0;
-          j < this.detailCarData[i].length &&
+          j < this.detailChangeRateData[i].length - 1 &&
           tmpSum + j < this.dateData.length - 1;
           j++
         ) {
           let key = this.dateData[tmpSum + j];
-          let value = this.detailCarData[i][j].value.toFixed(2);
+          let value = this.detailChangeRateData[i][j].value.toFixed(4);
           this.svg
             .append("path")
             .attr("fill", "none")
             .attr("stroke", this.detailCarData[i][j].color)
-            .attr("stroke-width", thisPathWidth)
+            .attr("stroke-width", 10)
             .attr(
               "d",
-              `M ${this.xScale(new Date(this.dateData[tmpSum + j]))} ${(this
-                .height -
-                6) /
-                2}
-              H ${this.xScale(new Date(this.dateData[tmpSum + j + 1]))}`
+              `M ${this.xScale(
+                new Date(this.dateData[tmpSum + j])
+              )} ${this.yScale(this.detailChangeRateData[i][j].norm)}
+              L ${this.xScale(
+                new Date(this.dateData[tmpSum + j + 1])
+              )} ${this.yScale(this.detailChangeRateData[i][j + 1].norm)}`
             )
             .on("mouseover", function() {
               d3.select(`#tooltip_path_${that.fundId}`).style(
@@ -857,7 +941,7 @@ export default {
               );
             });
         }
-        tmpSum += this.detailCarData[i].length;
+        tmpSum += this.detailChangeRateData[i].length;
       }
     },
   },
@@ -875,7 +959,8 @@ export default {
   position: absolute;
   display: flex;
   height: 100%;
-  width: 80%;
+  width: 85%;
+  left: 15%;
   border: 1px solid black;
   overflow-x: auto;
   overflow-y: hidden;
@@ -884,7 +969,8 @@ export default {
 .curve {
   position: absolute;
   height: 100%;
-  width: 80%;
+  width: 85%;
+  left: 15%;
   border: 1px solid black;
   z-index: 2;
   overflow-x: auto;
@@ -894,8 +980,8 @@ export default {
 .rects {
   position: absolute;
   height: 100%;
-  width: 20%;
-  left: 80%;
+  width: 15%;
+  left: 0;
   z-index: 1;
 }
 
@@ -913,12 +999,16 @@ export default {
   background: rgba(0, 0, 0, 0.1);
 }
 
+.invest_style_boxes::-webkit-scrollbar {
+  display: none;
+}
+
 .buttons {
   position: absolute;
   display: flex;
   width: 80px;
   height: 30px;
-  left: 20px;
+  left: calc(15% + 20px);
   top: 25px;
   font-size: 30px;
   z-index: 999;
@@ -928,8 +1018,8 @@ export default {
 .select-box {
   position: absolute;
   height: 20%;
-  width: 20%;
-  left: 80%;
+  width: 15%;
+  left: 0;
   z-index: 2;
 }
 
@@ -946,12 +1036,13 @@ export default {
   position: absolute;
   text-align: center;
   max-width: 150px;
-  max-height: 50px;
+  max-height: 300px;
   padding: 6px;
   border: none;
   background: black;
   color: white;
   pointer-events: none;
   display: none;
+  font-size: 10px;
 }
 </style>
