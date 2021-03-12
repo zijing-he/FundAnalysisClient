@@ -2,7 +2,7 @@
   <a-row :gutter="[8, 8]">
     <a-col :span="6">
       <ControlPanelLayout
-        v-on:updateSortedList="handleUpdateSortedList"
+        v-on:updateFundId="handleUpdateFundId"
         :start_date="startDate"
         :end_date="endDate"
       />
@@ -58,20 +58,20 @@ export default {
   data() {
     return {
       fundsData: null,
-      fundsID: null,
+      fundsID: null, //给散点图的
       startDate: "20110331", //默认起始值
       endDate: "20191231",
       userWeight: null,
-      needFundsID: null,
+      needFundsID: null,  //给FundProfile的
       totalWidth: 900,
       scrollLeft: 0,
-      sortedList: null,
-      unRanksStart:0,
+      unRanksStart: 0,
     };
   },
   computed: {},
   methods: {
-    handleUpdateSortedList(weight) {
+    // 从雷达图获取权重，再post得到基金数组
+    handleUpdateFundId(weight) {
       this.userWeight = weight;
       DataService.post(
         "get_fund_ranks",
@@ -81,22 +81,21 @@ export default {
           end_date: this.endDate,
         },
         (data) => {
-          console.log(data);
+          // 已排序和未排序基金ID合成一个数组
           let tempID = data.ranks.map((d) => d.id);
-          data.un_ranks.forEach(d => {
+
+          //散点图展示的基金id(先只展示已排序的)
+          this.fundsID = tempID;
+
+          data.un_ranks.forEach((d) => {
             tempID.push(d.id);
           });
           this.needFundsID = tempID;
           this.unRanksStart = data.ranks.length;
 
-          this.sortedList = data.ranks.slice(0, 10);
+          this.getFundManagers();
         }
       );
-    },
-    handleUpdateFundId(fundsID) {
-      this.fundsID = fundsID;
-      this.needFundsID = this.fundsID;
-      this.getFundManagers();
     },
     getTimeBoundary() {
       DataService.post(
@@ -112,6 +111,7 @@ export default {
       );
     },
     getFundManagers() {
+      // console.log("得到基金散点图和基金经理信息");
       //得到基金散点图和基金经理信息
       DataService.post(
         "get_manager_fund_local",
@@ -123,6 +123,7 @@ export default {
           end_date: this.endDate,
         },
         (data) => {
+          console.log("得到的散点图信息：",data);
           this.fundsData = data;
         }
       );
@@ -135,17 +136,6 @@ export default {
         this.getFundManagers();
       }
     },
-    // handleUpdateWeightsAndId(fundsID, userWeight) {
-    //   this.fundsID = fundsID;
-    //   this.userWeight = userWeight;
-    //   // if (!this.startDate && !this.endDate) {
-    //   // if (this.startDate == "20110331" && this.endDate == "20191231") {
-    //   //   this.getTimeBoundary();
-    //   // } else {
-    //   this.needFundsID = this.fundsID;
-    //   this.getFundManagers();
-    //   // }
-    // },
     handleUpdateWidth(width) {
       // console.log(width);
       this.totalWidth = width;

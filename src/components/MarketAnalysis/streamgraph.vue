@@ -114,25 +114,21 @@ export default {
     handleChange(value) {
       this.renderUpdate();
     },
-    handleMenuClick(e) {
-      // console.log("click", e);
-      this.selectedIndustries.push(e.key);
-      this.selectedIndustries = Array.from(new Set(this.selectedIndustries));
-      this.renderUpdate();
-    },
-    handleButtonClick(event) {
-      //点击删除相应的行业
-      this.selectedIndustries.splice(
-        this.selectedIndustries.indexOf(event.toElement.innerText),
-        1
-      );
-      this.renderUpdate();
-    },
+    // handleMenuClick(e) {
+    //   this.selectedIndustries.push(e.key);
+    //   this.selectedIndustries = Array.from(new Set(this.selectedIndustries));
+    //   this.renderUpdate();
+    // },
+    // handleButtonClick(event) {
+    //   //点击删除相应的行业
+    //   this.selectedIndustries.splice(
+    //     this.selectedIndustries.indexOf(event.toElement.innerText),
+    //     1
+    //   );
+    //   this.renderUpdate();
+    // },
     renderInit() {
       this.sectors = Object.keys(sectorDict);
-      console.log(this.sectors);
-      // this.keys = Object.keys(this.data[this.date[0]]);
-      // this.keys.pop();
       this.date = this.date.map(
         (d) =>
           new Date(
@@ -258,7 +254,7 @@ export default {
   border: 1px solid black;
 }
 
-.icon {
+/* .icon {
   width: 1.2em;
   height: 1.2em;
   margin-top: 0.2em;
@@ -266,5 +262,5 @@ export default {
   vertical-align: -0.15em;
   fill: currentColor;
   overflow: hidden;
-}
+} */
 </style>

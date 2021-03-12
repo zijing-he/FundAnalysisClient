@@ -28,7 +28,7 @@
       </a-col>
       <a-col :span="20">
         <ControlPanelRaderChart
-          v-on:updateUserData="updateList"
+          v-on:updateUserData="handleUpdateUserData"
           :proData="data"
         />
       </a-col>
@@ -38,20 +38,15 @@
         <a-button
           type="primary"
           @click="handleClick"
-          style="margin-left: 60px; margin-bottom: 10px"
-          >更新权重</a-button
+          style="margin-left: 80px; margin-bottom: 10px"
+          >提交</a-button
         >
       </a-col>
     </a-row>
   </div>
-  <!-- <div class="bottomContainer">
-    <sortedList :list="sortedList" v-on:updateFundId="handleUpdateFundId" />
-  </div> -->
 </template>
 <script>
 import ControlPanelRaderChart from "@/components/ControlPanel/rader-chart";
-// import SortedList from "@/components/SortedList/sorted-list";
-import DataService from "@/utils/data-service";
 import { UserOutlined, DownOutlined } from "@ant-design/icons-vue";
 
 export default {
@@ -80,7 +75,6 @@ export default {
         three_year_car: "0.5000",
       },
       sortedList: null,
-      userWeight: null,
       data: [
         { axis: "size", value: 2.5 },
         { axis: "instl_weight", value: 2.5 },
@@ -99,12 +93,11 @@ export default {
       ],
     };
   },
-  emits: ["updateWeightsAndId"],
+  emits: ["updateFundId"],
   components: {
     ControlPanelRaderChart,
     UserOutlined,
     DownOutlined,
-    // SortedList,
   },
   methods: {
     handleMenuClick(d) {
@@ -210,30 +203,12 @@ export default {
       }
     },
     handleClick() {
-      //点击传值
-      // DataService.post(
-      //   "get_fund_ranks",
-      //   {
-      //     weights: this.weight,
-      //     start_date: this.start_date,
-      //     end_date: this.end_date,
-      //   },
-      //   (data) => {
-      //     this.sortedList = data.ranks.slice(0, 10);
-      //   }
-      // );
-
-      this.userWeight = this.weight;
-      this.$emit("updateSortedList", this.userWeight);
+      this.$emit("updateFundId", this.weight);
     },
-    updateList(userWeight) {
+    handleUpdateUserData(userWeight) {
       // 返回排序结果
       this.weight = userWeight;
     },
-
-    // handleUpdateFundId(fundsId) {
-    //   this.$emit("updateWeightsAndId", fundsId, this.userWeight);
-    // },
   },
   mounted() {},
 };
