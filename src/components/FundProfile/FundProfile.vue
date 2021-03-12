@@ -372,10 +372,6 @@ export default {
     this.renderUpdate();
   },
 
-  beforeUnmount: function() {
-    this.$emit("updateFundLikeScore", this.fundId, this.thisFundLikeScore);
-  },
-
   updated: function() {
     this.updateMargin();
     this.updateRects();
