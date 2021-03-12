@@ -8,6 +8,12 @@
         tip="Loading..."
         style="margin-top: 89.3px; margin-bottom: 89.3px"
       />
+      <div class="manager_bubble_chart_container" v-if="!isRequesting">
+        <managerBubbleChart
+          :fundManagers="managers"
+          v-on:showManager="handleShowManager"
+        />
+      </div>
       <div class="fund_bubble_chart_outer_container" v-if="!isRequesting">
         <fundBubbleChart
           :quarterFundData="val"
@@ -18,12 +24,6 @@
           v-for="(val, key) in funds"
         >
         </fundBubbleChart>
-      </div>
-      <div class="manager_bubble_chart_container" v-if="!isRequesting">
-        <managerBubbleChart
-          :fundManagers="managers"
-          v-on:showManager="handleShowManager"
-        />
       </div>
     </div>
   </div>
@@ -55,6 +55,7 @@ export default {
   },
   watch: {
     fundsData: function () {
+      // console.log(this.fundsData);
       this.isRequesting = true;
       this.managers = this.fundsData.managers;
       this.funds = this.fundsData.funds;
@@ -87,12 +88,25 @@ h4 {
 .fund_bubble_chart_outer_container {
   /* position: absolute; */
   display: flex;
-  width: 80%;
+  width: 85%;
   overflow-x: auto;
   overflow-y: hidden;
   border-right: 1px solid black;
 }
 .manager_bubble_chart_container {
-  width: 20%;
+  width: 15%;
+}
+/* 设置滚动条的样式 */
+::-webkit-scrollbar {
+  height: 6px;
+}
+/* 滚动槽 */
+::-webkit-scrollbar-track {
+  border-radius: 10px;
+}
+/* 滚动条滑块 */
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.1);
 }
 </style>

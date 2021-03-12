@@ -1,6 +1,6 @@
 <template>
   <div class="topContainer">
-    <h4>投资风格面板</h4>
+    <h4>View</h4>
     <a-row type="flex" align="middle" :gutter="[8, 32]">
       <a-col :span="4">
         <a-dropdown>

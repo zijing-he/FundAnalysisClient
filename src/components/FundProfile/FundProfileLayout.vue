@@ -38,6 +38,7 @@ export default {
     fundsID: Array,
     start_date: String,
     end_date: String,
+    unranksStart:Number,  //未排序数组的起点
   },
   watch: {
     start_date: function(val) {

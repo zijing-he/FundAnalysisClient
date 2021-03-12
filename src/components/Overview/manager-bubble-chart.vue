@@ -15,8 +15,8 @@ export default {
   data() {
     return {
       svg: null,
-      width: 390,
-      height: 216,
+      width: 200,
+      height: 200,
       margin: { top: 20, right: 20, bottom: 20, left: 20 },
       data: this.fundManagers,
       name: [],
@@ -82,7 +82,7 @@ export default {
         .attr("class", "tooltip")
         .style("visibility", "hidden")
         .style("width", "150px")
-        .style("height", "78px")
+        .style("height", "90px")
         .style("background-color", "black")
         .style("border-radius", "5px")
         .style("padding", "7px")
@@ -142,11 +142,11 @@ export default {
 </script>
 
 <style scoped>
-/* #manager_bubble_chart{
-  height:200px;
-  width:200px;
-  border:1px solid red;
-} */
+#manager_bubble_chart{
+  /* border:1px solid red; */
+  height:210px;
+  width:300px;
+}
 /* h5 {
   margin-bottom: 0;
 } */

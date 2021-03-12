@@ -16,9 +16,9 @@ export default {
   data() {
     return {
       svg: null,
-      margin: { top: 15, right: 20, bottom: 20, left: 15 },
-      width: 515,
-      height: 200,
+      margin: { top: 15, right: 20, bottom: 30, left: 15 },
+      width: 625,
+      height: 350,
       date: Object.keys(market_income),
       fund_size: Object.values(market_size),
       fund_number: Object.values(market_number),
@@ -200,8 +200,10 @@ export default {
 
 <style scoped>
 #market_curvechart {
-  height: 200px;
+  height: 350px;
   width: 100%;
   margin-top:10px;
+  padding-bottom:10px;
+  border: 1px solid black;
 }
 </style>

@@ -1,18 +1,18 @@
 <template>
   <a-row :gutter="[8, 8]">
-    <a-col :span="5">
+    <a-col :span="6">
       <ControlPanelLayout
         v-on:updateSortedList="handleUpdateSortedList"
         :start_date="startDate"
         :end_date="endDate"
       />
-       <a-row>
+      <a-row>
         <MarketAnalysisLayout
           v-on:updateTimeBoundary="handleUpdateTimeBoundary"
         />
       </a-row>
     </a-col>
-    <a-col :span="19">
+    <a-col :span="18">
       <a-row>
         <OverViewLayout
           :fundsData="fundsData"
@@ -23,6 +23,7 @@
       <a-row>
         <FundProfileLayout
           :fundsID="needFundsID"
+          :unranksStart="unRanksStart"
           :start_date="startDate"
           :end_date="endDate"
           ref="fundProfileLayout"
@@ -32,9 +33,9 @@
       </a-row>
     </a-col>
   </a-row>
-  <a-row>
+  <!-- <a-row>
     <SortedList :list="sortedList" v-on:updateFundId="handleUpdateFundId" />
-  </a-row>
+  </a-row> -->
 </template>
 
 <script>
@@ -43,7 +44,7 @@ import ControlPanelLayout from "@/components/ControlPanel/layout";
 import MarketAnalysisLayout from "@/components/MarketAnalysis/layout";
 import OverViewLayout from "@/components/Overview/layout";
 import DataService from "@/utils/data-service";
-import SortedList from "@/components/SortedList/sorted-list";
+// import SortedList from "@/components/SortedList/sorted-list";
 
 export default {
   name: "App",
@@ -52,7 +53,7 @@ export default {
     MarketAnalysisLayout,
     OverViewLayout,
     FundProfileLayout,
-    SortedList
+    // SortedList
   },
   data() {
     return {
@@ -65,15 +66,14 @@ export default {
       totalWidth: 900,
       scrollLeft: 0,
       sortedList: null,
+      unRanksStart:0,
     };
   },
   computed: {},
   methods: {
-    
-    handleUpdateSortedList(weight){
-      console.log("weights到app了",weight);
+    handleUpdateSortedList(weight) {
       this.userWeight = weight;
-         DataService.post(
+      DataService.post(
         "get_fund_ranks",
         {
           weights: this.userWeight,
@@ -81,6 +81,14 @@ export default {
           end_date: this.endDate,
         },
         (data) => {
+          console.log(data);
+          let tempID = data.ranks.map((d) => d.id);
+          data.un_ranks.forEach(d => {
+            tempID.push(d.id);
+          });
+          this.needFundsID = tempID;
+          this.unRanksStart = data.ranks.length;
+
           this.sortedList = data.ranks.slice(0, 10);
         }
       );
@@ -95,7 +103,6 @@ export default {
         "get_fund_time_border",
         { f_ids: this.fundsID },
         (data) => {
-          console.log(data);
           this.startDate = data["start_date"].toString();
           this.endDate = data["end_date"].toString();
           this.needFundsID = this.fundsID;
@@ -121,7 +128,7 @@ export default {
       );
     },
     handleUpdateTimeBoundary(start, end) {
-      console.log("起始点：", start, end);
+      // console.log("起始点：", start, end);
       this.startDate = start; //start发生变化，FundProfileLayout里的start也会改变，导致getviewFunds改变
       this.endDate = end;
       if (this.fundsID && this.userWeight) {
@@ -156,7 +163,8 @@ export default {
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font: 14px/1.5 "Helvetica Neue", Helvetica, Arial, "Microsoft Yahei",
+    "Hiragino Sans GB", "Heiti SC", "WenQuanYi Micro Hei", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;

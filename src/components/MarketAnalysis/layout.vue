@@ -1,10 +1,11 @@
 <template>
   <div class="container">
-    <h4>基金市场的演变</h4>
-    <a-row>
+    <h4>Market panel</h4>
+    <a-row class="first_row">
       <MarketAnalysisCurveChart v-on:updateBrush="handleUpdateBrush" />
     </a-row>
-    <a-row>
+    <a-row class="second_row">
+      <text>Industry Panel</text>
       <MarketAnalysisStramGraph />
     </a-row>
   </div>
@@ -32,9 +33,11 @@ export default {
 
 <style scoped>
 .container {
-  margin-top:10px;
+  margin-top: 10px;
   width: 100%;
-  border: 1px solid black;
+  /* border: 1px solid black; */
+  text-align: center;
+
 }
 .container h4 {
   border-bottom: 1px solid black;
@@ -44,4 +47,21 @@ export default {
 .inner_container {
   display: flex;
 }
+.second_row {
+  margin-top: 20px;
+  border-top: 1px solid black;
+  width: 100%;
+  text-align: center;
+  font-size:18px;
+  font-weight: bold;
+}
+.second_row text{
+  width:100%;
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+  border-bottom: 1px solid black;
+
+
+}
+
 </style>

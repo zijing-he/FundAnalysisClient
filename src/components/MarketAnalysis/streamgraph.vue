@@ -8,7 +8,7 @@
           v-model:value="selectedIndustries"
           mode="multiple"
           showArrow
-          style="width: 100%; margin-top: 20px"
+          style="width:100%; border-left: 1px solid black; border-right: 1px solid black;"
           placeholder="选择您所关注的行业"
           @change="handleChange"
         >
@@ -37,16 +37,14 @@ import sectorDict from "@/data/sector_dict.json";
 export default {
   name: "MarketAnalysisStramGraph",
   props: {},
-  components: {
-  },
+  components: {},
   data() {
     return {
       svg: null,
-      margin: { top: 20, right: 20, bottom: 20, left: 15 },
-      width: 515,
-      height: 200,
+      margin: { top: 20, right: 20, bottom: 30, left: 15 },
+      width: 629.5,
+      height: 350,
       date: Object.keys(dataJSON),
-      keys: [],
       data: dataJSON,
       sector_data: sectorJSON,
       sectors: [],
@@ -62,7 +60,7 @@ export default {
     //根据内容不同改变颜色
     activationSelect() {
       return (item) => {
-        return { color: sectorDict[item].color};
+        return { color: sectorDict[item].color };
       };
     },
     innerWidth() {
@@ -109,7 +107,7 @@ export default {
     },
     stackedData() {
       // offset(d3.stackOffsetSilhouette) ——>河流图
-      return d3.stack().keys(this.keys)(Object.values(this.data));
+      return d3.stack().keys(this.sectors)(Object.values(this.data));
     },
   },
   methods: {
@@ -132,7 +130,9 @@ export default {
     },
     renderInit() {
       this.sectors = Object.keys(sectorDict);
-      this.keys = Object.keys(this.data[this.date[0]]);
+      console.log(this.sectors);
+      // this.keys = Object.keys(this.data[this.date[0]]);
+      // this.keys.pop();
       this.date = this.date.map(
         (d) =>
           new Date(
@@ -160,7 +160,7 @@ export default {
       // .select(".domain")
       // .remove();
       // Customization
-      this.svg.selectAll(".tick line").attr("stroke", "#595959");
+      // this.svg.selectAll(".tick line").attr("stroke", "#595959");
       // Add X axis label:
       // this.svg
       //   .append("text")
@@ -193,7 +193,7 @@ export default {
       // Show the areas
       // let color = d3
       //   .scaleOrdinal()
-      //   .domain(this.keys)
+      //   .domain(this.sectors)
       //   .range([...d3.schemeCategory10, ...d3.schemePaired, ...d3.schemeSet1]);
 
       this.svg.selectAll("#streamGraphLayers").remove();
@@ -223,17 +223,25 @@ export default {
 
       let handleMouseover = function (event, d) {
         console.log(event, d);
-        d3.selectAll("line-path-sector").attr("stroke", "black");
-        d3.select(this).attr("stroke", (d) => sectorDict[d].color);
+        d3.selectAll(".line-path-sector").attr("stroke", "#B8B8B8");
+        d3.select(this)
+          .attr("stroke", (d) => sectorDict[d].color)
+          .attr("stroke-width", 5);
+      };
+      let handleMouseout = function (event, d) {
+        d3.selectAll(".line-path-sector")
+          .attr("stroke", (d) => sectorDict[d].color)
+          .attr("stroke-width", 2);
       };
       sectorChart
         .append("path")
         .attr("class", "line-path-sector")
         .attr("d", (d) => this.linePath(Object.values(this.sector_data[d])))
         .attr("fill", "none")
-        .attr("stroke-width", "2px")
+        .attr("stroke-width", 2)
         .attr("stroke", (d) => sectorDict[d].color)
-        .on("mouseover", handleMouseover);
+        .on("mouseover", handleMouseover)
+        .on("mouseout", handleMouseout);
     },
   },
 };
@@ -245,8 +253,9 @@ export default {
   /* border: 1px solid red; */
 }
 #market_streamgraph {
-  height: 200px;
+  height: 350px;
   width: 100%;
+  border: 1px solid black;
 }
 
 .icon {
