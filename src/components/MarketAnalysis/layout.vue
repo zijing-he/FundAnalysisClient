@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h4>Market panel</h4>
+    <text>Market panel</text>
     <a-row class="first_row">
       <MarketAnalysisCurveChart v-on:updateBrush="handleUpdateBrush" />
     </a-row>

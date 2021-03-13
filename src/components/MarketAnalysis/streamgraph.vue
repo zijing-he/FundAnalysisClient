@@ -218,7 +218,6 @@ export default {
       // this.yScale.domain([0, 154677212676.10007]);
 
       let handleMouseover = function (event, d) {
-        console.log(event, d);
         d3.selectAll(".line-path-sector").attr("stroke", "#B8B8B8");
         d3.select(this)
           .attr("stroke", (d) => sectorDict[d].color)

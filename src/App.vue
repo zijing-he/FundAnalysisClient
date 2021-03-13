@@ -21,7 +21,7 @@
         />
       </a-row>
       <a-row>
-        <FundProfileLayout
+        <!-- <FundProfileLayout
           :fundsID="needFundsID"
           :unranksStart="unRanksStart"
           :start_date="startDate"
@@ -29,7 +29,7 @@
           ref="fundProfileLayout"
           @updateWidth="handleUpdateWidth"
           @updateScrollLeft="handleScrollLeft"
-        />
+        /> -->
       </a-row>
     </a-col>
   </a-row>
@@ -52,7 +52,7 @@ export default {
     ControlPanelLayout,
     MarketAnalysisLayout,
     OverViewLayout,
-    FundProfileLayout,
+    // FundProfileLayout,
     // SortedList
   },
   data() {
@@ -62,7 +62,7 @@ export default {
       startDate: "20110331", //默认起始值
       endDate: "20191231",
       userWeight: null,
-      needFundsID: null,  //给FundProfile的
+      needFundsID: null, //给FundProfile的
       totalWidth: 900,
       scrollLeft: 0,
       unRanksStart: 0,
@@ -85,14 +85,12 @@ export default {
           let tempID = data.ranks.map((d) => d.id);
 
           //散点图展示的基金id(先只展示已排序的)
-          this.fundsID = tempID;
-
+          this.fundsID = JSON.parse(JSON.stringify(tempID)).slice(0,1);  //深拷贝，给散点图的id
           data.un_ranks.forEach((d) => {
             tempID.push(d.id);
           });
           this.needFundsID = tempID;
           this.unRanksStart = data.ranks.length;
-
           this.getFundManagers();
         }
       );
@@ -117,13 +115,13 @@ export default {
         "get_manager_fund_local",
         {
           weights: this.userWeight,
-          num_top: 10,
+          num_top: 2,
           f_ids: this.fundsID,
           start_date: this.startDate,
           end_date: this.endDate,
         },
         (data) => {
-          console.log("得到的散点图信息：",data);
+          console.log("得到的散点图信息：", data);
           this.fundsData = data;
         }
       );

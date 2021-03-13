@@ -11,21 +11,22 @@
 
 <script>
 import * as d3 from "d3";
+var jsnx = require("jsnetworkx");
 export default {
   name: "fundBubbleChart",
   props: {
     date: String,
     quarterFundData: Object,
     fundManagers: Object,
-    mangerId: String,
+    managerGruop:Object
   },
   components: {},
   watch: {
-    quarterFundData: function () {
-      this.renderUpdate();
+    quarterFundData: function (fundData) {
+      // this.renderUpdate();
     },
     mangerId: function () {
-      this.renderUpdate();
+      // this.renderUpdate();
     },
   },
   data() {
@@ -38,11 +39,17 @@ export default {
       data_values: [],
       fund_id: [],
       managersKey: [],
+      G: null,
     };
   },
   mounted: function () {
-    this.renderInit();
-    this.renderUpdate();
+    // console.log(this.date);
+    // console.log(this.quarterFundData);
+    // console.log(this.fundManagers);
+    console.log(this.managerGruop);
+    this.graphInit();
+    // this.renderInit();
+    // this.renderUpdate();
   },
   computed: {
     innerWidth() {
@@ -67,6 +74,31 @@ export default {
     },
   },
   methods: {
+    graphInit() {
+      //创建图和顶点 & 根据基金经理归类：
+
+      this.G = new jsnx.Graph();
+      // let managerGruop = {};
+
+      for (let id in this.quarterFundData) {
+        this.G.addNode(id, {
+          managerId: this.quarterFundData[id].manager_ids,
+          x: this.quarterFundData[id].loc[0],
+          y: this.quarterFundData[id].loc[1],
+        });
+        // this.quarterFundData[id].manager_ids.forEach((d) => {
+        //   if (!Object.prototype.hasOwnProperty.call(managerGruop, `${d}`)) {
+        //     managerGruop[d] = [];
+        //   }
+        //   managerGruop[d].push(id);
+        // });
+      }
+      // console.log(managerGruop);
+      console.log(this.G.nodes(true));
+      
+     
+
+    },
     renderInit() {
       this.svg = d3
         .select("#fund_bubble_chart_item")

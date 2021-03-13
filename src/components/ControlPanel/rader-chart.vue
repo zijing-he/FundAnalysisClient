@@ -228,10 +228,6 @@ export default {
         str = str + this.dataValues[i][0] + "," + this.dataValues[i][1] + " ";
       }
 
-      // console.log(this.raderChart.select(".radar-chart-area"));
-      // console.log(this.raderChart.select("#nodesGroup"));
-      // this.raderChart.select(".radar-chart-area").remove();
-      // this.raderChart.select("#nodesGroup").remove();
 
       this.raderChart
         .append("g")
@@ -416,7 +412,7 @@ export default {
 <style scoped>
 .update_value {
   position: absolute;
-  left: 177px;
+  left: 220px;
   top: 112px;
   width: 66px;
   height: 66px;
