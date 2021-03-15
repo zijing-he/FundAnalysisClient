@@ -18,13 +18,13 @@ export default {
       svg: null,
       margin: { top: 15, right: 20, bottom: 30, left: 15 },
       width: 519,
-      height: 350,
+      height: 298,
       date: Object.keys(market_income),
       fund_size: Object.values(market_size),
       fund_number: Object.values(market_number),
       fund_income: Object.values(market_income),
       fund_hs300: Object.values(market_hs300),
-      keys: ["基金规模", "沪深300","基金平均收益",],
+      keys: ["基金规模", "沪深300", "基金平均收益"],
     };
   },
 
@@ -200,10 +200,7 @@ export default {
 
 <style scoped>
 #market_curvechart {
-  height: 350px;
+  height: 307px;
   width: 100%;
-  margin-top:10px;
-  padding-bottom:10px;
-  border: 1px solid black;
 }
 </style>

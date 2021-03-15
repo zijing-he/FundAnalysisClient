@@ -1,39 +1,54 @@
 <template>
   <div class="topContainer">
-    <h4>View</h4>
-    <a-row type="flex" align="middle" :gutter="[8, 32]">
-      <a-col :span="4">
-        <a-dropdown>
-          <template #overlay>
-            <a-menu @click="handleMenuClick">
-              <a-menu-item key="1">
-                <UserOutlined />
-                保守型
-              </a-menu-item>
-              <a-menu-item key="2">
-                <UserOutlined />
-                稳健型
-              </a-menu-item>
-              <a-menu-item key="3">
-                <UserOutlined />
-                激进型
-              </a-menu-item>
-            </a-menu>
-          </template>
-          <a-button>
-            用户类型
-            <DownOutlined />
-          </a-button>
-        </a-dropdown>
-      </a-col>
-      <a-col :span="20">
-        <ControlPanelRaderChart
-          v-on:updateUserData="handleUpdateUserData"
-          :proData="data"
-        />
-      </a-col>
+    <a-row class="control_panel">
+      <svg class="icon control_icon" aria-hidden="true">
+        <use xlink:href="#iconcontrol"></use>
+      </svg>
+      <text>Control Panel</text>
     </a-row>
-    <a-row type="flex" align="middle" :gutter="[8, 32]">
+    <a-row class="investment_style">
+      <svg class="icon menu_icon" aria-hidden="true">
+        <use xlink:href="#iconxitongcaidan"></use>
+      </svg>
+      <text>Investment Style</text>
+    </a-row>
+
+    <a-row class="custormer_type">
+      <text id="custormer_type_text">Custormer Type</text>
+      <a-dropdown>
+        <template #overlay>
+          <a-menu @click="handleMenuClick">
+            <a-menu-item key="1">
+              <UserOutlined />
+              <text class="menu_item_text">Conservative Investor</text>
+            </a-menu-item>
+            <a-menu-item key="2">
+              <UserOutlined />
+              <text class="menu_item_text">Robust Investor</text>
+            </a-menu-item>
+            <a-menu-item key="3">
+              <UserOutlined />
+              <text class="menu_item_text">Radical Investor</text>
+            </a-menu-item>
+          </a-menu>
+        </template>
+        <a-button class="dropdown_button">
+          <text>Conservative Investor</text>
+          <DownOutlined class="dropdown_button_downicon" />
+        </a-button>
+      </a-dropdown>
+    </a-row>
+    <a-row id="divider"></a-row>
+    <a-row>
+      <text id="weight_adjustment_text">Weight Adjustment</text>
+    </a-row>
+    <a-row class="rader_chart_container">
+      <ControlPanelRaderChart
+        v-on:updateUserData="handleUpdateUserData"
+        :proData="data"
+      />
+    </a-row>
+    <!-- <a-row type="flex" align="middle" :gutter="[8, 32]">
       <a-col :span="24">
         <a-button
           type="primary"
@@ -42,7 +57,7 @@
           >提交</a-button
         >
       </a-col>
-    </a-row>
+    </a-row> -->
   </div>
 </template>
 <script>
@@ -216,7 +231,7 @@ export default {
 
 <style scoped>
 .topContainer {
-  /* height: 300px; */
+  height: 529px;
   width: 100%;
   border: 1px solid black;
 }
@@ -225,19 +240,105 @@ export default {
   margin-bottom: 0px;
   font-weight: bold;
 }
-.sectror_ontainer {
-  margin-top: -0.5em;
-  margin-left: 1em;
+
+/* 从这里开始放新的样式 */
+
+.control_panel {
+  background: #011f41;
+  box-shadow: 1px -3px 4px 0 rgba(36, 15, 57, 0.1);
 }
 
-.text {
+.control_panel text {
+  font-family: PingFangSC-Semibold;
+  font-size: 24px;
+  color: #d0dde7;
+  letter-spacing: 0;
+  margin-left: 25px;
+}
+
+.control_panel .control_icon {
+  position: relative;
+  font-size: 23px;
+  bottom: 2px;
+  left: 22px;
+}
+.investment_style {
+  margin-top: 3%;
+  margin-bottom: 1%;
+}
+.investment_style text {
+  font-family: "PingFangSC-Semibold";
+  font-size: 19px;
+  font-weight: 800;
+  color: #185bbd;
+  letter-spacing: 0;
+  margin-left: 25px;
+}
+.investment_style .menu_icon {
+  position: relative;
+  color: #185bbd;
+  font-size: 23px;
+  bottom: 4px;
+  left: 20px;
+}
+.custormer_type {
+  margin-bottom: 10px;
+  /* border: 1px solid #DEDEDE; */
+}
+.custormer_type #custormer_type_text {
+  font-family: "PingFangSC-Medium";
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 32px;
+  color: #4b4b4b;
+  letter-spacing: -0.22px;
+  text-align: right;
+  margin-left: 28px;
+}
+#weight_adjustment_text{
+  font-family: "PingFangSC-Medium";
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 32px;
+  color: #4b4b4b;
+  letter-spacing: -0.22px;
+  text-align: right;
+  margin-left: 28px;
+  margin-top: 10px;
+}
+.custormer_type .dropdown_button {
+  text-align: left;
+  margin-left: 30px;
+  width: 300px;
+  border: 1px solid #aeaeae;
+  box-shadow: 0 20px 15px -12px rgba(21, 85, 194, 0.13);
+  border-radius: 5px;
+}
+.custormer_type .dropdown_button text {
+  font-family: "PingFangSC-Semibold";
   font-size: 13px;
+  color: #9c9c9c;
+  letter-spacing: 0.3px;
+  line-height: 32px;
 }
-
-.bottomContainer {
-  width: 100%;
-  height: 76%;
-  margin-top: 5px;
-  border: 1px solid black;
+.custormer_type .dropdown_button .dropdown_button_downicon {
+  margin-left: 120px;
+  color: #aeaeae;
+}
+.menu_item_text {
+  font-family: "PingFangSC-Semibold";
+  font-size: 13px;
+  color: #4b4b4b;
+  letter-spacing: 0.3px;
+  line-height: 32px;
+}
+#divider{
+  margin:auto;
+  width: 89%;
+  /* height: 1px; */
+  border-bottom: 1px solid #DEDEDE;
+}
+.rader_chart_container{
+  position: relative;
 }
 </style>

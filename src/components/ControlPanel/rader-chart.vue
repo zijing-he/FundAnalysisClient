@@ -18,28 +18,28 @@ export default {
     return {
       svg: null,
       raderChart: null,
-      margin: { top: 45, right: 152, bottom: 60, left: 70 },
-      width: 200,
-      height: 200,
+      margin: { top: 35, right: 265, bottom: 94, left: 70 },
+      width: 260,
+      height: 260,
       factor: 1,
-      levels: 15,
+      levels: 6,
       maxValue: 3,
       radians: 2 * Math.PI,
       data: [
         { axis: "size", value: 2.5 },
-        { axis: "instl_weight", value: 2.5 },
-        { axis: "alpha", value: 2.5 },
-        { axis: "beta", value: 2.5 },
-        { axis: "sharp_ratio", value: 2.5 },
-        { axis: "max_drop_down", value: 2.5 },
-        { axis: "information_ratio", value: 2.5 },
-        { axis: "risk", value: 2.5 },
-        { axis: "one_quarter_return", value: 2.5 },
-        { axis: "one_year_return", value: 2.5 },
         { axis: "three_year_return", value: 2.5 },
+        { axis: "one_year_return", value: 2.5 },
+        { axis: "one_quarter_return", value: 2.5 },
+        { axis: "beta", value: 2.5 },
+        { axis: "alpha", value: 2.5 },
+        { axis: "sharp_ratio", value: 2.5 },
+        { axis: "instl_weight", value: 2.5 },
+        { axis: "risk", value: 2.5 },
+        { axis: "information_ratio", value: 2.5 },
+        { axis: "max_drop_down", value: 2.5 },
         { axis: "one_quarter_car", value: 2.5 },
-        { axis: "one_year_car", value: 2.5 },
         { axis: "three_year_car", value: 2.5 },
+        { axis: "one_year_car", value: 2.5 },
       ],
       dataValues: [],
       allAxis: [],
@@ -56,6 +56,7 @@ export default {
     },
   },
   mounted: function () {
+    console.log(nameDictionary);
     this.svg = d3
       .select("#market_raderchart")
       .append("svg")
@@ -89,8 +90,7 @@ export default {
       this.raderChart = this.svg.append("g").attr("id", "raderChartGroup");
 
       // 生成环
-      // for (let i = 0; i < this.levels; i++) {
-      for (let i = 9; i < 10; i++) {
+      for (let i = 0; i < this.levels; i++) {
         let levelFactor = this.factor * this.radius * ((i + 1) / this.levels);
         this.raderChart
           .selectAll(".levels")
@@ -124,10 +124,17 @@ export default {
                 this.factor * Math.cos(((i + 1) * this.radians) / this.total))
           )
           .attr("class", "line")
-          .style("stroke", "#bbb")
-          .style("stroke-opacity", "0.75")
+          .style("stroke", () => {
+            // if (i === 3) return "red";
+            // else
+            return "#979797";
+          })
+          .style("stroke-opacity", "0.56")
           .style("stroke-width", "1px")
-          .attr("stroke-dasharray", "2,2")
+          .attr("stroke-dasharray", () => {
+            if (i === 3) return "0";
+            else return "4";
+          })
           .attr(
             "transform",
             `translate(${this.width / 2 - levelFactor},${
@@ -142,21 +149,23 @@ export default {
         .append("g");
       axis
         .append("line")
-        .attr(
-          "x1",
-          (d, i) =>
-            (this.width / 2) *
-            (1 -
-              0.33 * //比例
-                this.factor *
-                Math.sin((i * this.radians) / this.total))
-        )
-        .attr(
-          "y1",
-          (d, i) =>
-            (this.height / 2) *
-            (1 - 0.33 * this.factor * Math.cos((i * this.radians) / this.total))
-        )
+        .attr("x1", this.width / 2)
+        .attr("y1", this.height / 2)
+        // .attr(
+        //   "x1",
+        //   (d, i) =>
+        //     (this.width / 2) *
+        //     (1 -
+        //       0.33 * //比例
+        //         this.factor *
+        //         Math.sin((i * this.radians) / this.total))
+        // )
+        // .attr(
+        //   "y1",
+        //   (d, i) =>
+        //     (this.height / 2) *
+        //     (1 - 0.33 * this.factor * Math.cos((i * this.radians) / this.total))
+        // )
         .attr(
           "x2",
           (d, i) =>
@@ -169,18 +178,29 @@ export default {
             (this.height / 2) *
             (1 - this.factor * Math.cos((i * this.radians) / this.total))
         )
-        .style("stroke", "#D5D5D5")
-        .style("stroke-width", "1px");
+        .style("stroke", "#979797")
+        .style("opacity", "0.56")
+        .style("stroke-width", (d, i) => {
+          if (i % 2) return "0px";
+          else return "1px";
+        })
+        .style("stroke-dasharray", "4");
+
+      // font-family: PingFangSC-Regular;
+      // font-size: 12px;
+      // color: #939393;
+      // letter-spacing: 0;
 
       axis
         .append("text")
-        .text((d) => nameDictionary[d].cn_name)
+        .text((d) => nameDictionary[d].en_sx)
         .attr("id", (d) => "text_" + d)
-        .style("font-family", "sans-serif")
-        .style("font-size", "11px")
+        .style("font-family", "PingFangSC-Regular")
+        .style("font-size", "14px")
         .attr("text-anchor", "middle")
+        .style("fill", "#939393")
         .attr("dy", "1.5em")
-        .attr("transform", "translate(3,-12)")
+        .attr("transform", "translate(3,-15)")
         .attr(
           "x",
           (d, i) =>
@@ -196,7 +216,35 @@ export default {
             20 * Math.cos((i * this.radians) / this.total)
         );
 
-      this.raderChart.attr("transform", "translate(-6,-16)");
+      this.raderChart.attr("transform", "translate(28,0)");
+
+      axis.select("#text_sharp_ratio").attr("transform", "translate(-45,-20)");
+      axis.select("#text_instl_weight").attr("transform", "translate(10,-8)");
+      axis.select("#text_risk").attr("transform", "translate(69,-19)");
+      axis
+        .select("#text_information_ratio")
+        .attr("transform", "translate(43,-15)");
+      axis.select("#text_max_drop_down").attr("transform", "translate(38,-13)");
+      axis
+        .select("#text_one_quarter_car")
+        .attr("transform", "translate(12,-15)");
+      //这里
+      axis
+        .select("#text_three_year_car")
+        .attr("transform", "translate(14,-16)");
+      axis.select("#text_one_year_car").attr("transform", "translate(12,-16)");
+      axis.select("#text_size").attr("transform", "translate(0,-20)");
+      axis
+        .select("#text_three_year_return")
+        .attr("transform", "translate(-12,-16)");
+      axis
+        .select("#text_one_year_return")
+        .attr("transform", "translate(-7,-17)");
+      axis
+        .select("#text_one_quarter_return")
+        .attr("transform", "translate(-8,-18)");
+      axis.select("#text_beta").attr("transform", "translate(-7,-18)");
+      axis.select("#text_alpha").attr("transform", "translate(-7,-16)");
     },
     renderUpdate() {
       let maxDataValues = [];
@@ -228,7 +276,6 @@ export default {
         str = str + this.dataValues[i][0] + "," + this.dataValues[i][1] + " ";
       }
 
-
       this.raderChart
         .append("g")
         .selectAll(".area")
@@ -237,30 +284,31 @@ export default {
         .append("polygon")
         .attr("class", "radar-chart-area")
         .attr("id", "radar-chart-area")
-        .style("stroke-width", "2px")
-        .style("stroke", "#d62728")
-        .style("fill", "#d62728")
-        .style("fill-opacity", 0.2)
+        .style("stroke-width", "3px")
+        .style("stroke", "#50A1FF")
+        .style("fill", "rgba(80,161,255,0.10)")
+        // .style("fill-opacity", 0.2)
         .attr("points", str);
 
       let dragstarted = function (event, d) {
-        d3.select(this).raise().attr("stroke", "black");
+        d3.select(this).raise().attr("r", "8px").style("opacity","0.8");
         d3.select(".update_value_weight")
-          .text(nameDictionary[d.axis].cn_name)
-          .style("margin-top", "8px");
-        if (nameDictionary[d.axis].cn_name.length <= 5) {
-          d3.select(".update_value_weight").style("margin-top", "16px");
-        }
-        d3.select(".update_value_value")
-          .text(d.value - 2)
-          .style("display", "block")
-          .style("text-align", "center");
+          .text((d.value - 2).toFixed(2))
+          // .style("fill", "#FFFFFF")
+          .style("margin-top", "-2px");
+        // if (nameDictionary[d.axis].en_sx.length <= 5) {
+        //   d3.select(".update_value_weight").style("margin-top", "16px");
+        // }
+        // d3.select(".update_value_value")
+        //   .text(d.value - 2)
+        //   .style("display", "block")
+        //   .style("text-align", "center");
 
         toolTip.style("visibility", "visible");
       };
       let move = function (event, d) {
-        let width = 200; //this.width更新，这儿也要更新
-        let height = 200;
+        let width = 260; //this.width更新，这儿也要更新
+        let height = 260;
         const e = nodesGroup.nodes();
         const i = e.indexOf(this); //获取index
         let dragTarget = d3.select(this);
@@ -300,12 +348,17 @@ export default {
           dragTarget.attr("cx", newX + width / 2).attr("cy", height / 2 - newY);
 
           d.value = newValue;
-          //更新数值
 
-          d3.select(".update_value_value")
-            .text((newValue - 2).toFixed(2))
-            .style("display", "block")
-            .style("text-align", "center");
+          toolTip
+            .style("left", newX + width / 2 + 75 + "px")
+            .style("top", height / 2 - newY - 20 + "px");
+            d3.select(".update_value_weight")
+          .text((newValue - 2).toFixed(2));
+
+          // d3.select(".update_value_value")
+          //   .text((newValue - 2).toFixed(2))
+          //   .style("display", "block")
+          //   .style("text-align", "center");
           // .style("visibility", "visible");
 
           updatePoly();
@@ -351,7 +404,7 @@ export default {
       };
 
       let dragended = function (event, d) {
-        d3.select(this).attr("stroke", null);
+        d3.select(this).style("r", "3.5px").style("opacity","1");
         toolTip.style("visibility", "hidden");
         // d3.select(".update_value_value").style("visibility", "hidden");
       };
@@ -363,7 +416,7 @@ export default {
         .enter()
         .append("circle")
         .attr("class", "nodes")
-        .attr("r", 3)
+        .attr("r", "3.5px")
         .attr(
           "cx",
           (d, i) =>
@@ -383,8 +436,8 @@ export default {
                 Math.cos((i * this.radians) / this.total))
         )
         .attr("data-id", (d) => d.axis)
-        .style("fill", "#d62728")
-        .style("fill-opacity", 0.75)
+        .style("fill", "#50A1FF")
+        // .style("fill-opacity", 0.75)
         .style("cursor", "pointer")
         .call(
           d3
@@ -394,6 +447,7 @@ export default {
             .on("end", dragended)
         );
       //添加中心数值查看框
+
       let toolTip = d3.select(".update_value");
       toolTip
         .append("g")
@@ -401,8 +455,9 @@ export default {
         .style("display", "block")
         .style("text-align", "center")
         .style("font-size", "11px")
-        .style("margin-top", "14px");
-      toolTip.append("g").attr("class", "update_value_value");
+        // .style("margin-top", "14px")
+        .style("font-family", "PingFangSC-Regular");
+      // toolTip.append("g").attr("class", "update_value_value");
       toolTip.style("visibility", "hidden");
     },
   },
@@ -412,7 +467,7 @@ export default {
 <style scoped>
 .update_value {
   position: absolute;
-  left: 220px;
+  /*left: 220px;
   top: 112px;
   width: 66px;
   height: 66px;
@@ -420,6 +475,26 @@ export default {
   color: white;
   border-radius: 50%;
   opacity: 1;
-  z-index: 1;
+  z-index: 1; */
+  background-image: linear-gradient(-153deg, #f15887 0%, #fe9b86 100%);
+  width: 44px;
+  height: 25px;
+
+  top: 130px;
+  left: 200px;
+
+  padding: 5px 8px;
+  display: inline-block;
+  border-radius: 4px;
+  margin: 10px 0 10px 10px;
+  /* position: relative; */
+}
+.update_value::after {
+  content: "";
+  border: 4px solid #edf5ff;
+  border-top: 5px solid #fc8d87;
+  position: absolute;
+  right: 27px;
+  top: 25px;
 }
 </style>

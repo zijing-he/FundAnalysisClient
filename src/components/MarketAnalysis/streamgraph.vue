@@ -56,7 +56,7 @@ export default {
       svg: null,
       margin: { top: 60, right: 20, bottom: 30, left: 55 },
       width: 519,
-      height: 350,
+      height: 290,
       date: Object.keys(dataJSON),
       data: dataJSON,
       sector_data: sectorJSON,
@@ -332,7 +332,7 @@ export default {
   /* border: 1px solid red; */
 }
 #market_streamgraph {
-  height: 20.7%;
+  height: 290px;
   width: 100%;
   /* border: 1px solid black; */
 }
