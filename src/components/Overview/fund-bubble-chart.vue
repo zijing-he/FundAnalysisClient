@@ -1,4 +1,3 @@
-
 <template>
   <div
     id="fund_bubble_chart_inner_container"
@@ -18,7 +17,7 @@ export default {
     date: String,
     quarterFundData: Object,
     fundManagers: Object,
-    managerGruop:Object
+    managerGruop: Object,
   },
   components: {},
   watch: {
@@ -43,13 +42,13 @@ export default {
     };
   },
   mounted: function () {
-    // console.log(this.date);
-    // console.log(this.quarterFundData);
-    // console.log(this.fundManagers);
-    console.log(this.managerGruop);
+    console.log(this.date);
+    console.log(this.quarterFundData);
+    console.log(this.fundManagers);
+    // console.log(this.managerGruop);
     this.graphInit();
-    // this.renderInit();
-    // this.renderUpdate();
+    this.renderInit();
+    this.renderUpdate();
   },
   computed: {
     innerWidth() {
@@ -75,7 +74,7 @@ export default {
   },
   methods: {
     graphInit() {
-      //创建图和顶点 & 根据基金经理归类：
+      //创建图和顶点：
 
       this.G = new jsnx.Graph();
       // let managerGruop = {};
@@ -93,12 +92,35 @@ export default {
         //   managerGruop[d].push(id);
         // });
       }
-      // console.log(managerGruop);
-      console.log(this.G.nodes(true));
-      
-     
 
+      for (let key in this.managerGruop) {
+        if (this.managerGruop[key].length > 1) {
+          this.managerGruop[key].forEach((d, i) => {
+            if (i - 1 >= 0) {
+              let startId = this.managerGruop[key][i - 1];
+              let endId = d;
+              this.G.addEdge(startId, endId, {
+                source: {
+                  id: startId,
+                  x: this.quarterFundData[startId].loc[0],
+                  y: this.quarterFundData[startId].loc[1],
+                },
+                target: {
+                  id: endId,
+                  x: this.quarterFundData[endId].loc[0],
+                  y: this.quarterFundData[endId].loc[1],
+                },
+                managerId: key,
+              });
+            }
+          });
+        }
+      }
+      // console.log(this.G.nodes(true));
+      // console.log(this.G.edges(true));
+      // console.log(this.G);
     },
+
     renderInit() {
       this.svg = d3
         .select("#fund_bubble_chart_item")
@@ -121,39 +143,85 @@ export default {
       // });
       // this.managersKey = Object.keys(this.fundManagers);
       this.svg.selectAll("circle").remove();
-      this.svg
-        .append("g")
+
+      let node = this.svg
         .selectAll("circle")
-        .data(this.data_values)
+        .data(this.G.nodes(true)) // this.G.nodes(true)
         .enter()
         .append("circle")
-        // .join("circle")
-        .attr("cx", (d) => this.xScale(d.loc[0]))
-        .attr("cy", (d) => this.yScale(d.loc[1]))
-        .attr("r", 4)
-        .style("fill", (d, i) => {
-          if (this.mangerId) {
-            let flag = false;
-            d.manager_ids.forEach((dd) => {
-              if (dd == this.mangerId) {
-                flag = true;
-              }
-            });
-            if (flag) {
-              return this.fundManagers[this.mangerId].color;
-            } else {
-              return "#B6B6B6";
-            }
+        .attr("class", (d) => `funds_manager_${d[1].managerId[0]}`) //展示时注意：可能一个基金有多个基金经理
+        .attr("r", 10)
+        .style("fill", (d) => {
+          if (this.fundManagers[d[1].managerId[0]]) {
+            return this.fundManagers[d[1].managerId[0]].color;
           } else {
-            return "#B6B6B6";
+            return "#aaa";
           }
         })
-        .style("stroke", (d) =>
-          d.new == true || d.delete == true ? "black" : "none"
-        )
-        // d.new == true : "特殊操作" ? "默认"
-        .style("stroke-dasharray", (d) => (d.new == true ? "2" : "0"))
-        .style("fill-opacity", (d) => (d.delete == true ? "0.5" : "1"));
+        .style("opacity","0.4")
+        .attr("cx", (d) => {
+          // console.log(d);
+
+          return this.xScale(d[1].x);
+        })
+        .attr("cy", (d) => this.yScale(d[1].y));
+
+      let link = this.svg
+        .selectAll("line")
+        .data(this.G.edges(true)) //this.G.edges(true)
+        .enter()
+        .append("line")
+        .attr("class", (d) => `funds_manager_${d[2].managerId}`) 
+        .style("stroke", (d) => {
+          console.log(d, d[2].managerId, this.fundManagers[d[2].managerId]);
+          if (this.fundManagers[d[2].managerId]) {
+            return this.fundManagers[d[2].managerId].color;
+          } else return "#aaa";
+        })
+        .style("stroke-width", "16")
+        .style("opacity","0.4")
+        .attr("x1", (d) => {
+          // console.log(d);
+          return this.xScale(d[2].source.x);
+        })
+        .attr("y1", (d) => this.yScale(d[2].source.y))
+        .attr("x2", (d) => this.xScale(d[2].target.x))
+        .attr("y2", (d) => this.yScale(d[2].target.y));
+
+   
+      // this.svg
+      //   .append("g")
+      //   .selectAll("circle")
+      //   .data(this.data_values)
+      //   .enter()
+      //   .append("circle")
+      //   // .join("circle")
+      //   .attr("cx", (d) => this.xScale(d.loc[0]))
+      //   .attr("cy", (d) => this.yScale(d.loc[1]))
+      //   .attr("r", 4)
+      //   .style("fill", (d, i) => {
+      //     if (this.mangerId) {
+      //       let flag = false;
+      //       d.manager_ids.forEach((dd) => {
+      //         if (dd == this.mangerId) {
+      //           flag = true;
+      //         }
+      //       });
+      //       if (flag) {
+      //         return this.fundManagers[this.mangerId].color;
+      //       } else {
+      //         return "#B6B6B6";
+      //       }
+      //     } else {
+      //       return "#B6B6B6";
+      //     }
+      //   })
+      //   .style("stroke", (d) =>
+      //     d.new == true || d.delete == true ? "black" : "none"
+      //   )
+      //   // d.new == true : "特殊操作" ? "默认"
+      //   .style("stroke-dasharray", (d) => (d.new == true ? "2" : "0"))
+      //   .style("fill-opacity", (d) => (d.delete == true ? "0.5" : "1"));
     },
   },
 };

@@ -8,13 +8,26 @@
           v-model:value="selectedIndustries"
           mode="multiple"
           showArrow
-          style="width:100%; border-left: 1px solid black; border-right: 1px solid black;"
+          style="
+            width: 91%;
+            border: 1px solid #aeaeae;
+            box-shadow: 0 20px 15px -12px rgba(21, 85, 194, 0.13);
+            border-radius: 5px;
+          "
           placeholder="选择您所关注的行业"
           @change="handleChange"
         >
           <a-select-option v-for="item in sectors" :key="item" :value="item">
             <span>
-              <text :style="activationSelect(item)">██ </text>
+              <svg
+                class="icon"
+                aria-hidden="true"
+                :style="activationSelect(item)"
+              >
+                <use v-if="item === '医药生物'" xlink:href="#iconyiyao"></use>
+                <use v-if="item === '电子'" xlink:href="#icondianzi"></use>
+              </svg>
+              <!-- <text :style="activationSelect(item)">██ </text> -->
               <text>{{ item }}</text>
             </span>
           </a-select-option>
@@ -41,8 +54,8 @@ export default {
   data() {
     return {
       svg: null,
-      margin: { top: 20, right: 20, bottom: 30, left: 15 },
-      width: 629.5,
+      margin: { top: 60, right: 20, bottom: 30, left: 55 },
+      width: 519,
       height: 350,
       date: Object.keys(dataJSON),
       data: dataJSON,
@@ -57,10 +70,23 @@ export default {
     this.renderUpdate();
   },
   computed: {
+    iconScale() {
+      return d3
+        .scaleOrdinal()
+        .domain(this.sectors)
+        .range(["iconyiyao", "icondianzi", "iconshipinyinliao", "iconhuagong"]);
+    },
+    colorScale() {
+      return d3
+        .scaleOrdinal()
+        .domain(this.sectors)
+        .range(["#D6AA9F", "#B7E6C7", "#B2C0E0"]);
+    },
     //根据内容不同改变颜色
     activationSelect() {
       return (item) => {
-        return { color: sectorDict[item].color };
+        // return { color: sectorDict[item].color };
+        return { color: this.colorScale(item) };
       };
     },
     innerWidth() {
@@ -83,13 +109,7 @@ export default {
         maxArray.push(d3.max(Object.values(this.sector_data[d])));
       });
 
-      return yscale.domain([
-        0,
-        d3.max(maxArray),
-        // d3.max(Object.values(this.data), (d) => d.avg),
-        // domain([0, 154677212676.10007])
-        // d3.max(Object.values(this.data), (d) => d3.max(Object.values(d))),
-      ]);
+      return yscale.domain([0, d3.max(maxArray)]);
     },
     linePath() {
       return d3
@@ -105,10 +125,10 @@ export default {
         .y0((d) => this.yScale(0))
         .y1((d) => this.yScale(d.avg));
     },
-    stackedData() {
-      // offset(d3.stackOffsetSilhouette) ——>河流图
-      return d3.stack().keys(this.sectors)(Object.values(this.data));
-    },
+    // stackedData() {
+    //   // offset(d3.stackOffsetSilhouette) ——>河流图
+    //   return d3.stack().keys(this.sectors)(Object.values(this.data));
+    // },
   },
   methods: {
     handleChange(value) {
@@ -145,16 +165,48 @@ export default {
         .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
     },
     renderUpdate() {
+      this.svg.selectAll("g").remove();
       // Add X axis
       this.svg
         .append("g")
+        .attr("class", "xAxis")
         .attr("transform", `translate(0,${this.innerHeight})`)
         .call(
-          d3.axisBottom(this.xScale).ticks(d3.timeYear.every(1))
+          d3.axisBottom(this.xScale).ticks(d3.timeYear.every(2))
+          // .tickValues([2010,2020])
           // .tickSize(this.innerHeight / 2 - 3)
-        );
-      // .select(".domain")
-      // .remove();
+        )
+        //删除坐标tick line
+        .select(".domain")
+        .remove();
+
+      this.svg
+        .append("g")
+        .attr("class", "yAxis")
+        .call(
+          d3.axisLeft(this.yScale).tickFormat(d3.format("~s")).ticks(5)
+          // .ticks(d3.timeYear.every(2))
+          // .tickValues([2010,2020])
+          // .tickSize(this.innerHeight / 2 - 3)
+        )
+        .select(".domain")
+        .remove();
+
+      this.svg.selectAll(".tick line").remove();
+      this.svg
+        .select(".xAxis")
+        .selectAll(".tick text")
+        .style("font-size", "13px")
+        .style("font-family", "PingFangSC-Regular")
+        .style("letter-spacing", "-0.08px")
+        .style("color", "#6C7B8A");
+      this.svg
+        .select(".yAxis")
+        .selectAll(".tick text")
+        .style("font-family", "Helvetica")
+        .style("font-size", "10px")
+        .style("color", "#6C7B8A");
+
       // Customization
       // this.svg.selectAll(".tick line").attr("stroke", "#595959");
       // Add X axis label:
@@ -200,8 +252,8 @@ export default {
         .append("path")
         .datum(Object.values(this.data))
         .attr("class", "streamGraphLayers")
-        .style("stroke", "#9F9D9D")
-        .style("fill", "#9F9D9D")
+        .style("stroke", "rgba(80,161,255,0.10")
+        .style("fill", "rgba(80,161,255,0.10")
         // .style("stroke-width", "0.1px")
         // .style("fill", "#9F9D9D")
         .attr("d", this.area);
@@ -216,27 +268,59 @@ export default {
         .enter();
 
       // this.yScale.domain([0, 154677212676.10007]);
-
-      let handleMouseover = function (event, d) {
-        d3.selectAll(".line-path-sector").attr("stroke", "#B8B8B8");
-        d3.select(this)
-          .attr("stroke", (d) => sectorDict[d].color)
-          .attr("stroke-width", 5);
-      };
-      let handleMouseout = function (event, d) {
-        d3.selectAll(".line-path-sector")
-          .attr("stroke", (d) => sectorDict[d].color)
-          .attr("stroke-width", 2);
-      };
+      // let color = d3
+      //   .scaleOrdinal()
+      //   .domain(this.sectors)
+      //   .range(["#D6AA9F", "#B7E6C7", "#B2C0E0"]);
+      // let handleMouseover = function (event, d) {
+      //   d3.selectAll(".line-path-sector").attr("stroke", "#B8B8B8");
+      //   d3.select(this).attr("stroke", color(d)).attr("stroke-width", 5);
+      // };
+      // let handleMouseout = function (event, d) {
+      //   d3.selectAll(".line-path-sector")
+      //     .attr("stroke", color(d))
+      //     .attr("stroke-width", "3px");
+      // };
       sectorChart
         .append("path")
         .attr("class", "line-path-sector")
         .attr("d", (d) => this.linePath(Object.values(this.sector_data[d])))
         .attr("fill", "none")
-        .attr("stroke-width", 2)
-        .attr("stroke", (d) => sectorDict[d].color)
-        .on("mouseover", handleMouseover)
-        .on("mouseout", handleMouseout);
+        .attr("stroke-width", "3px")
+        // .attr("stroke", (d) => sectorDict[d].color)
+        .attr("stroke", (d) => this.colorScale(d));
+      // .on("mouseover", handleMouseover)
+      // .on("mouseout", handleMouseout);
+
+      this.svg
+        .append("circle")
+        .attr("cx", this.innerWidth - 151)
+        .attr("cy", -16)
+        .attr("r", 7)
+        .style("fill", "rgba(80,161,255,0.30)");
+      // .style("fill", "red");
+      this.svg
+        .append("text")
+        .attr("x", this.innerWidth - 134)
+        .attr("y", -15)
+        .style("fill", "#9F9F9F")
+        .style("font-family", "PingFangSC-Regular")
+        .style("letter-spacing", "-0.18px")
+        .style("font-size", "17px")
+        .text("Industry average")
+        .attr("text-anchor", "left")
+        .style("alignment-baseline", "middle");
+      this.svg
+        .append("text")
+        .attr("x", -30)
+        .attr("y", -15)
+        .style("fill", "#6A6A6A")
+        .style("font-family", "Helvetica")
+        .style("letter-spacing", "0.2px")
+        .style("font-size", "13px")
+        .text("(rmb)")
+        .attr("text-anchor", "left")
+        .style("alignment-baseline", "middle");
     },
   },
 };
@@ -248,18 +332,8 @@ export default {
   /* border: 1px solid red; */
 }
 #market_streamgraph {
-  height: 350px;
+  height: 20.7%;
   width: 100%;
-  border: 1px solid black;
+  /* border: 1px solid black; */
 }
-
-/* .icon {
-  width: 1.2em;
-  height: 1.2em;
-  margin-top: 0.2em;
-  margin-right: 0.5em;
-  vertical-align: -0.15em;
-  fill: currentColor;
-  overflow: hidden;
-} */
 </style>

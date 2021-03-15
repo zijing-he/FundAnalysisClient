@@ -1,6 +1,6 @@
 <template>
   <a-row :gutter="[8, 8]">
-    <a-col :span="6">
+    <a-col :span="5">
       <ControlPanelLayout
         v-on:updateFundId="handleUpdateFundId"
         :start_date="startDate"
@@ -12,7 +12,7 @@
         />
       </a-row>
     </a-col>
-    <a-col :span="18">
+    <a-col :span="19">
       <a-row>
         <OverViewLayout
           :fundsData="fundsData"
@@ -21,7 +21,7 @@
         />
       </a-row>
       <a-row>
-        <!-- <FundProfileLayout
+        <FundProfileLayout
           :fundsID="needFundsID"
           :unranksStart="unRanksStart"
           :start_date="startDate"
@@ -29,7 +29,7 @@
           ref="fundProfileLayout"
           @updateWidth="handleUpdateWidth"
           @updateScrollLeft="handleScrollLeft"
-        /> -->
+        />
       </a-row>
     </a-col>
   </a-row>
@@ -52,7 +52,7 @@ export default {
     ControlPanelLayout,
     MarketAnalysisLayout,
     OverViewLayout,
-    // FundProfileLayout,
+    FundProfileLayout,
     // SortedList
   },
   data() {
@@ -85,12 +85,12 @@ export default {
           let tempID = data.ranks.map((d) => d.id);
 
           //散点图展示的基金id(先只展示已排序的)
-          this.fundsID = JSON.parse(JSON.stringify(tempID)).slice(0,1);  //深拷贝，给散点图的id
-          data.un_ranks.forEach((d) => {
-            tempID.push(d.id);
-          });
-          this.needFundsID = tempID;
-          this.unRanksStart = data.ranks.length;
+          this.fundsID = JSON.parse(JSON.stringify(tempID)).slice(0, 1); //深拷贝，给散点图的id
+          // data.un_ranks.forEach((d) => {
+          //   tempID.push(d.id);
+          // });
+          this.needFundsID = tempID.slice(0, 19);
+          this.unRanksStart = data.ranks.length; //没有放入未排序的数组，这个参数可以先不管
           this.getFundManagers();
         }
       );
@@ -159,5 +159,14 @@ export default {
   width: 100%;
   height: 100%;
   padding: 5px;
+}
+.icon {
+  width: 1.2em;
+  height: 1.2em;
+  margin-top: 0.2em;
+  margin-right: 0.5em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
 }
 </style>
