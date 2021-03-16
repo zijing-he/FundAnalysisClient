@@ -2,7 +2,7 @@
   <a-row :gutter="[8, 8]">
     <a-col :span="5">
       <ControlPanelLayout
-        v-on:updateFundId="handleUpdateFundId"
+        v-on:updateFundWeight="handleUpdateFundWeight"
         :start_date="startDate"
         :end_date="endDate"
       />
@@ -11,17 +11,23 @@
           v-on:updateTimeBoundary="handleUpdateTimeBoundary"
         />
       </a-row>
+      <a-row id="update_button_container">
+        <a-button type="primary" @click="handleUpdateClick" id="update_button">
+          <text>UPDATE</text>
+        </a-button>
+      </a-row>
     </a-col>
     <a-col :span="19">
-      <a-row>
-        <!-- <OverViewLayout
+      <!-- 散点图样式还没写好 -->
+      <!-- <a-row>
+        <OverViewLayout
           :fundsData="fundsData"
           :totalWidth="totalWidth"
           :scrollLeft="scrollLeft"
-        /> -->
-      </a-row>
+        />
+      </a-row> -->
       <a-row>
-        <!-- <FundProfileLayout
+        <FundProfileLayout
           :fundsID="needFundsID"
           :unranksStart="unRanksStart"
           :start_date="startDate"
@@ -29,13 +35,10 @@
           ref="fundProfileLayout"
           @updateWidth="handleUpdateWidth"
           @updateScrollLeft="handleScrollLeft"
-        /> -->
+        />
       </a-row>
     </a-col>
   </a-row>
-  <!-- <a-row>
-    <SortedList :list="sortedList" v-on:updateFundId="handleUpdateFundId" />
-  </a-row> -->
 </template>
 
 <script>
@@ -44,7 +47,7 @@ import ControlPanelLayout from "@/components/ControlPanel/layout";
 import MarketAnalysisLayout from "@/components/MarketAnalysis/layout";
 import OverViewLayout from "@/components/Overview/layout";
 import DataService from "@/utils/data-service";
-// import SortedList from "@/components/SortedList/sorted-list";
+import { message } from "ant-design-vue";
 
 export default {
   name: "App",
@@ -52,8 +55,7 @@ export default {
     ControlPanelLayout,
     MarketAnalysisLayout,
     // OverViewLayout,
-    // FundProfileLayout,
-    // SortedList
+    FundProfileLayout,
   },
   data() {
     return {
@@ -70,30 +72,37 @@ export default {
   },
   computed: {},
   methods: {
-    // 从雷达图获取权重，再post得到基金数组
-    handleUpdateFundId(weight) {
-      this.userWeight = weight;
-      DataService.post(
-        "get_fund_ranks",
-        {
-          weights: this.userWeight,
-          start_date: this.startDate,
-          end_date: this.endDate,
-        },
-        (data) => {
-          // 已排序和未排序基金ID合成一个数组
-          let tempID = data.ranks.map((d) => d.id);
+    //点击update获得id
+    handleUpdateClick() {
+      if (this.userWeight) {
+        DataService.post(
+          "get_fund_ranks",
+          {
+            weights: this.userWeight,
+            start_date: this.startDate,
+            end_date: this.endDate,
+          },
+          (data) => {
+            // 已排序和未排序基金ID合成一个数组
+            let tempID = data.ranks.map((d) => d.id);
 
-          //散点图展示的基金id(先只展示已排序的)
-          this.fundsID = JSON.parse(JSON.stringify(tempID)).slice(0, 1); //深拷贝，给散点图的id
-          // data.un_ranks.forEach((d) => {
-          //   tempID.push(d.id);
-          // });
-          this.needFundsID = tempID.slice(0, 19);
-          this.unRanksStart = data.ranks.length; //没有放入未排序的数组，这个参数可以先不管
-          this.getFundManagers();
-        }
-      );
+            //散点图展示的基金id(先只展示已排序的)
+            this.fundsID = JSON.parse(JSON.stringify(tempID)).slice(0, 1); //深拷贝，给散点图的id
+            // data.un_ranks.forEach((d) => {
+            //   tempID.push(d.id);
+            // });
+            this.needFundsID = tempID.slice(0, 19);
+            this.unRanksStart = data.ranks.length; //没有放入未排序的数组，这个参数可以先不管
+            this.getFundManagers();
+          }
+        );
+      } else {
+        message.error("还未得到用户权重", 2);
+      }
+    },
+    // 从雷达图获取权重
+    handleUpdateFundWeight(weight) {
+      this.userWeight = weight;
     },
     getTimeBoundary() {
       DataService.post(
@@ -163,5 +172,21 @@ export default {
   vertical-align: -0.15em;
   fill: currentColor;
   overflow: hidden;
+}
+#update_button_container {
+  width: 523px;
+  height: 63px;
+  background: #ffffff;
+  box-shadow: 12px 2px 44px 0 rgba(0, 0, 0, 0.05);
+}
+#update_button_container #update_button {
+  width: 89%;
+  margin: auto;
+  border-radius: 6px;
+}
+#update_button_container #update_button text {
+  font-size: 16px;
+  font-family: "PingFangSC-Semibold";
+  letter-spacing: 0;
 }
 </style>

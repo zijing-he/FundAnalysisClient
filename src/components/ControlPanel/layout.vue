@@ -1,5 +1,5 @@
 <template>
-  <div class="topContainer">
+  <div class="container">
     <a-row class="control_panel">
       <svg class="icon control_icon" aria-hidden="true">
         <use xlink:href="#iconcontrol"></use>
@@ -108,7 +108,7 @@ export default {
       ],
     };
   },
-  emits: ["updateFundId"],
+  emits: ["updateFundWeight"],
   components: {
     ControlPanelRaderChart,
     UserOutlined,
@@ -217,12 +217,13 @@ export default {
         ];
       }
     },
-    handleClick() {
-      this.$emit("updateFundId", this.weight);
-    },
+    // handleClick() {
+    //   this.$emit("updateFundId", this.weight);
+    // },
     handleUpdateUserData(userWeight) {
       // 返回排序结果
       this.weight = userWeight;
+      this.$emit("updateFundWeight", this.weight);
     },
   },
   mounted() {},
@@ -230,17 +231,12 @@ export default {
 </script>
 
 <style scoped>
-.topContainer {
+.container {
   height: 529px;
-  width: 100%;
-  border: 1px solid black;
+  width: 523px;
+  background: #ffffff;
+  box-shadow: 12px 2px 44px 0 rgba(0, 0, 0, 0.05);
 }
-.topContainer h4 {
-  border-bottom: 1px solid black;
-  margin-bottom: 0px;
-  font-weight: bold;
-}
-
 /* 从这里开始放新的样式 */
 
 .control_panel {

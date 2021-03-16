@@ -252,8 +252,8 @@ export default {
         .append("path")
         .datum(Object.values(this.data))
         .attr("class", "streamGraphLayers")
-        .style("stroke", "rgba(80,161,255,0.10")
-        .style("fill", "rgba(80,161,255,0.10")
+        .style("stroke", "rgba(80,161,255,0.10)")
+        .style("fill", "rgba(80,161,255,0.10)")
         // .style("stroke-width", "0.1px")
         // .style("fill", "#9F9D9D")
         .attr("d", this.area);

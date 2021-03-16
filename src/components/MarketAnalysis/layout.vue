@@ -7,7 +7,6 @@
       <svg class="icon menu_icon" aria-hidden="true">
         <use xlink:href="#iconxitongcaidan"></use>
       </svg>
-
       <text>Industry Selection</text>
     </a-row>
     <MarketAnalysisStramGraph />
@@ -35,29 +34,23 @@ export default {
 </script>
 
 <style scoped>
-.container {
-  width: 100%;
-  height: 30.9%;
-  /* border: 1px solid black; */
-  text-align: center;
-}
-
 .first_row {
   height: 307px;
-  width: 100%;
-  border: 1px solid red;
+  width: 523px;
+  background: #ffffff;
+  box-shadow: 12px 2px 44px 0 rgba(0, 0, 0, 0.05);
 }
 .second_row {
   /* border-top: 1px solid black; */
   height: 380px;
-  width: 100%;
+  width: 523px;
   /* border: 1px solid red; */
   /* transform: rotate(-90deg); */
   background: #ffffff;
   box-shadow: 12px 2px 44px 0 rgba(0, 0, 0, 0.05);
 }
 
-.industry_selection_style{
+.industry_selection_style {
   margin-top: 3%;
   margin-bottom: 1%;
 }
@@ -76,11 +69,5 @@ export default {
   font-size: 23px;
   bottom: 4px;
   left: 20px;
-}
-.menuIcon {
-  position: relative;
-  color: #185bbd;
-  font-size: 23px;
-  bottom: 4px;
 }
 </style>
