@@ -19,13 +19,13 @@
     </a-col>
     <a-col :span="19">
       <!-- 散点图样式还没写好 -->
-      <!-- <a-row>
+      <a-row>
         <OverViewLayout
           :fundsData="fundsData"
           :totalWidth="totalWidth"
           :scrollLeft="scrollLeft"
         />
-      </a-row> -->
+      </a-row>
       <a-row>
         <FundProfileLayout
           :fundsID="needFundsID"
@@ -54,7 +54,7 @@ export default {
   components: {
     ControlPanelLayout,
     MarketAnalysisLayout,
-    // OverViewLayout,
+    OverViewLayout,
     FundProfileLayout,
   },
   data() {
