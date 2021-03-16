@@ -1,6 +1,6 @@
 <template>
   <div id="invest_style_box" class="invest_style_box">
-    <div class="text" id="text" v-if="boxText !== null">{{ boxText }}</div>
+    <div class="text" id="text" v-if="boxText !== undefined">{{ boxText }}</div>
     <div class="content" id="content">
       <div class="center" id="center"></div>
       <div class="left" id="left"></div>
@@ -166,7 +166,7 @@ export default {
         .style("width", this.boxWidth + "px")
         .style(
           "height",
-          this.boxText !== null
+          this.boxText !== undefined
             ? (220 * this.boxWidth) / 200 + "px"
             : this.boxWidth + "px"
         )
@@ -947,7 +947,7 @@ export default {
   margin-left: 60px;
   flex-shrink: 0;
   z-index: 3;
-  background-color: white;
+  background: #ffffff;
 }
 
 .text {
@@ -973,7 +973,7 @@ export default {
   position: absolute;
   height: 80px;
   width: 80px;
-  border: 1px solid black;
+  /* border: 1px solid black; */
   left: 60px;
   top: 60px;
 }

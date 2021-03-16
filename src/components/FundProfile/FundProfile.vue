@@ -21,7 +21,7 @@
     /> -->
     <div class="summary" id="summary">
       <div class="title">
-        <div class="buttons">
+        <div class="buttons-like">
           <svg class="icon" aria-hidden="true" @click="likeFund()">
             <use xlink:href="#iconheart-line"></use>
           </svg>
@@ -32,31 +32,52 @@
         <div style="margin-top: 4px; margin-left: 30%;">{{ fundId }}</div>
       </div>
       <div class="summary_box" v-if="fundData !== null">
-        <!-- <InvestStyleBox
+        <InvestStyleBox
           :boxId="fundId + '_summary'"
           :holdingData="investStyleBoxes[0].holdingData"
-          :max_drop_downData="fundData['total']['max_drop_down']"
-          :riskData="fundData['total']['risk']"
-          :one_quarter_returnData="fundData['total']['one_quarter_return']"
-          :one_quarter_hs300_returnData="investStyleBoxes[0].one_quarter_hs300_returnData"
-          :one_year_returnData="fundData['total']['one_year_return']"
-          :one_year_hs300_returnData="investStyleBoxes[0].one_year_hs300_returnData"
-          :three_year_returnData="fundData['total']['three_year_return']"
-          :three_year_hs300_returnData="investStyleBoxes[0].three_year_hs300_returnData"
-          :stockData="fundData['total']['stock']"
-          :bondData="fundData['total']['bond']"
-          :cashData="fundData['total']['cash']"
-          :otherData="fundData['total']['other']"
-          :sizeData="fundData['total']['size']"
-          :alphaData="fundData['total']['alpha']"
-          :betaData="fundData['total']['beta']"
-          :sharp_ratioData="fundData['total']['sharp_ratio']"
-          :information_ratioData="fundData['total']['information_ratio']"
-          :boxGap="27"
-          :boxWidth="investStyleBoxWidth"
-          :contentWidth="contentWidth"
+          :max_drop_downData="fundData['total'][fundId]['max_drop_down']"
+          :riskData="fundData['total'][fundId]['risk']"
+          :one_quarter_returnData="
+            fundData['total'][fundId]['one_quarter_return']
+          "
+          :one_quarter_hs300_returnData="
+            investStyleBoxes[0].one_quarter_hs300_returnData
+          "
+          :one_year_returnData="fundData['total'][fundId]['one_year_return']"
+          :one_year_hs300_returnData="
+            investStyleBoxes[20].one_year_hs300_returnData
+          "
+          :three_year_returnData="
+            fundData['total'][fundId]['three_year_return']
+          "
+          :three_year_hs300_returnData="
+            investStyleBoxes[20].three_year_hs300_returnData
+          "
+          :stockData="fundData['total'][fundId]['stock']"
+          :bondData="fundData['total'][fundId]['bond']"
+          :cashData="fundData['total'][fundId]['cash']"
+          :otherData="fundData['total'][fundId]['other']"
+          :sizeData="fundData['total'][fundId]['size']"
+          :alphaData="fundData['total'][fundId]['alpha']"
+          :betaData="fundData['total'][fundId]['beta']"
+          :sharp_ratioData="fundData['total'][fundId]['sharp_ratio']"
+          :information_ratioData="
+            fundData['total'][fundId]['information_ratio']
+          "
+          :boxGap="42"
+          :boxWidth="170"
+          :contentWidth="170"
+          style="margin-top: 15px;"
         >
-        </InvestStyleBox> -->
+        </InvestStyleBox>
+        <div class="buttons-turn">
+          <svg class="icon" aria-hidden="true" @click="turnCounterClockwise()">
+            <use xlink:href="#iconnishizhenxuanzhuan"></use>
+          </svg>
+          <svg class="icon" aria-hidden="true" @click="turnClockwise()">
+            <use xlink:href="#iconshunshizhenxuanzhuan"></use>
+          </svg>
+        </div>
       </div>
     </div>
     <div
@@ -116,6 +137,7 @@ export default {
   name: "FundProfile",
   props: {
     fundId: String,
+    fundIds: Array, // 要计算空余部分面积，只能一起请求后端数据
     startDate: String,
     endDate: String,
     boxHeight: Number,
@@ -148,23 +170,31 @@ export default {
   },
 
   // watch: {
-  //   startDate: function(val) {
-  //     console.log("In FundProfile(startDate): ", val);
-  //   },
-  //   fundData: function(val) {
-  //     console.log("In FundProfile(fundData): ", val);
-  //   },
+  //   // startDate: function(val) {
+  //   //   console.log("In FundProfile(startDate): ", val);
+  //   // },
+  //   // fundData: function(val) {
+  //   //   console.log("In FundProfile(fundData): ", val);
+  //   // },
+  //   fundIds: function(val) {
+  //     console.log("In FundProfile(fundIds): ", val);
+  //     for (let i = 0; i < this.investStyleBoxes.length; i++) {
+  //       this.$refs[this.investStyleBoxes[i].boxId].$forceUpdate();
+  //     }
+  //     this.$forceUpdate();
+  //   }
   // },
 
   mounted: function() {
     DataService.post(
       "get_view_funds",
       {
-        f_ids: [this.fundId],
+        f_ids: this.fundIds,
         start_date: this.startDate,
         end_date: this.endDate,
       },
       (data) => {
+        console.log(data);
         this.fundData = data;
         this.calcAttrs();
         this.renderInit();
@@ -652,16 +682,9 @@ export default {
       }
     },
     updateCurve() {
-      // const maxSize = Math.max(...this.sizeData);
-      // const minSize = Math.min(...this.sizeData);
-      // const k = (this.maxPathWidth - this.minPathWidth) / (maxSize - minSize);
-      // const b = this.maxPathWidth - k * maxSize;
       let tmpSum = 0;
       let that = this;
       for (let i = 0; i < this.investStyleBoxes.length; i++) {
-        // let thisPathWidth = k * this.sizeData[i] + b;
-        // if (this.investStyleBoxes.length === 1)
-        //   thisPathWidth = this.maxPathWidth;
         for (
           let j = 0;
           j < this.detailChangeRateData[i].length - 1 &&
@@ -720,6 +743,16 @@ export default {
         }
         tmpSum += this.detailChangeRateData[i].length;
       }
+      // 添加基准虚线
+      this.svg
+        .append("path")
+        .attr("stroke-dasharray", "2, 2")
+        .attr("stroke", "#979797")
+        .attr(
+          "d",
+          `M ${this.margin.left} ${this.height / 2} H ${this.width -
+            this.margin.right}`
+        );
     },
   },
 };
@@ -729,7 +762,7 @@ export default {
 .fund_profile {
   position: relative;
   height: 270px;
-  width: 100%;
+  width: calc(100% - 30px);
   background: #ffffff;
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.1);
   border-radius: 8px;
@@ -754,10 +787,17 @@ export default {
   font-size: 20px;
 }
 
-.buttons {
+.buttons-like {
   margin-top: 5px;
   margin-left: 5px;
   justify-content: space-around;
+}
+
+.buttons-turn {
+  position: absolute;
+  left: 215px;
+  top: 70px;
+  font-size: 27px;
 }
 
 .icon {
@@ -775,7 +815,7 @@ export default {
   height: 100%;
   width: 85%;
   left: 15%;
-  border-left: 1px dashed black;
+  border-left: 1px dashed #979797;
   overflow-x: auto;
   overflow-y: hidden;
 }
@@ -785,7 +825,7 @@ export default {
   height: 100%;
   width: 85%;
   left: 15%;
-  border-left: 1px dashed black;
+  border-left: 1px dashed #979797;
   z-index: 2;
   overflow-x: auto;
   overflow-y: hidden;

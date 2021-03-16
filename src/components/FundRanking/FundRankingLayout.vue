@@ -88,6 +88,7 @@ export default {
         managerCode: "",
       },
       showFundProfileIDs: [],
+      isFundProfileIDChecked: new Map(),
     };
   },
   computed: {},
@@ -97,13 +98,13 @@ export default {
       console.log(this.queryParam);
     },
     handleCheckbox(e) {
-      if (e.target.checked) this.showFundProfileIDs.push(e.target.value);
-      else
-        this.showFundProfileIDs.splice(
-          this.showFundProfileIDs.indexOf(e.target.value),
-          1
-        );
-      console.log(this.showFundProfileIDs);
+      // 设置Map的目的是为了保证右边展示的顺序与左边rank的顺序始终一致
+      this.isFundProfileIDChecked.set(e.target.value, e.target.checked);
+      this.showFundProfileIDs = [];
+      this.rankFundsID.forEach((d) => {
+        if (this.isFundProfileIDChecked.get(d)) this.showFundProfileIDs.push(d);
+      });
+      // console.log(this.showFundProfileIDs);
       this.$emit("showFundIDChange", this.showFundProfileIDs);
     },
   },

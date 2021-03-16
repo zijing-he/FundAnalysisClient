@@ -10,10 +10,11 @@
       </svg>
       <text>Funds</text>
     </div>
-    <div class="fund-profiles">
+    <div class="fund-profiles" v-if="refresh">
       <FundProfile
         :ref="item"
         :fundId="item"
+        :fundIds="fundsID"
         :startDate="start_date"
         :endDate="end_date"
         :boxHeight="eachHeight"
@@ -74,6 +75,11 @@ export default {
       if (this.isFirst) {
         this.isFirst = false;
       }
+      // 当前呈现的所有基金数组变了，必须强制重新渲染每个组件
+      this.refresh = false;
+      this.$nextTick(() => {
+        this.refresh = true;
+      });
       // this.isRequesting = true;
       // this.getViewFunds();
       // 重置基金喜好分数
@@ -93,6 +99,7 @@ export default {
       eachHeight: 270,
       fundsLikeScore: {},
       historyFundsLikeScore: [],
+      refresh: true,
       // 无限下滑相关参数
       // size: 4, // 单页个数
       // page: 0, // 当前页码
