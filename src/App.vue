@@ -133,7 +133,7 @@ export default {
     // 从雷达图获取权重
     handleUpdateFundWeight(weight) {
       this.userWeight = weight;
-
+    },
     
     getTimeBoundary() {
       DataService.post(
