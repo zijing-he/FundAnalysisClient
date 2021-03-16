@@ -18,8 +18,7 @@
       </a-row>
     </a-col>
 
-    <a-col :span="19">
-      <!-- 散点图样式还没写好 -->
+    <!-- 散点图样式还没写好 -->
     <a-col :span="3">
       <FundRankingLayout
         :rankFundsID="rankFundsID"
@@ -31,13 +30,12 @@
       />
     </a-col>
     <a-col :span="16">
-
       <a-row>
-        <!-- <OverViewLayout
+        <OverViewLayout
           :fundsData="fundsData"
           :totalWidth="totalWidth"
           :scrollLeft="scrollLeft"
-        /> -->
+        />
       </a-row>
       <a-row>
         <FundProfileLayout
@@ -52,7 +50,6 @@
         />
       </a-row>
     </a-col>
-    </a-col>
   </a-row>
 </template>
 
@@ -64,7 +61,7 @@ import OverViewLayout from "@/components/Overview/layout";
 import FundRankingLayout from "@/components/FundRanking/FundRankingLayout";
 import DataService from "@/utils/data-service";
 import { message } from "ant-design-vue";
-import { line } from 'd3-shape';
+import { line } from "d3-shape";
 // import SortedList from "@/components/SortedList/sorted-list";
 
 export default {
@@ -72,7 +69,7 @@ export default {
   components: {
     ControlPanelLayout,
     MarketAnalysisLayout,
-    // OverViewLayout,
+    OverViewLayout,
     FundProfileLayout,
     FundRankingLayout,
   },
@@ -86,7 +83,7 @@ export default {
       rankFundsID: null, //给FundRanking
       rankFundsData: null,
       showFundsID: [], //展示的FundProfile
-      lineStartYPos: [],  //连线起始y坐标
+      lineStartYPos: [], //连线起始y坐标
       totalWidth: 900,
       scrollLeft: 0,
       unRanksStart: 0,
@@ -94,37 +91,35 @@ export default {
   },
   computed: {},
   methods: {
-
     //点击update获得id
     handleUpdateClick() {
       if (this.userWeight) {
-      this.isRequestRanking = true;
-       DataService.post(
-        "get_fund_ranks",
-        {
-          weights: this.userWeight,
-          start_date: this.startDate,
-          end_date: this.endDate,
-        },
-        (data) => {
-          // 已排序和未排序基金ID合成一个数组
-          let tempID = data.ranks.map((d) => d.id);
-          console.log(data);
+        this.isRequestRanking = true;
+        DataService.post(
+          "get_fund_ranks",
+          {
+            weights: this.userWeight,
+            start_date: this.startDate,
+            end_date: this.endDate,
+          },
+          (data) => {
+            // 已排序和未排序基金ID合成一个数组
+            let tempID = data.ranks.map((d) => d.id);
+            console.log(data);
 
-          //散点图展示的基金id(先只展示已排序的)
-          this.fundsID = JSON.parse(JSON.stringify(tempID)).slice(0, 1); //深拷贝，给散点图的id
-          // data.un_ranks.forEach((d) => {
-          //   tempID.push(d.id);
-          // });
-          this.rankFundsID = tempID.slice(0, 20);
-          this.rankFundsData = data.ranks.slice(0, 20);
-          // this.rankFundsID = tempID;
-          // this.rankFundsData = data.ranks;
-          this.unRanksStart = data.ranks.length; //没有放入未排序的数组，这个参数可以先不管
-          this.getFundManagers();
-        }
-      );
-        
+            //散点图展示的基金id(先只展示已排序的)
+            this.fundsID = JSON.parse(JSON.stringify(tempID)).slice(0, 1); //深拷贝，给散点图的id
+            // data.un_ranks.forEach((d) => {
+            //   tempID.push(d.id);
+            // });
+            this.rankFundsID = tempID.slice(0, 20);
+            this.rankFundsData = data.ranks.slice(0, 20);
+            // this.rankFundsID = tempID;
+            // this.rankFundsData = data.ranks;
+            this.unRanksStart = data.ranks.length; //没有放入未排序的数组，这个参数可以先不管
+            this.getFundManagers();
+          }
+        );
       } else {
         message.error("还未得到用户权重", 2);
       }
@@ -133,7 +128,7 @@ export default {
     handleUpdateFundWeight(weight) {
       this.userWeight = weight;
     },
-    
+
     getTimeBoundary() {
       DataService.post(
         "get_fund_time_border",
@@ -190,7 +185,7 @@ export default {
     },
     handleLineStartYPosChange(val) {
       this.lineStartYPos = val;
-    }
+    },
   },
 };
 </script>

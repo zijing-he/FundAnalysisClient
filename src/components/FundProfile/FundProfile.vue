@@ -784,7 +784,7 @@ export default {
   background: #ffffff;
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  font-size: 20px;
+  font-size: 19px;
 }
 
 .buttons-like {
