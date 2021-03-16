@@ -63,12 +63,9 @@ import MarketAnalysisLayout from "@/components/MarketAnalysis/layout";
 import OverViewLayout from "@/components/Overview/layout";
 import FundRankingLayout from "@/components/FundRanking/FundRankingLayout";
 import DataService from "@/utils/data-service";
-<<<<<<< Updated upstream
 import { message } from "ant-design-vue";
-=======
 import { line } from 'd3-shape';
 // import SortedList from "@/components/SortedList/sorted-list";
->>>>>>> Stashed changes
 
 export default {
   name: "App",
@@ -97,19 +94,12 @@ export default {
   },
   computed: {},
   methods: {
-<<<<<<< Updated upstream
 
     //点击update获得id
     handleUpdateClick() {
       if (this.userWeight) {
       this.isRequestRanking = true;
        DataService.post(
-=======
-    // 从雷达图获取权重，再post得到基金数组
-    handleUpdateFundId(weight) {
-      this.userWeight = weight;
-      DataService.post(
->>>>>>> Stashed changes
         "get_fund_ranks",
         {
           weights: this.userWeight,
