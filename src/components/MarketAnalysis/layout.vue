@@ -1,23 +1,16 @@
 <template>
-  <div class="container">
-    <text>Market panel</text>
-    <a-row class="first_row">
-      <MarketAnalysisCurveChart v-on:updateBrush="handleUpdateBrush" />
+  <a-row class="first_row">
+    <MarketAnalysisCurveChart v-on:updateBrush="handleUpdateBrush" />
+  </a-row>
+  <a-row class="second_row">
+    <a-row type="flex" class="industry_selection_style">
+      <svg class="icon menu_icon" aria-hidden="true">
+        <use xlink:href="#iconxitongcaidan"></use>
+      </svg>
+      <text>Industry Selection</text>
     </a-row>
-    <a-row class="second_row">
-      <a-row type="flex" class="icon_text">
-        <a-col :span="10">
-          <svg class="icon menuIcon" aria-hidden="true">
-            <use xlink:href="#iconxitongcaidan"></use>
-          </svg>
-        </a-col>
-        <a-col :span="14">
-          <text>Industry Selection</text>
-        </a-col>
-      </a-row>
-      <MarketAnalysisStramGraph />
-    </a-row>
-  </div>
+    <MarketAnalysisStramGraph />
+  </a-row>
 </template>
 <script>
 import MarketAnalysisCurveChart from "@/components/MarketAnalysis/curvechart";
@@ -41,52 +34,40 @@ export default {
 </script>
 
 <style scoped>
-.container {
-  margin-top: 10px;
-  width: 100%;
-  height: 100%;
-  /* border: 1px solid black; */
-  text-align: center;
-}
-.container h4 {
-  border-bottom: 1px solid black;
-  margin-bottom: 0;
-  font-weight: bold;
-}
-.inner_container {
-  display: flex;
+.first_row {
+  height: 307px;
+  width: 523px;
+  background: #ffffff;
+  box-shadow: 12px 2px 44px 0 rgba(0, 0, 0, 0.05);
 }
 .second_row {
-  position: relative;
-  margin-top: 20px;
   /* border-top: 1px solid black; */
-  height: 30.9%;
-  width: 100%;
+  height: 380px;
+  width: 523px;
   /* border: 1px solid red; */
   /* transform: rotate(-90deg); */
   background: #ffffff;
   box-shadow: 12px 2px 44px 0 rgba(0, 0, 0, 0.05);
 }
-.icon_text {
-  margin-top: 3.5%;
 
-  margin-bottom: 4.83%;
+.industry_selection_style {
+  margin-top: 3%;
+  margin-bottom: 1%;
 }
-.second_row text {
-  font-family: PingFangSC-Semibold;
+.industry_selection_style text {
+  font-family: "PingFangSC-Semibold";
   font-size: 19px;
+  height: 32px;
   font-weight: 800;
   color: #185bbd;
   letter-spacing: 0;
-  white-space: nowrap;
-  text-align: center;
-  margin-left: -9%;
+  margin-left: 25px;
 }
-
-.menuIcon {
+.industry_selection_style .menu_icon {
   position: relative;
   color: #185bbd;
   font-size: 23px;
   bottom: 4px;
+  left: 20px;
 }
 </style>

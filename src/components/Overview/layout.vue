@@ -79,7 +79,7 @@ export default {
 
 <style scoped>
 .container {
-  width: 100%;
+  width: 80%;
   border: 1px solid black;
 }
 text {

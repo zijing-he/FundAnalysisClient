@@ -2,7 +2,7 @@
   <a-row :gutter="[8, 8]">
     <a-col :span="5">
       <ControlPanelLayout
-        v-on:updateFundId="handleUpdateFundId"
+        v-on:updateFundWeight="handleUpdateFundWeight"
         :start_date="startDate"
         :end_date="endDate"
       />
@@ -11,7 +11,15 @@
           v-on:updateTimeBoundary="handleUpdateTimeBoundary"
         />
       </a-row>
+      <a-row id="update_button_container">
+        <a-button type="primary" @click="handleUpdateClick" id="update_button">
+          <text>UPDATE</text>
+        </a-button>
+      </a-row>
     </a-col>
+
+    <a-col :span="19">
+      <!-- 散点图样式还没写好 -->
     <a-col :span="3">
       <a-spin
         v-if="isRequestRanking"
@@ -29,6 +37,7 @@
       />
     </a-col>
     <a-col :span="16">
+
       <a-row>
         <OverViewLayout
           :fundsData="fundsData"
@@ -49,9 +58,6 @@
       </a-row>
     </a-col>
   </a-row>
-  <!-- <a-row>
-    <SortedList :list="sortedList" v-on:updateFundId="handleUpdateFundId" />
-  </a-row> -->
 </template>
 
 <script>
@@ -61,7 +67,7 @@ import MarketAnalysisLayout from "@/components/MarketAnalysis/layout";
 import OverViewLayout from "@/components/Overview/layout";
 import FundRankingLayout from "@/components/FundRanking/FundRankingLayout";
 import DataService from "@/utils/data-service";
-// import SortedList from "@/components/SortedList/sorted-list";
+import { message } from "ant-design-vue";
 
 export default {
   name: "App",
@@ -71,7 +77,6 @@ export default {
     OverViewLayout,
     FundProfileLayout,
     FundRankingLayout,
-    // SortedList
   },
   data() {
     return {
@@ -91,11 +96,12 @@ export default {
   },
   computed: {},
   methods: {
-    // 从雷达图获取权重，再post得到基金数组
-    handleUpdateFundId(weight) {
-      this.userWeight = weight;
+
+    //点击update获得id
+    handleUpdateClick() {
+      if (this.userWeight) {
       this.isRequestRanking = true;
-      DataService.post(
+       DataService.post(
         "get_fund_ranks",
         {
           weights: this.userWeight,
@@ -119,7 +125,16 @@ export default {
           this.getFundManagers();
         }
       );
+        
+      } else {
+        message.error("还未得到用户权重", 2);
+      }
     },
+    // 从雷达图获取权重
+    handleUpdateFundWeight(weight) {
+      this.userWeight = weight;
+
+    
     getTimeBoundary() {
       DataService.post(
         "get_fund_time_border",
@@ -179,14 +194,9 @@ export default {
 
 <style>
 #app {
-  font: 14px/1.5 "Helvetica Neue", Helvetica, Arial, "Microsoft Yahei",
-    "Hiragino Sans GB", "Heiti SC", "WenQuanYi Micro Hei", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   text-align: center;
   width: 100%;
   height: 100%;
-  padding: 5px;
 }
 .icon {
   width: 1.2em;
@@ -196,5 +206,21 @@ export default {
   vertical-align: -0.15em;
   fill: currentColor;
   overflow: hidden;
+}
+#update_button_container {
+  width: 523px;
+  height: 63px;
+  background: #ffffff;
+  box-shadow: 12px 2px 44px 0 rgba(0, 0, 0, 0.05);
+}
+#update_button_container #update_button {
+  width: 89%;
+  margin: auto;
+  border-radius: 6px;
+}
+#update_button_container #update_button text {
+  font-size: 16px;
+  font-family: "PingFangSC-Semibold";
+  letter-spacing: 0;
 }
 </style>

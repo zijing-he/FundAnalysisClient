@@ -1,5 +1,15 @@
 <template>
-  <div id="market_curvechart"></div>
+  <div class="container">
+    <a-row type="flex" class="funds_market_style">
+      <svg class="icon menu_icon" aria-hidden="true">
+        <use xlink:href="#iconxitongcaidan"></use>
+      </svg>
+      <text>Funds Market</text>
+    </a-row>
+    <a-row>
+      <div id="market_curvechart"></div>
+    </a-row>
+  </div>
 </template>
 
 <script>
@@ -16,15 +26,15 @@ export default {
   data() {
     return {
       svg: null,
-      margin: { top: 15, right: 20, bottom: 30, left: 15 },
-      width: 519,
-      height: 350,
+      margin: { top: 70, right: 20, bottom: 30, left: 15 },
+      width: 520,
+      height: 253,
       date: Object.keys(market_income),
       fund_size: Object.values(market_size),
       fund_number: Object.values(market_number),
       fund_income: Object.values(market_income),
       fund_hs300: Object.values(market_hs300),
-      keys: ["基金规模", "沪深300","基金平均收益",],
+      keys: ["沪深300", "基金平均收益", "基金规模"],
     };
   },
 
@@ -60,26 +70,35 @@ export default {
     colorScale() {
       return d3
         .scaleOrdinal()
-        .domain(this.keys) //["基金规模", "基金数量", "基金平均收益","沪深三百"]
-        .range(["#928a97", "#283c63", "#f85f73"]);
+        .domain(this.keys)
+        .range(["#855FFA", "#FE6AAC", "rgba(80,161,255,0.30)"]);
+    },
+    area() {
+      return d3
+        .area()
+        .x((d, i) => this.xScale(this.date[i]))
+        .y0((d) => this.yScale(0))
+        .y1((d) => this.yScale(d));
     },
   },
 
   methods: {
     updateDate({ selection }) {
-      let start = this.xScale
-        .invert(selection[0])
-        .toISOString()
-        .slice(0, 10)
-        .replace(/-/g, "");
-      let end = this.xScale
-        .invert(selection[1])
-        .toISOString()
-        .slice(0, 10)
-        .replace(/-/g, "");
+      if (selection) {
+        let start = this.xScale
+          .invert(selection[0])
+          .toISOString()
+          .slice(0, 10)
+          .replace(/-/g, "");
+        let end = this.xScale
+          .invert(selection[1])
+          .toISOString()
+          .slice(0, 10)
+          .replace(/-/g, "");
 
-      // console.log(start, end);
-      this.$emit("updateBrush", start, end);
+        this.$emit("updateBrush", start, end);
+      }
+
       // this.svg.select(".brush").call(this.brush.move, null);  //情况brush后会报错，但是不影响
     },
     renderInit() {
@@ -108,7 +127,7 @@ export default {
       let brush = d3
         .brushX()
         .extent([
-          [0, -this.margin.top],
+          [0, -this.margin.top + 35],
           [this.innerWidth, this.innerHeight],
         ])
         .on("end", this.updateDate);
@@ -116,16 +135,27 @@ export default {
       let curveChart = this.svg.append("g");
 
       //fund_size
-      this.yScale.domain(d3.extent(this.fund_size));
+      this.yScale.domain([0,d3.max(this.fund_size)]);
       // console.log(this.yScale(0),this.yScale(100000));
+      // curveChart
+      //   .append("g")
+      //   .append("path")
+      //   .attr("class", "line-path-size")
+      //   .attr("d", this.linePath(this.fund_size))
+      //   .attr("fill", "none")
+      //   .attr("stroke-width", 1.5)
+      //   // .attr("stroke", "rgba(80,161,255,0.30)");
+      //   .attr("stroke", "red");
       curveChart
         .append("g")
         .append("path")
-        .attr("class", "line-path-size")
-        .attr("d", this.linePath(this.fund_size))
-        .attr("fill", "none")
-        .attr("stroke-width", 1.5)
-        .attr("stroke", "#928a97");
+        .datum(this.fund_size)
+        .attr("class", "streamGraphLayers")
+        .style("stroke", "rgba(80,161,255,0.30)")
+        .style("fill", "rgba(80,161,255,0.30)")
+        // .style("stroke-width", "0.1px")
+        // .style("fill", "#9F9D9D")
+        .attr("d", this.area);
 
       // curveChart
       //   .selectAll(".points")
@@ -157,7 +187,7 @@ export default {
         .attr("d", this.linePath(this.fund_income))
         .attr("fill", "none")
         .attr("stroke-width", 2)
-        .attr("stroke", "#f85f73");
+        .attr("stroke", "#FE6AAC");
 
       // fund_hs300——紫色
       this.yScale.domain(d3.extent(this.fund_hs300));
@@ -168,7 +198,7 @@ export default {
         .attr("d", this.linePath(this.fund_hs300))
         .attr("fill", "none")
         .attr("stroke-width", 2)
-        .attr("stroke", "#283c63");
+        .attr("stroke", "#855FFA");
 
       curveChart.append("g").attr("class", "brush").call(brush);
 
@@ -178,18 +208,22 @@ export default {
         .data(this.keys)
         .enter()
         .append("circle")
-        .attr("cx", (d, i) => 5 + i * 75)
-        .attr("cy", -2)
-        .attr("r", 4)
+        .attr("cx", (d, i) => 10 + i * 200)
+        .attr("cy", -50)
+        .attr("r", "6px")
         .style("fill", (d) => this.colorScale(d));
+
       this.svg
         .selectAll(".labels")
-        .data(this.keys)
+        .data(["CSI 300", "Average return", "Fund size"])
         .enter()
         .append("text")
-        .attr("x", (d, i) => 15 + i * 75)
-        .attr("y", -2)
-        .style("fill", (d) => this.colorScale(d))
+        .attr("x", (d, i) => 25 + i * 200)
+        .attr("y", -48)
+        .style("fill", "#9F9F9F")
+        .style("font-family", "PingFangSC-Medium")
+        .style("font-size", "14px")
+        .style("letter-spacing", "-0.18px")
         .text((d) => d)
         .attr("text-anchor", "left")
         .style("alignment-baseline", "middle");
@@ -199,11 +233,32 @@ export default {
 </script>
 
 <style scoped>
+.container {
+  height: 307px;
+  width: 523px;
+}
 #market_curvechart {
-  height: 350px;
+  height: 253px;
   width: 100%;
-  margin-top:10px;
-  padding-bottom:10px;
-  border: 1px solid black;
+}
+.funds_market_style {
+  margin-top: 3%;
+  margin-bottom: 1%;
+}
+.funds_market_style text {
+  font-family: "PingFangSC-Semibold";
+  font-size: 19px;
+  height: 32px;
+  font-weight: 800;
+  color: #185bbd;
+  letter-spacing: 0;
+  margin-left: 25px;
+}
+.funds_market_style .menu_icon {
+  position: relative;
+  color: #185bbd;
+  font-size: 23px;
+  bottom: 4px;
+  left: 20px;
 }
 </style>
