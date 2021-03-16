@@ -135,52 +135,52 @@ export default {
         };
         this.data = [
           { axis: "size", value: 2.5 },
-          { axis: "instl_weight", value: 2.5 },
-          { axis: "alpha", value: 2.5 },
-          { axis: "beta", value: 2.5 },
-          { axis: "sharp_ratio", value: 2.5 },
-          { axis: "max_drop_down", value: 2.5 },
-          { axis: "information_ratio", value: 2.5 },
-          { axis: "risk", value: 2.5 },
-          { axis: "one_quarter_return", value: 2.5 },
-          { axis: "one_year_return", value: 2.5 },
           { axis: "three_year_return", value: 2.5 },
+          { axis: "one_year_return", value: 2.5 },
+          { axis: "one_quarter_return", value: 2.5 },
+          { axis: "beta", value: 2.5 },
+          { axis: "alpha", value: 2.5 },
+          { axis: "sharp_ratio", value: 2.5 },
+          { axis: "instl_weight", value: 2.5 },
+          { axis: "risk", value: 2.5 },
+          { axis: "information_ratio", value: 2.5 },
+          { axis: "max_drop_down", value: 2.5 },
           { axis: "one_quarter_car", value: 2.5 },
-          { axis: "one_year_car", value: 2.5 },
           { axis: "three_year_car", value: 2.5 },
+          { axis: "one_year_car", value: 2.5 },
         ];
       } else if (d.key == 2) {
         this.weight = {
-          size: "0.7",
-          instl_weight: "0.7",
-          alpha: "0.7",
-          beta: "0.55",
-          sharp_ratio: "0.3",
-          max_drop_down: "0.2",
-          information_ratio: "0.6",
-          risk: "0.6",
-          one_quarter_return: "0.6",
-          one_year_return: "0.6",
-          three_year_return: "0.6",
-          one_quarter_car: "0.6",
-          one_year_car: "0.8",
-          three_year_car: "0.8",
+          size: "2",
+          instl_weight: "2",
+          alpha: "2",
+          beta: "2",
+          sharp_ratio: "2",
+          max_drop_down: "2",
+          information_ratio: "2",
+          risk: "2",
+          one_quarter_return: "2",
+          one_year_return: "2",
+          three_year_return: "2",
+          one_quarter_car: "2",
+          one_year_car: "2",
+          three_year_car: "2",
         };
         this.data = [
-          { axis: "size", value: 2.7 },
-          { axis: "instl_weight", value: 2.7 },
-          { axis: "alpha", value: 2.7 },
-          { axis: "beta", value: 2.57 },
-          { axis: "sharp_ratio", value: 2.3 },
-          { axis: "max_drop_down", value: 2.2 },
-          { axis: "information_ratio", value: 2.6 },
-          { axis: "risk", value: 2.6 },
-          { axis: "one_quarter_return", value: 2.6 },
-          { axis: "one_year_return", value: 2.6 },
-          { axis: "three_year_return", value: 2.6 },
-          { axis: "one_quarter_car", value: 2.6 },
-          { axis: "one_year_car", value: 2.8 },
-          { axis: "three_year_car", value: 2.8 },
+          { axis: "size", value: 2 },
+          { axis: "three_year_return", value: 2 },
+          { axis: "one_year_return", value: 2 },
+          { axis: "one_quarter_return", value: 2 },
+          { axis: "beta", value: 2 },
+          { axis: "alpha", value: 2 },
+          { axis: "sharp_ratio", value: 2 },
+          { axis: "instl_weight", value: 2 },
+          { axis: "risk", value: 2 },
+          { axis: "information_ratio", value: 2 },
+          { axis: "max_drop_down", value: 2 },
+          { axis: "one_quarter_car", value: 2 },
+          { axis: "three_year_car", value: 2 },
+          { axis: "one_year_car", value: 2 },
         ];
       } else if (d.key == 3) {
         this.weight = {
@@ -201,19 +201,19 @@ export default {
         };
         this.data = [
           { axis: "size", value: 3 },
-          { axis: "instl_weight", value: 3 },
-          { axis: "alpha", value: 3 },
-          { axis: "beta", value: 3 },
-          { axis: "sharp_ratio", value: 3 },
-          { axis: "max_drop_down", value: 3 },
-          { axis: "information_ratio", value: 3 },
-          { axis: "risk", value: 3 },
-          { axis: "one_quarter_return", value: 3 },
-          { axis: "one_year_return", value: 3 },
           { axis: "three_year_return", value: 3 },
+          { axis: "one_year_return", value: 3 },
+          { axis: "one_quarter_return", value: 3 },
+          { axis: "beta", value: 3 },
+          { axis: "alpha", value: 3 },
+          { axis: "sharp_ratio", value: 3 },
+          { axis: "instl_weight", value: 3 },
+          { axis: "risk", value: 3 },
+          { axis: "information_ratio", value: 3 },
+          { axis: "max_drop_down", value: 3 },
           { axis: "one_quarter_car", value: 3 },
-          { axis: "one_year_car", value: 3 },
           { axis: "three_year_car", value: 3 },
+          { axis: "one_year_car", value: 3 },
         ];
       }
     },
@@ -295,7 +295,7 @@ export default {
   text-align: right;
   margin-left: 28px;
 }
-#weight_adjustment_text{
+#weight_adjustment_text {
   font-family: "PingFangSC-Medium";
   font-size: 15px;
   font-weight: 600;
@@ -332,13 +332,13 @@ export default {
   letter-spacing: 0.3px;
   line-height: 32px;
 }
-#divider{
-  margin:auto;
+#divider {
+  margin: auto;
   width: 89%;
   /* height: 1px; */
-  border-bottom: 1px solid #DEDEDE;
+  border-bottom: 1px solid #dedede;
 }
-.rader_chart_container{
+.rader_chart_container {
   position: relative;
 }
 </style>

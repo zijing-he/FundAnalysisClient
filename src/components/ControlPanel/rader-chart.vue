@@ -291,11 +291,9 @@ export default {
         .attr("points", str);
 
       let dragstarted = function (event, d) {
-        d3.select(this).raise().attr("r", "8px").style("opacity","0.8");
-        d3.select(".update_value_weight")
-          .text((d.value - 2).toFixed(2))
-          // .style("fill", "#FFFFFF")
-          .style("margin-top", "-2px");
+        d3.select(this).raise().attr("r", "8px").style("opacity", "0.8");
+        d3.select(".update_value_weight").text((d.value - 2).toFixed(2));
+        // .style("fill", "#FFFFFF")
         // if (nameDictionary[d.axis].en_sx.length <= 5) {
         //   d3.select(".update_value_weight").style("margin-top", "16px");
         // }
@@ -303,8 +301,6 @@ export default {
         //   .text(d.value - 2)
         //   .style("display", "block")
         //   .style("text-align", "center");
-
-        toolTip.style("visibility", "visible");
       };
       let move = function (event, d) {
         let width = 260; //this.width更新，这儿也要更新
@@ -351,9 +347,8 @@ export default {
 
           toolTip
             .style("left", newX + width / 2 + 75 + "px")
-            .style("top", height / 2 - newY - 20 + "px");
-            d3.select(".update_value_weight")
-          .text((newValue - 2).toFixed(2));
+            .style("top", height / 2 - newY - 20 + "px").style("visibility", "visible");
+          d3.select(".update_value_weight").text((newValue - 2).toFixed(2));
 
           // d3.select(".update_value_value")
           //   .text((newValue - 2).toFixed(2))
@@ -404,7 +399,7 @@ export default {
       };
 
       let dragended = function (event, d) {
-        d3.select(this).style("r", "3.5px").style("opacity","1");
+        d3.select(this).style("r", "3.5px").style("opacity", "1");
         toolTip.style("visibility", "hidden");
         // d3.select(".update_value_value").style("visibility", "hidden");
       };

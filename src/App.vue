@@ -14,14 +14,14 @@
     </a-col>
     <a-col :span="19">
       <a-row>
-        <OverViewLayout
+        <!-- <OverViewLayout
           :fundsData="fundsData"
           :totalWidth="totalWidth"
           :scrollLeft="scrollLeft"
-        />
+        /> -->
       </a-row>
       <a-row>
-        <FundProfileLayout
+        <!-- <FundProfileLayout
           :fundsID="needFundsID"
           :unranksStart="unRanksStart"
           :start_date="startDate"
@@ -29,7 +29,7 @@
           ref="fundProfileLayout"
           @updateWidth="handleUpdateWidth"
           @updateScrollLeft="handleScrollLeft"
-        />
+        /> -->
       </a-row>
     </a-col>
   </a-row>
@@ -51,8 +51,8 @@ export default {
   components: {
     ControlPanelLayout,
     MarketAnalysisLayout,
-    OverViewLayout,
-    FundProfileLayout,
+    // OverViewLayout,
+    // FundProfileLayout,
     // SortedList
   },
   data() {
