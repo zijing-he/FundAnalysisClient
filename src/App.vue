@@ -39,11 +39,11 @@
     <a-col :span="16">
 
       <a-row>
-        <OverViewLayout
+        <!-- <OverViewLayout
           :fundsData="fundsData"
           :totalWidth="totalWidth"
           :scrollLeft="scrollLeft"
-        />
+        /> -->
       </a-row>
       <a-row>
         <FundProfileLayout
@@ -56,6 +56,7 @@
           @updateScrollLeft="handleScrollLeft"
         />
       </a-row>
+    </a-col>
     </a-col>
   </a-row>
 </template>
@@ -74,7 +75,7 @@ export default {
   components: {
     ControlPanelLayout,
     MarketAnalysisLayout,
-    OverViewLayout,
+    // OverViewLayout,
     FundProfileLayout,
     FundRankingLayout,
   },
