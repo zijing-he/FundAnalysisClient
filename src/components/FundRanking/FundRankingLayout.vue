@@ -22,30 +22,14 @@
       </a-form>
     </div>
     <a-divider />
-    <div class="ranking">
+    <a-spin v-if="!rankFundsID" size="large" tip="Loading..." />
+    <div
+      class="ranking"
+      ref="ranking"
+      @scroll="handleScroll"
+      v-if="rankFundsID"
+    >
       <a-row>
-        <a-col :span="7">
-          <a-row type="flex" justify="center">Rank</a-row>
-          <a-row
-            type="flex"
-            justify="center"
-            :key="item + '_rank'"
-            v-for="(item, index) in rankFundsID"
-          >
-            {{ index + 1 }}
-          </a-row>
-        </a-col>
-        <a-col :span="7">
-          <a-row type="flex" justify="center">Compare</a-row>
-          <a-row
-            type="flex"
-            justify="center"
-            :key="item + '_checkbox'"
-            v-for="item in rankFundsID"
-          >
-            <a-checkbox :value="item" @change="handleCheckbox"></a-checkbox>
-          </a-row>
-        </a-col>
         <a-col :span="10">
           <a-row type="flex" justify="center">Fund</a-row>
           <a-row
@@ -59,6 +43,28 @@
               :start_date="start_date"
               :end_date="end_date"
             />
+          </a-row>
+        </a-col>
+        <a-col :span="7">
+          <a-row type="flex" justify="center">Compare</a-row>
+          <a-row
+            type="flex"
+            justify="center"
+            :key="item + '_checkbox'"
+            v-for="item in rankFundsID"
+          >
+            <a-checkbox :value="item" @change="handleCheckbox"></a-checkbox>
+          </a-row>
+        </a-col>
+        <a-col :span="7">
+          <a-row type="flex" justify="center">Rank</a-row>
+          <a-row
+            type="flex"
+            justify="center"
+            :key="item + '_rank'"
+            v-for="(item, index) in rankFundsID"
+          >
+            {{ index + 1 }}
           </a-row>
         </a-col>
       </a-row>
@@ -88,7 +94,9 @@ export default {
         managerCode: "",
       },
       showFundProfileIDs: [],
+      lineStartYPos: [], // 连线起始坐标
       isFundProfileIDChecked: new Map(),
+      lastScrollTop: 0,
     };
   },
   computed: {},
@@ -101,23 +109,34 @@ export default {
       // 设置Map的目的是为了保证右边展示的顺序与左边rank的顺序始终一致
       this.isFundProfileIDChecked.set(e.target.value, e.target.checked);
       this.showFundProfileIDs = [];
-      this.rankFundsID.forEach((d) => {
-        if (this.isFundProfileIDChecked.get(d)) this.showFundProfileIDs.push(d);
+      this.lineStartYPos = [];
+      this.rankFundsID.forEach((d, i) => {
+        if (this.isFundProfileIDChecked.get(d)) {
+          this.showFundProfileIDs.push(d);
+          this.lineStartYPos.push(
+            i * 127 + 63.5 + 127 + 24 - this.$refs["ranking"].scrollTop
+          );
+        }
       });
       // console.log(this.showFundProfileIDs);
-      this.$emit("showFundIDChange", this.showFundProfileIDs);
+      this.$emit(
+        "showFundIDChange",
+        this.showFundProfileIDs,
+        this.lineStartYPos
+      );
+    },
+    handleScroll() {
+      this.lineStartYPos = this.lineStartYPos.map(
+        (d) => d + this.lastScrollTop - this.$refs["ranking"].scrollTop
+      );
+      this.lastScrollTop = this.$refs["ranking"].scrollTop;
+      this.$emit("lineStartYPosChange", this.lineStartYPos);
     },
   },
 };
 </script>
 
 <style scoped>
-.container {
-  max-height: 1200px;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
 .title {
   display: flex;
   margin-left: 10px;
@@ -144,8 +163,12 @@ export default {
 }
 
 .ranking {
+  max-height: 995px;
+  overflow-y: auto;
+  overflow-x: hidden;
   font-size: 15px;
-  line-height: 100px;
+  line-height: 127px;
+  direction: rtl;
 }
 
 /* 设置滚动条的样式 */

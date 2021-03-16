@@ -150,7 +150,7 @@ export default {
     return {
       fundData: null,
       svg: null,
-      margin: { top: 10, right: 100, bottom: 100, left: 70 },
+      margin: { top: 10, right: 100, bottom: 100, left: 100 },
       width: 900,
       height: 270,
       isSyncTop: false,
@@ -160,7 +160,7 @@ export default {
       detailCarData: [],
       sizeData: [],
       investStyleBoxes: [],
-      emptyBoxes: [], // 为同步不同FundProfile的长度
+      // emptyBoxes: [], // 为同步不同FundProfile的长度
       investStyleBoxWidth: (200 * this.boxHeight) / 270,
       contentWidth: (200 * this.boxHeight) / 270,
       boxGap: 200,
@@ -522,10 +522,10 @@ export default {
     },
     calcAttrs() {
       for (let i in this.fundData["detail"][this.fundId]) {
-        if (Object.keys(this.fundData["detail"][this.fundId][i]).length === 0) {
-          this.emptyBoxes.push(i);
-          continue;
-        }
+        // if (Object.keys(this.fundData["detail"][this.fundId][i]).length === 0) {
+        //   this.emptyBoxes.push(i);
+        //   continue;
+        // }
         let tmpDetailCarData = this.fundData["detail"][this.fundId][i][
           "detail_car"
         ];
@@ -559,8 +559,8 @@ export default {
         };
 
         this.investStyleBoxes.push({
-          boxId: this.fundId + "_" + tmpDateData[tmpDateData.length - 1],
-          boxText: tmpDateData[tmpDateData.length - 1],
+          boxId: this.fundId + "_" + `${i.substring(0, 4)}-${i.substring(4, 6)}-${i.substring(6)}`,
+          boxText: `${i.substring(0, 4)}-${i.substring(4, 6)}-${i.substring(6)}`,
           holdingData: thisHoldingData,
           one_quarter_returnData:
             "one_quarter_return" in this.fundData["detail"][this.fundId][i]
@@ -611,10 +611,10 @@ export default {
       }
     },
     renderInit() {
-      this.margin.right = this.investStyleBoxWidth / 2;
+      this.margin.left = this.margin.right = this.investStyleBoxWidth / 2;
       this.width = Math.max(
         (this.investStyleBoxWidth + this.boxGap) *
-          (this.investStyleBoxes.length + this.emptyBoxes.length) +
+          this.investStyleBoxes.length +
           this.margin.left +
           this.margin.right -
           this.investStyleBoxWidth / 2,
@@ -766,7 +766,7 @@ export default {
   background: #ffffff;
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  margin: 20px;
+  margin: 20px 20px 20px 0;
 }
 
 .summary {

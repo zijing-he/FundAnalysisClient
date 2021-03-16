@@ -3,14 +3,16 @@
     class="container"
     ref="container"
     id="container"
+    @scroll="handleProfileScroll"
   >
+    <div class="line" id="line"></div>
     <div class="title">
       <svg class="icon menuIcon" aria-hidden="true">
         <use xlink:href="#iconxitongcaidan"></use>
       </svg>
       <text>Funds</text>
     </div>
-    <div class="fund-profiles" v-if="refresh">
+    <div class="fund-profiles" id="fund_profiles" v-if="refresh">
       <FundProfile
         :ref="item"
         :fundId="item"
@@ -40,6 +42,7 @@ export default {
     start_date: String,
     end_date: String,
     unranksStart: Number, //未排序数组的起点
+    lineStartYPos: Array,
   },
   watch: {
     start_date: function(newVal, oldVal) {
@@ -71,7 +74,7 @@ export default {
         }
         this.historyFundsLikeScore.push(this.fundsLikeScore);
       }
-      console.log(this.historyFundsLikeScore);
+      // console.log(this.historyFundsLikeScore);
       if (this.isFirst) {
         this.isFirst = false;
       }
@@ -87,6 +90,30 @@ export default {
       // for (let i = 0; i < newVal.length; i++)
       //   this.fundsLikeScore[newVal[i]] = 0;
     },
+    refresh: function(val) {
+      this.$nextTick(() => {
+        if (val) {
+          if (this.svg === null) {
+            this.svg = d3
+              .select("#line")
+              .append("svg")
+              .attr("width", 30);
+          }
+          this.svg.attr(
+            "height",
+            Math.max(document.getElementById("fund_profiles").scrollHeight, 905)
+          );
+          this.drawConnectLines();
+        }
+      });
+    },
+    lineStartYPos: function(val) {
+      // console.log("ypos change: ", val);
+      this.lineStartYPos_n = val.map(
+        (d) => d + document.getElementById("container").scrollTop
+      );
+      if (this.svg !== null) this.drawConnectLines();
+    },
   },
   data() {
     return {
@@ -100,6 +127,9 @@ export default {
       fundsLikeScore: {},
       historyFundsLikeScore: [],
       refresh: true,
+      svg: null, // 用于绘制rank与profile之间的连接线
+      lineStartYPos_n: [],
+      lineEndYPos: [],
       // 无限下滑相关参数
       // size: 4, // 单页个数
       // page: 0, // 当前页码
@@ -245,6 +275,12 @@ export default {
     //     }
     //   );
     // },
+    handleProfileScroll() {
+      this.lineStartYPos_n = this.lineStartYPos.map(
+        (d) => d + document.getElementById("container").scrollTop
+      );
+      this.drawConnectLines();
+    },
     handleScroll(value) {
       this.$emit("updateScrollLeft", value);
       for (let i = 0; i < this.fundsID.length; i++)
@@ -263,6 +299,29 @@ export default {
       this.historyFundsLikeScore.push(this.fundsLikeScore);
       return this.historyFundsLikeScore;
     },
+    calcLineEndYPos() {
+      this.lineEndYPos = [];
+      for (let i = 0; i < this.fundsID.length; i++) {
+        this.lineEndYPos.push(
+          5 + 33 + 30 * (i + 1) + i * this.eachHeight + this.eachHeight / 2
+        );
+      }
+    },
+    drawConnectLines() {
+      this.svg.select("#connectLines").remove();
+      const gConnectLines = this.svg.append("g").attr("id", "connectLines");
+      this.calcLineEndYPos();
+      for (let i = 0; i < this.lineStartYPos_n.length; i++) {
+        gConnectLines
+          .append("path")
+          .attr("fill", "none")
+          .attr("stroke", "#979797")
+          .attr(
+            "d",
+            `M 0 ${this.lineStartYPos_n[i]} C 15 ${this.lineStartYPos_n[i]} 15 ${this.lineEndYPos[i]} 30 ${this.lineEndYPos[i]}`
+          );
+      }
+    },
   },
 };
 </script>
@@ -278,9 +337,14 @@ export default {
   overflow-x: hidden;
 }
 
+.line {
+  position: absolute;
+}
+
 .title {
+  position: absolute;
   display: flex;
-  margin-left: 10px;
+  left: 20px;
 }
 
 .title text {
@@ -301,7 +365,9 @@ export default {
 
 .fund-profiles {
   position: absolute;
-  width: 100%;
+  width: calc(100% - 30px);
+  left: 30px;
+  top: 33px;
 }
 
 /* 设置滚动条的样式 */

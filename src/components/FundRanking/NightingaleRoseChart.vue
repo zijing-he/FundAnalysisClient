@@ -38,8 +38,8 @@ export default {
   data() {
     return {
       svg: null,
-      width: 100,
-      height: 100,
+      width: 127,
+      height: 127,
       datum: [],
       isRequesting: true,
     };
@@ -136,7 +136,7 @@ export default {
 
 <style scoped>
 .rose-chart {
-  height: 100px;
+  height: 127px;
   width: 100%;
 }
 </style>

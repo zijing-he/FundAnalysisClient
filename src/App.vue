@@ -21,19 +21,13 @@
     <a-col :span="19">
       <!-- 散点图样式还没写好 -->
     <a-col :span="3">
-      <a-spin
-        v-if="isRequestRanking"
-        size="large"
-        tip="Loading..."
-        style="margin-top: 50%;"
-      />
       <FundRankingLayout
         :rankFundsID="rankFundsID"
         :rankFundsData="rankFundsData"
         :start_date="startDate"
         :end_date="endDate"
         @showFundIDChange="handleFundProfileIDChange"
-        v-if="!isRequestRanking"
+        @lineStartYPosChange="handleLineStartYPosChange"
       />
     </a-col>
     <a-col :span="16">
@@ -51,6 +45,7 @@
           :unranksStart="unRanksStart"
           :start_date="startDate"
           :end_date="endDate"
+          :lineStartYPos="lineStartYPos"
           ref="fundProfileLayout"
           @updateWidth="handleUpdateWidth"
           @updateScrollLeft="handleScrollLeft"
@@ -68,7 +63,12 @@ import MarketAnalysisLayout from "@/components/MarketAnalysis/layout";
 import OverViewLayout from "@/components/Overview/layout";
 import FundRankingLayout from "@/components/FundRanking/FundRankingLayout";
 import DataService from "@/utils/data-service";
+<<<<<<< Updated upstream
 import { message } from "ant-design-vue";
+=======
+import { line } from 'd3-shape';
+// import SortedList from "@/components/SortedList/sorted-list";
+>>>>>>> Stashed changes
 
 export default {
   name: "App",
@@ -88,8 +88,8 @@ export default {
       userWeight: null,
       rankFundsID: null, //给FundRanking
       rankFundsData: null,
-      isRequestRanking: true,
       showFundsID: [], //展示的FundProfile
+      lineStartYPos: [],  //连线起始y坐标
       totalWidth: 900,
       scrollLeft: 0,
       unRanksStart: 0,
@@ -97,12 +97,19 @@ export default {
   },
   computed: {},
   methods: {
+<<<<<<< Updated upstream
 
     //点击update获得id
     handleUpdateClick() {
       if (this.userWeight) {
       this.isRequestRanking = true;
        DataService.post(
+=======
+    // 从雷达图获取权重，再post得到基金数组
+    handleUpdateFundId(weight) {
+      this.userWeight = weight;
+      DataService.post(
+>>>>>>> Stashed changes
         "get_fund_ranks",
         {
           weights: this.userWeight,
@@ -121,8 +128,9 @@ export default {
           // });
           this.rankFundsID = tempID.slice(0, 20);
           this.rankFundsData = data.ranks.slice(0, 20);
+          // this.rankFundsID = tempID;
+          // this.rankFundsData = data.ranks;
           this.unRanksStart = data.ranks.length; //没有放入未排序的数组，这个参数可以先不管
-          this.isRequestRanking = false;
           this.getFundManagers();
         }
       );
@@ -186,9 +194,13 @@ export default {
     getFundsLikeScore() {
       return this.$refs["fundProfileLayout"].getHistoryFundsLikeScore();
     },
-    handleFundProfileIDChange(val) {
-      this.showFundsID = val;
+    handleFundProfileIDChange(showFundsID, lineStartYPos) {
+      this.showFundsID = showFundsID;
+      this.lineStartYPos = lineStartYPos;
     },
+    handleLineStartYPosChange(val) {
+      this.lineStartYPos = val;
+    }
   },
 };
 </script>
