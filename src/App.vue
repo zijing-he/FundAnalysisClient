@@ -17,8 +17,27 @@
         </a-button>
       </a-row>
     </a-col>
+
     <a-col :span="19">
       <!-- 散点图样式还没写好 -->
+    <a-col :span="3">
+      <a-spin
+        v-if="isRequestRanking"
+        size="large"
+        tip="Loading..."
+        style="margin-top: 50%;"
+      />
+      <FundRankingLayout
+        :rankFundsID="rankFundsID"
+        :rankFundsData="rankFundsData"
+        :start_date="startDate"
+        :end_date="endDate"
+        @showFundIDChange="handleFundProfileIDChange"
+        v-if="!isRequestRanking"
+      />
+    </a-col>
+    <a-col :span="16">
+
       <a-row>
         <OverViewLayout
           :fundsData="fundsData"
@@ -28,7 +47,7 @@
       </a-row>
       <a-row>
         <FundProfileLayout
-          :fundsID="needFundsID"
+          :fundsID="showFundsID"
           :unranksStart="unRanksStart"
           :start_date="startDate"
           :end_date="endDate"
@@ -46,6 +65,7 @@ import FundProfileLayout from "@/components/FundProfile/FundProfileLayout";
 import ControlPanelLayout from "@/components/ControlPanel/layout";
 import MarketAnalysisLayout from "@/components/MarketAnalysis/layout";
 import OverViewLayout from "@/components/Overview/layout";
+import FundRankingLayout from "@/components/FundRanking/FundRankingLayout";
 import DataService from "@/utils/data-service";
 import { message } from "ant-design-vue";
 
@@ -56,6 +76,7 @@ export default {
     MarketAnalysisLayout,
     OverViewLayout,
     FundProfileLayout,
+    FundRankingLayout,
   },
   data() {
     return {
@@ -64,7 +85,10 @@ export default {
       startDate: "20110331", //默认起始值
       endDate: "20191231",
       userWeight: null,
-      needFundsID: null, //给FundProfile的
+      rankFundsID: null, //给FundRanking
+      rankFundsData: null,
+      isRequestRanking: true,
+      showFundsID: [], //展示的FundProfile
       totalWidth: 900,
       scrollLeft: 0,
       unRanksStart: 0,
@@ -72,30 +96,36 @@ export default {
   },
   computed: {},
   methods: {
+
     //点击update获得id
     handleUpdateClick() {
       if (this.userWeight) {
-        DataService.post(
-          "get_fund_ranks",
-          {
-            weights: this.userWeight,
-            start_date: this.startDate,
-            end_date: this.endDate,
-          },
-          (data) => {
-            // 已排序和未排序基金ID合成一个数组
-            let tempID = data.ranks.map((d) => d.id);
+      this.isRequestRanking = true;
+       DataService.post(
+        "get_fund_ranks",
+        {
+          weights: this.userWeight,
+          start_date: this.startDate,
+          end_date: this.endDate,
+        },
+        (data) => {
+          // 已排序和未排序基金ID合成一个数组
+          let tempID = data.ranks.map((d) => d.id);
+          console.log(data);
 
-            //散点图展示的基金id(先只展示已排序的)
-            this.fundsID = JSON.parse(JSON.stringify(tempID)).slice(0, 1); //深拷贝，给散点图的id
-            // data.un_ranks.forEach((d) => {
-            //   tempID.push(d.id);
-            // });
-            this.needFundsID = tempID.slice(0, 19);
-            this.unRanksStart = data.ranks.length; //没有放入未排序的数组，这个参数可以先不管
-            this.getFundManagers();
-          }
-        );
+          //散点图展示的基金id(先只展示已排序的)
+          this.fundsID = JSON.parse(JSON.stringify(tempID)).slice(0, 1); //深拷贝，给散点图的id
+          // data.un_ranks.forEach((d) => {
+          //   tempID.push(d.id);
+          // });
+          this.rankFundsID = tempID.slice(0, 20);
+          this.rankFundsData = data.ranks.slice(0, 20);
+          this.unRanksStart = data.ranks.length; //没有放入未排序的数组，这个参数可以先不管
+          this.isRequestRanking = false;
+          this.getFundManagers();
+        }
+      );
+        
       } else {
         message.error("还未得到用户权重", 2);
       }
@@ -103,7 +133,8 @@ export default {
     // 从雷达图获取权重
     handleUpdateFundWeight(weight) {
       this.userWeight = weight;
-    },
+
+    
     getTimeBoundary() {
       DataService.post(
         "get_fund_time_border",
@@ -111,7 +142,7 @@ export default {
         (data) => {
           this.startDate = data["start_date"].toString();
           this.endDate = data["end_date"].toString();
-          this.needFundsID = this.fundsID;
+          this.rankFundsID = this.fundsID;
           //先后
           this.getFundManagers();
         }
@@ -153,6 +184,9 @@ export default {
     },
     getFundsLikeScore() {
       return this.$refs["fundProfileLayout"].getHistoryFundsLikeScore();
+    },
+    handleFundProfileIDChange(val) {
+      this.showFundsID = val;
     },
   },
 };

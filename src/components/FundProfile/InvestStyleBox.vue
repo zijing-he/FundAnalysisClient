@@ -1,6 +1,6 @@
 <template>
   <div id="invest_style_box" class="invest_style_box">
-    <div class="text" id="text">{{ boxText }}</div>
+    <div class="text" id="text" v-if="boxText !== undefined">{{ boxText }}</div>
     <div class="content" id="content">
       <div class="center" id="center"></div>
       <div class="left" id="left"></div>
@@ -164,7 +164,12 @@ export default {
       d3.select("#invest_style_box")
         .attr("id", "invest_style_box_" + this.boxId)
         .style("width", this.boxWidth + "px")
-        .style("height", (220 * this.boxWidth) / 200 + "px")
+        .style(
+          "height",
+          this.boxText !== undefined
+            ? (220 * this.boxWidth) / 200 + "px"
+            : this.boxWidth + "px"
+        )
         .style("margin-left", this.boxGap + "px");
       d3.select("#text")
         .attr("id", "text_" + this.boxId)
@@ -378,7 +383,9 @@ export default {
                     Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`))
                   ) -
                     this.yScale(
-                      Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
+                      Math.abs(
+                        eval(`returnToHs300.${this.initTopBars[i]}.norm`)
+                      )
                     )
                 );
             }
@@ -449,7 +456,9 @@ export default {
                     Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`))
                   ) -
                     this.yScale(
-                      Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
+                      Math.abs(
+                        eval(`returnToHs300.${this.initTopBars[i]}.norm`)
+                      )
                     )
                 );
             }
@@ -520,7 +529,9 @@ export default {
                     Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`))
                   ) -
                     this.yScale(
-                      Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
+                      Math.abs(
+                        eval(`returnToHs300.${this.initTopBars[i]}.norm`)
+                      )
                     )
                 );
             }
@@ -936,7 +947,7 @@ export default {
   margin-left: 60px;
   flex-shrink: 0;
   z-index: 3;
-  background-color: white;
+  background: #ffffff;
 }
 
 .text {
@@ -945,6 +956,9 @@ export default {
   height: 20px;
   text-align: center;
   font-size: 13px;
+  font-family: PingFangSC-Regular;
+  color: #185bbd;
+  letter-spacing: 0;
 }
 
 .content {
@@ -959,7 +973,7 @@ export default {
   position: absolute;
   height: 80px;
   width: 80px;
-  border: 1px solid black;
+  /* border: 1px solid black; */
   left: 60px;
   top: 60px;
 }
