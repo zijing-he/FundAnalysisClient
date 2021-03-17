@@ -24,8 +24,9 @@
                 aria-hidden="true"
                 :style="activationSelect(item)"
               >
-                <use v-if="item === '医药生物'" xlink:href="#iconyiyao"></use>
-                <use v-if="item === '电子'" xlink:href="#icondianzi"></use>
+                <!-- <use v-if="item === '医药生物'" xlink:href="#iconyiyao"></use>
+                <use v-if="item === '电子'" xlink:href="#icondianzi"></use> -->
+                <use :xlink:href="sectorItem[item]"></use>
               </svg>
               <!-- <text :style="activationSelect(item)">██ </text> -->
               <text>{{ item }}</text>
@@ -47,6 +48,7 @@ import * as d3 from "d3";
 import dataJSON from "@/data/StreamGraph/market_date_sector.json";
 import sectorJSON from "@/data/market_sector_date.json";
 import sectorDict from "@/data/sector_dict.json";
+import market_hs300 from "@/data/CurveChart/market_hs300.json";
 export default {
   name: "MarketAnalysisStramGraph",
   props: {},
@@ -62,6 +64,38 @@ export default {
       sector_data: sectorJSON,
       sectors: [],
       selectedIndustries: [],
+      fund_hs300: Object.values(market_hs300),
+      sectorItem: {
+        医药生物: "#iconyiyao",
+        电子: "#icondianzi",
+        食品饮料: "#iconshipinyinliao",
+        化工: "#iconhuagong",
+        计算机: "#iconjisuanjicomputer160",
+        机械设备: "#iconjixieshebei",
+        非银金融: "#iconfeiyinjinrong",
+        传媒: "#iconmediatb",
+        汽车: "#iconche1-copy",
+        电气设备: "#icondianqishebei",
+        房地产: "#iconreal-estate",
+        银行: "#iconyinhang1",
+        家用电器: "#iconappliances",
+        公用事业: "#icongongyongshiye",
+        通信: "#icontongxin-copy",
+        建筑装饰: "#iconjianzhuzhuangshi",
+        有色金属: "#iconyousejinshu",
+        农林牧渔: "#iconnonglinmuyu",
+        交通运输: "#iconjiaotongyunshu",
+        轻工制造: "#iconqinggongzhizao",
+        商业贸易: "#iconshangyemaoyi",
+        国防军工: "#iconguofangjungong",
+        建筑材料: "#iconjianzhucailiao",
+        采掘: "#iconcaijue",
+        休闲服务: "#iconxiuxianfuwu",
+        纺织服装: "#iconfangzhifuzhuang",
+        综合: "#iconzonghe",
+        钢铁: "#icongangtie",
+        未知: "#iconweizhi",
+      },
     };
   },
 
@@ -134,21 +168,9 @@ export default {
     handleChange(value) {
       this.renderUpdate();
     },
-    // handleMenuClick(e) {
-    //   this.selectedIndustries.push(e.key);
-    //   this.selectedIndustries = Array.from(new Set(this.selectedIndustries));
-    //   this.renderUpdate();
-    // },
-    // handleButtonClick(event) {
-    //   //点击删除相应的行业
-    //   this.selectedIndustries.splice(
-    //     this.selectedIndustries.indexOf(event.toElement.innerText),
-    //     1
-    //   );
-    //   this.renderUpdate();
-    // },
     renderInit() {
       this.sectors = Object.keys(sectorDict);
+      console.log(this.sectors);
       this.date = this.date.map(
         (d) =>
           new Date(
@@ -247,7 +269,6 @@ export default {
       this.svg.selectAll("#streamGraphLayers").remove();
       let streamGraph = this.svg.append("g").attr("id", "streamGraphLayers");
 
-      // this.yScale.domain([0, d3.max(Object.values(this.data), (d) => d.avg)]);
       streamGraph
         .append("path")
         .datum(Object.values(this.data))

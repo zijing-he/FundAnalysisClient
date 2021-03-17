@@ -26,7 +26,7 @@ export default {
   data() {
     return {
       svg: null,
-      margin: { top: 70, right: 20, bottom: 30, left: 15 },
+      margin: { top: 70, right: 20, bottom: 30, left: 55 },
       width: 520,
       height: 253,
       date: Object.keys(market_income),
@@ -34,7 +34,7 @@ export default {
       fund_number: Object.values(market_number),
       fund_income: Object.values(market_income),
       fund_hs300: Object.values(market_hs300),
-      keys: ["沪深300", "基金平均收益", "基金规模"],
+      keys: ["基金平均收益", "基金规模"],
     };
   },
 
@@ -121,8 +121,44 @@ export default {
       // Add X axis
       this.svg
         .append("g")
-        .call(d3.axisBottom(this.xScale).ticks(d3.timeYear.every(1), "%Y"))
-        .attr("transform", `translate(0,${this.innerHeight})`);
+        .attr("class", "xAxis")
+        .call(d3.axisBottom(this.xScale).ticks(d3.timeYear.every(2), "%Y"))
+        .attr("transform", `translate(0,${this.innerHeight})`)
+        .select(".domain")
+        .remove();
+
+      this.svg
+        .append("g")
+        .attr("class", "yAxis")
+        .call(
+          d3.axisLeft(this.yScale).tickFormat(d3.format(".0%")).ticks(5)
+          // .ticks(d3.timeYear.every(2))
+          // .tickValues([2010,2020])
+          // .tickSize(this.innerHeight / 2 - 3)
+        )
+        .select(".domain")
+        .remove();
+      this.svg.selectAll(".tick line").remove();
+      this.svg
+        .select(".xAxis")
+        .selectAll(".tick text")
+        .style("font-size", "13px")
+        .style("font-family", "PingFangSC-Regular")
+        .style("letter-spacing", "-0.08px")
+        .style("color", "#6C7B8A");
+      this.svg
+        .select(".yAxis")
+        .selectAll(".tick text")
+        .style("font-family", "Helvetica")
+        .style("font-size", "10px")
+        .style("color", "#6C7B8A");
+
+      // .attr("transform", `translate(0,${this.innerHeight})`);
+
+      // this.svg
+      // .append("g")
+      // .call(d3.axisBottom(this.xScale).ticks(d3.timeYear.every(1), "%Y"))
+      // .attr("transform", `translate(0,${this.innerHeight})`);
 
       let brush = d3
         .brushX()
@@ -135,7 +171,7 @@ export default {
       let curveChart = this.svg.append("g");
 
       //fund_size
-      this.yScale.domain([0,d3.max(this.fund_size)]);
+      this.yScale.domain([0, d3.max(this.fund_size)]);
       // console.log(this.yScale(0),this.yScale(100000));
       // curveChart
       //   .append("g")
@@ -190,15 +226,15 @@ export default {
         .attr("stroke", "#FE6AAC");
 
       // fund_hs300——紫色
-      this.yScale.domain(d3.extent(this.fund_hs300));
-      curveChart
-        .append("g")
-        .append("path")
-        .attr("class", "line-path-fund_hs300")
-        .attr("d", this.linePath(this.fund_hs300))
-        .attr("fill", "none")
-        .attr("stroke-width", 2)
-        .attr("stroke", "#855FFA");
+      // this.yScale.domain(d3.extent(this.fund_hs300));
+      // curveChart
+      //   .append("g")
+      //   .append("path")
+      //   .attr("class", "line-path-fund_hs300")
+      //   .attr("d", this.linePath(this.fund_hs300))
+      //   .attr("fill", "none")
+      //   .attr("stroke-width", 2)
+      //   .attr("stroke", "#855FFA");
 
       curveChart.append("g").attr("class", "brush").call(brush);
 
@@ -208,17 +244,17 @@ export default {
         .data(this.keys)
         .enter()
         .append("circle")
-        .attr("cx", (d, i) => 10 + i * 200)
+        .attr("cx", (d, i) => 210 + i * 150)
         .attr("cy", -50)
         .attr("r", "6px")
         .style("fill", (d) => this.colorScale(d));
 
       this.svg
         .selectAll(".labels")
-        .data(["CSI 300", "Average return", "Fund size"])
+        .data(["Average return", "Fund size"])
         .enter()
         .append("text")
-        .attr("x", (d, i) => 25 + i * 200)
+        .attr("x", (d, i) => 230 + i * 150)
         .attr("y", -48)
         .style("fill", "#9F9F9F")
         .style("font-family", "PingFangSC-Medium")

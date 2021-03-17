@@ -1,8 +1,5 @@
 <template>
-  <div
-    id="fund_bubble_chart_inner_container"
-    class="fund_bubble_chart_inner_container"
-  >
+  <div class="fund_bubble_chart_inner_container">
     <div class="text">{{ date }}</div>
     <div id="fund_bubble_chart_item" class="fund_bubble_chart_item"></div>
   </div>
@@ -32,7 +29,7 @@ export default {
     return {
       svg: null,
       width: 200,
-      height: 180,
+      height: 172,
       margin: { top: 20, right: 20, bottom: 20, left: 20 },
       data: null,
       data_values: [],
@@ -158,7 +155,7 @@ export default {
             return "#aaa";
           }
         })
-        .style("opacity","0.4")
+        .style("opacity", "0.4")
         .attr("cx", (d) => {
           // console.log(d);
 
@@ -171,7 +168,7 @@ export default {
         .data(this.G.edges(true)) //this.G.edges(true)
         .enter()
         .append("line")
-        .attr("class", (d) => `funds_manager_${d[2].managerId}`) 
+        .attr("class", (d) => `funds_manager_${d[2].managerId}`)
         .style("stroke", (d) => {
           console.log(d, d[2].managerId, this.fundManagers[d[2].managerId]);
           if (this.fundManagers[d[2].managerId]) {
@@ -179,7 +176,7 @@ export default {
           } else return "#aaa";
         })
         .style("stroke-width", "16")
-        .style("opacity","0.4")
+        .style("opacity", "0.4")
         .attr("x1", (d) => {
           // console.log(d);
           return this.xScale(d[2].source.x);
@@ -188,7 +185,6 @@ export default {
         .attr("x2", (d) => this.xScale(d[2].target.x))
         .attr("y2", (d) => this.yScale(d[2].target.y));
 
-   
       // this.svg
       //   .append("g")
       //   .selectAll("circle")
@@ -233,17 +229,18 @@ h5 {
 }
 .fund_bubble_chart_inner_container {
   position: relative;
-  height: 200px;
+  height: 190px;
   width: 200px;
   flex-shrink: 0;
-  margin-right: 30px;
-  margin-top: 5px;
-  border: 1px solid black;
+  margin-right: 105px;
+  border: 1px dashed #979797;
+  
 }
 .text {
-  width: 200px;
-  height: 20px;
   text-align: center;
-  font-size: 13px;
+  font-family: "PingFangSC-Regular";
+  font-size: 10px;
+  color: #185bbd;
+  letter-spacing: 0;
 }
 </style>

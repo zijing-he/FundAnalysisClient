@@ -1,5 +1,5 @@
 <template>
-  <a-row :gutter="[8, 8]">
+  <a-row>
     <a-col :span="5">
       <ControlPanelLayout
         v-on:updateFundWeight="handleUpdateFundWeight"
@@ -18,18 +18,26 @@
       </a-row>
     </a-col>
 
-    <!-- 散点图样式还没写好 -->
     <a-col :span="3">
-      <FundRankingLayout
-        :rankFundsID="rankFundsID"
-        :rankFundsData="rankFundsData"
-        :start_date="startDate"
-        :end_date="endDate"
-        @showFundIDChange="handleFundProfileIDChange"
-        @lineStartYPosChange="handleLineStartYPosChange"
-      />
+      <a-row class="fund_list">
+        <svg class="icon fund_list_icon" aria-hidden="true">
+          <use xlink:href="#iconfund"></use>
+        </svg>
+        <text>Fund List</text>
+      </a-row>
+      <a-row>
+        <FundRankingLayout
+          :rankFundsID="rankFundsID"
+          :rankFundsData="rankFundsData"
+          :start_date="startDate"
+          :end_date="endDate"
+          @showFundIDChange="handleFundProfileIDChange"
+          @lineStartYPosChange="handleLineStartYPosChange"
+        />
+      </a-row>
     </a-col>
     <a-col :span="16">
+      <a-row id="fund_list_extent"></a-row>
       <a-row>
         <OverViewLayout
           :fundsData="fundsData"
@@ -220,5 +228,30 @@ export default {
   font-size: 16px;
   font-family: "PingFangSC-Semibold";
   letter-spacing: 0;
+}
+.fund_list {
+  background: #011f41;
+  box-shadow: 1px -3px 4px 0 rgba(36, 15, 57, 0.1);
+}
+
+.fund_list text {
+  font-family: PingFangSC-Semibold;
+  font-size: 24px;
+  color: #d0dde7;
+  letter-spacing: 0;
+  margin-left: 25px;
+}
+
+.fund_list .fund_list_icon {
+  position: relative;
+  font-size: 19px;
+  top: 3px;
+  left: 22px;
+}
+#fund_list_extent {
+  height: 37px;
+  width: 1706.66px;
+  background: #011f41;
+  box-shadow: 1px -3px 4px 0 rgba(36, 15, 57, 0.1);
 }
 </style>
