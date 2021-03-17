@@ -104,8 +104,10 @@ export default {
 .fund_bubble_chart_outer_container {
   /* position: absolute; */
   display: flex;
-  width: 1400px;
-  overflow-x: visible;
+  width: 1150px;
+  /* margin-left:100px; */
+  /* border: 1px solid #ccc; */
+  overflow-x: auto;
   overflow-y: hidden;
   margin-bottom: 10px;
 }
