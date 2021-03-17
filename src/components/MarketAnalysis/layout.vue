@@ -24,6 +24,7 @@ export default {
     MarketAnalysisCurveChart,
     MarketAnalysisStramGraph,
   },
+  emits:["updateTimeBoundary"],
   methods: {
     handleUpdateBrush(start, end) {
       this.$emit("updateTimeBoundary", start, end);

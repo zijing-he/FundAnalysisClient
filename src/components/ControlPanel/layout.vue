@@ -233,7 +233,7 @@ export default {
 <style scoped>
 .container {
   height: 529px;
-  width: 523px;
+  width: 533.328px;
   background: #ffffff;
   box-shadow: 12px 2px 44px 0 rgba(0, 0, 0, 0.05);
 }
@@ -254,13 +254,13 @@ export default {
 
 .control_panel .control_icon {
   position: relative;
-  font-size: 23px;
-  bottom: 2px;
+  font-size: 19px;
+  top:3px;
   left: 22px;
 }
 .investment_style {
-  margin-top: 3%;
-  margin-bottom: 1%;
+  margin-top: 15px;
+  margin-bottom:5px;
 }
 .investment_style text {
   font-family: "PingFangSC-Semibold";
