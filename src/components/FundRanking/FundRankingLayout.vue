@@ -4,7 +4,7 @@
       <svg class="icon menuIcon" aria-hidden="true">
         <use xlink:href="#iconxitongcaidan"></use>
       </svg>
-      <text>Fund Ranking</text>
+      <text>Funds Ranking</text>
     </div>
     <div class="search-box">
       <a-form :label-col="{ span: 9 }" :wrapper-col="{ span: 14 }">
@@ -53,7 +53,13 @@
             :key="item + '_checkbox'"
             v-for="item in rankFundsID"
           >
-            <a-checkbox :value="item" @change="handleCheckbox"></a-checkbox>
+            <input
+              type="checkbox"
+              style="height: 127px"
+              :value="item"
+              :id="item + '_checkbox'"
+              @change="handleCheckbox"
+            />
           </a-row>
         </a-col>
         <a-col :span="7">
@@ -114,7 +120,7 @@ export default {
         if (this.isFundProfileIDChecked.get(d)) {
           this.showFundProfileIDs.push(d);
           this.lineStartYPos.push(
-            i * 127 + 63.5 + 127 + 24 - this.$refs["ranking"].scrollTop
+            i * 127 + 63.5 + 127 + 24 - 34 - this.$refs["ranking"].scrollTop
           );
         }
       });
@@ -131,6 +137,27 @@ export default {
       );
       this.lastScrollTop = this.$refs["ranking"].scrollTop;
       this.$emit("lineStartYPosChange", this.lineStartYPos);
+    },
+    handleChangeHistoryIndex(val) {
+      this.showFundProfileIDs = val;
+      for (let i = 0; i < this.rankFundsID.length; i++) {
+        let isChecked =
+          this.showFundProfileIDs.indexOf(this.rankFundsID[i]) !== -1;
+        document.getElementById(
+          `${this.rankFundsID[i]}_checkbox`
+        ).checked = isChecked;
+        this.isFundProfileIDChecked.set(this.rankFundsID[i], isChecked);
+        // 手动更新下lineStartYPos
+        this.lineStartYPos = [];
+        this.rankFundsID.forEach((d, i) => {
+          if (this.isFundProfileIDChecked.get(d)) {
+            this.lineStartYPos.push(
+              i * 127 + 63.5 + 127 + 24 - 34 - this.$refs["ranking"].scrollTop
+            );
+          }
+        });
+        this.$emit("lineStartYPosChange", this.lineStartYPos);
+      }
     },
   },
 };

@@ -6,12 +6,12 @@
     @scroll="handleProfileScroll"
   >
     <div class="line" id="line"></div>
-    <div class="title">
+    <!-- <div class="title">
       <svg class="icon menuIcon" aria-hidden="true">
         <use xlink:href="#iconxitongcaidan"></use>
       </svg>
       <text>Funds</text>
-    </div>
+    </div> -->
     <div class="fund-profiles" id="fund_profiles" v-if="refresh">
       <FundProfile
         :ref="item"
@@ -20,10 +20,11 @@
         :startDate="start_date"
         :endDate="end_date"
         :boxHeight="eachHeight"
-        :fundLikeScore="fundsLikeScore[item]"
+        :fundLikeScore="fundsLikeScore_n[item]"
         :key="item"
         @handleScroll="handleScroll"
         @updateWidth="updateWidth"
+        @turn="handleTurn"
         v-for="item in fundsID"
       >
       </FundProfile>
@@ -39,56 +40,57 @@ export default {
   name: "FundProfileLayout",
   props: {
     fundsID: Array,
+    fundsLikeScore: Object,
     start_date: String,
     end_date: String,
     unranksStart: Number, //未排序数组的起点
     lineStartYPos: Array,
+    isTotalChange: Boolean,
   },
   watch: {
-    start_date: function(newVal, oldVal) {
-      console.log("In FundProfileLayout: ", newVal);
-      // 保存原分数
-      if (oldVal !== null) {
-        for (let i = 0; i < this.fundsID.length; i++) {
-          this.fundsLikeScore[this.fundsID[i]] = this.$refs[
-            this.fundsID[i]
-          ].thisFundLikeScore;
-        }
-      }
-      //限制第一次是因为id获取慢于起止点，会报错
-      if (!this.isFirst) {
-        this.getViewFunds();
-      }
-    },
+    // start_date: function(newVal, oldVal) {
+    //   console.log("In FundProfileLayout: ", newVal);
+    //   //限制第一次是因为id获取慢于起止点，会报错
+    //   if (!this.isFirst) {
+    //     this.getViewFunds();
+    //   }
+    //   // 重置基金喜好分数
+    //   this.fundsLikeScore_n = {};
+    //   for (let i = 0; i < newVal.length; i++)
+    //     this.fundsLikeScore_n[newVal[i]] = 0;
+    // },
     fundsID: function(newVal, oldVal) {
       console.log(`new fundsID: ${newVal}`);
       // this.totalPage = newVal.length / this.size;
       // this.updateViewFunds();
       // this.updateViewFundsID("down");
       // 保存原分数
-      if (oldVal !== null) {
-        for (let i = 0; i < oldVal.length; i++) {
-          this.fundsLikeScore[oldVal[i]] = this.$refs[
-            oldVal[i]
-          ].thisFundLikeScore;
-        }
-        this.historyFundsLikeScore.push(this.fundsLikeScore);
-      }
+      // if (oldVal !== null) {
+      //   for (let i = 0; i < oldVal.length; i++) {
+      //     this.fundsLikeScore_n[oldVal[i]] = this.$refs[
+      //       oldVal[i]
+      //     ].thisFundLikeScore;
+      //   }
+      //   this.historyFundsLikeScore.push(this.fundsLikeScore_n);
+      // }
       // console.log(this.historyFundsLikeScore);
       if (this.isFirst) {
         this.isFirst = false;
       }
+      // this.isRequesting = true;
+      // this.getViewFunds();
+      if (this.isTotalChange) {
+        // 重置基金喜好分数
+        this.historyFundsLikeScore = [];
+      }
+      this.fundsLikeScore_n = {};
+      for (let i = 0; i < newVal.length; i++)
+        this.fundsLikeScore_n[newVal[i]] = this.fundsLikeScore[newVal[i]];
       // 当前呈现的所有基金数组变了，必须强制重新渲染每个组件
       this.refresh = false;
       this.$nextTick(() => {
         this.refresh = true;
       });
-      // this.isRequesting = true;
-      // this.getViewFunds();
-      // 重置基金喜好分数
-      // this.fundsLikeScore = {};
-      // for (let i = 0; i < newVal.length; i++)
-      //   this.fundsLikeScore[newVal[i]] = 0;
     },
     refresh: function(val) {
       this.$nextTick(() => {
@@ -110,7 +112,7 @@ export default {
     lineStartYPos: function(val) {
       // console.log("ypos change: ", val);
       this.lineStartYPos_n = val.map(
-        (d) => d + document.getElementById("container").scrollTop
+        (d) => d + document.getElementById("fund_profiles").scrollTop
       );
       if (this.svg !== null) this.drawConnectLines();
     },
@@ -124,7 +126,7 @@ export default {
       isRequesting: true,
       isFirst: true,
       eachHeight: 270,
-      fundsLikeScore: {},
+      fundsLikeScore_n: this.fundsLikeScore,
       historyFundsLikeScore: [],
       refresh: true,
       svg: null, // 用于绘制rank与profile之间的连接线
@@ -289,21 +291,45 @@ export default {
     updateWidth(value) {
       this.$emit("updateWidth", value);
     },
-    getHistoryFundsLikeScore() {
-      // 点了提交，主动获取每个基金此时的score
+    handleTurn(value, callID) {
+      if (value) {
+        for (let i = 0; i < this.fundsID.length; i++)
+          if (this.fundsID[i] !== callID)
+            this.$refs[this.fundsID[i]].turnClockwise(true);
+      } else {
+        for (let i = 0; i < this.fundsID.length; i++)
+          if (this.fundsID[i] !== callID)
+            this.$refs[this.fundsID[i]].turnCounterClockwise(true);
+      }
+    },
+    saveCurFundsLikeScore() {
       for (let i = 0; i < this.fundsID.length; i++) {
-        this.fundsLikeScore[this.fundsID[i]] = this.$refs[
+        this.fundsLikeScore_n[this.fundsID[i]] = this.$refs[
           this.fundsID[i]
         ].thisFundLikeScore;
       }
-      this.historyFundsLikeScore.push(this.fundsLikeScore);
-      return this.historyFundsLikeScore;
+      // 检测此次比较是否已存入history，也就是是否保存后重新打分，这种情况视为更新之前的记录
+      let isExist = false,
+        index = -1;
+      for (let i = 0; i < this.historyFundsLikeScore.length && !isExist; i++) {
+        if (
+          JSON.stringify(Object.keys(this.fundsLikeScore_n)) ===
+          JSON.stringify(Object.keys(this.historyFundsLikeScore[i]))
+        ) {
+          // 一般是不能采用这种比较方式，但此处fundsID的顺序一定是一样的，所以可以这么比
+          isExist = true;
+          index = i;
+          break;
+        }
+      }
+      if (!isExist) this.historyFundsLikeScore.push(this.fundsLikeScore_n);
+      else this.historyFundsLikeScore[index] = this.fundsLikeScore_n;
     },
     calcLineEndYPos() {
       this.lineEndYPos = [];
       for (let i = 0; i < this.fundsID.length; i++) {
         this.lineEndYPos.push(
-          5 + 33 + 30 * (i + 1) + i * this.eachHeight + this.eachHeight / 2
+          5 + 20 * (i + 1) + i * this.eachHeight + this.eachHeight / 2
         );
       }
     },
@@ -329,10 +355,10 @@ export default {
 <style scoped>
 .container {
   position: relative;
-  margin-top: 5px;
+  margin-top: 34px;
   width: 100%;
   /* border: 1px solid black; */
-  height: 905px;
+  height: 1000px;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -367,7 +393,6 @@ export default {
   position: absolute;
   width: calc(100% - 30px);
   left: 30px;
-  top: 33px;
 }
 
 /* 设置滚动条的样式 */

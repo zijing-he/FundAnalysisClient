@@ -22,11 +22,17 @@
     <div class="summary" id="summary">
       <div class="title">
         <div class="buttons-like">
-          <svg class="icon" aria-hidden="true" @click="likeFund()">
+          <svg class="icon" aria-hidden="true" @click="likeFund()" v-if="thisFundLikeScore <= 0">
             <use xlink:href="#iconheart-line"></use>
           </svg>
-          <svg class="icon" aria-hidden="true" @click="dislikeFund()">
+          <svg class="icon" aria-hidden="true" @click="likeFund()" v-if="thisFundLikeScore > 0">
+            <use xlink:href="#iconheart-line-copy"></use>
+          </svg>
+          <svg class="icon" aria-hidden="true" @click="dislikeFund()" v-if="thisFundLikeScore >= 0">
             <use xlink:href="#icondislike-line"></use>
+          </svg>
+          <svg class="icon" aria-hidden="true" @click="dislikeFund()" v-if="thisFundLikeScore < 0">
+            <use xlink:href="#icondislike-line-copy"></use>
           </svg>
         </div>
         <div style="margin-top: 4px; margin-left: 30%;">{{ fundId }}</div>
@@ -194,7 +200,7 @@ export default {
         end_date: this.endDate,
       },
       (data) => {
-        console.log(data);
+        // console.log(data);
         this.fundData = data;
         this.calcAttrs();
         this.renderInit();
@@ -227,27 +233,29 @@ export default {
   },
 
   methods: {
-    turnClockwise() {
+    turnClockwise(isFatherCall = false) {
       this.svg.select("#dashline").remove();
       this.investStyleBoxes.forEach((d) => {
         this.$refs[d.boxId].removeDashline();
         this.$refs[d.boxId].turnClockwise();
       });
+      if (!isFatherCall) this.$emit("turn", true, this.fundId);
     },
-    turnCounterClockwise() {
+    turnCounterClockwise(isFatherCall = false) {
       this.svg.select("#dashline").remove();
       this.investStyleBoxes.forEach((d) => {
         this.$refs[d.boxId].removeDashline();
         this.$refs[d.boxId].turnCounterClockwise();
       });
+      if (!isFatherCall) this.$emit("turn", false, this.fundId);
     },
     likeFund() {
-      this.thisFundLikeScore++;
-      console.log(`${this.fundId}: ${this.thisFundLikeScore}`);
+      this.thisFundLikeScore = 1;
+      // console.log(`${this.fundId}: ${this.thisFundLikeScore}`);
     },
     dislikeFund() {
-      this.thisFundLikeScore--;
-      console.log(`${this.fundId}: ${this.thisFundLikeScore}`);
+      this.thisFundLikeScore = -1;
+      // console.log(`${this.fundId}: ${this.thisFundLikeScore}`);
     },
     clickBar(type) {
       this.svg.select("#dashline").remove();

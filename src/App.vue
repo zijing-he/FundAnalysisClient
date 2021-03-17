@@ -25,6 +25,7 @@
         :rankFundsData="rankFundsData"
         :start_date="startDate"
         :end_date="endDate"
+        ref="fundRankingLayout"
         @showFundIDChange="handleFundProfileIDChange"
         @lineStartYPosChange="handleLineStartYPosChange"
       />
@@ -37,13 +38,41 @@
           :scrollLeft="scrollLeft"
         />
       </a-row>
+      <a-row id="funds_comparison_title">
+        <svg class="icon menuIcon" aria-hidden="true">
+          <use xlink:href="#iconxitongcaidan"></use>
+        </svg>
+        <text>Funds Comparison</text>
+        <div id="comparison_buttons">
+          <select
+            style="width: 180px; margin-top: 2px; border-radius: 6px;"
+            v-model="selectIndex"
+          >
+            <option value="-1" disabled>History Comparison</option>
+            <option
+              :value="index"
+              :key="index"
+              v-for="(item, index) in historyFundsLikeScore"
+              >{{ index + 1 }}
+            </option>
+          </select>
+          <a-button type="primary" class="button" @click="handleSaveComparison">
+            <text>Save Comparison</text>
+          </a-button>
+          <a-button type="primary" class="button" @click="handleUpdateWeight">
+            <text>Update Weight</text>
+          </a-button>
+        </div>
+      </a-row>
       <a-row>
         <FundProfileLayout
           :fundsID="showFundsID"
+          :fundsLikeScore="showFundsLikeScore"
           :unranksStart="unRanksStart"
           :start_date="startDate"
           :end_date="endDate"
           :lineStartYPos="lineStartYPos"
+          :isTotalChange="isTotalChange"
           ref="fundProfileLayout"
           @updateWidth="handleUpdateWidth"
           @updateScrollLeft="handleScrollLeft"
@@ -61,8 +90,6 @@ import OverViewLayout from "@/components/Overview/layout";
 import FundRankingLayout from "@/components/FundRanking/FundRankingLayout";
 import DataService from "@/utils/data-service";
 import { message } from "ant-design-vue";
-import { line } from "d3-shape";
-// import SortedList from "@/components/SortedList/sorted-list";
 
 export default {
   name: "App",
@@ -73,20 +100,34 @@ export default {
     FundProfileLayout,
     FundRankingLayout,
   },
+  watch: {
+    selectIndex: function(val) {
+      if (val === -1) return;
+      this.isTotalChange = false;
+      this.showFundsLikeScore = this.historyFundsLikeScore[val];
+      this.showFundsID = Object.keys(this.historyFundsLikeScore[val]);
+      // 更新rank里面的选中情况
+      this.$refs["fundRankingLayout"].handleChangeHistoryIndex(this.showFundsID);
+    },
+  },
   data() {
     return {
       fundsData: null,
-      fundsID: null, //给散点图的
-      startDate: "20110331", //默认起始值
+      fundsID: null, // 给散点图的
+      startDate: "20110331", // 默认起始值
       endDate: "20191231",
       userWeight: null,
-      rankFundsID: null, //给FundRanking
+      rankFundsID: null, // 给FundRanking
       rankFundsData: null,
-      showFundsID: [], //展示的FundProfile
-      lineStartYPos: [], //连线起始y坐标
+      showFundsID: [], // 展示的FundProfile
+      showFundsLikeScore: {},
+      lineStartYPos: [], // 连线起始y坐标
       totalWidth: 900,
       scrollLeft: 0,
       unRanksStart: 0,
+      historyFundsLikeScore: [],
+      selectIndex: -1, // 选中的历史记录index
+      isTotalChange: true, // 为真表示是改变了所有rank的数据，要重置historyFundsLikeScore；为假则表示查看历史记录或者重新选取rank，无需重置
     };
   },
   computed: {},
@@ -103,6 +144,7 @@ export default {
             end_date: this.endDate,
           },
           (data) => {
+            this.isTotalChange = true;
             // 已排序和未排序基金ID合成一个数组
             let tempID = data.ranks.map((d) => d.id);
             console.log(data);
@@ -176,15 +218,33 @@ export default {
       // console.log(value);
       this.scrollLeft = value;
     },
-    getFundsLikeScore() {
-      return this.$refs["fundProfileLayout"].getHistoryFundsLikeScore();
-    },
     handleFundProfileIDChange(showFundsID, lineStartYPos) {
+      this.isTotalChange = false;
       this.showFundsID = showFundsID;
       this.lineStartYPos = lineStartYPos;
+      this.showFundsLikeScore = {};
+      this.showFundsID.forEach((d) => {
+        this.showFundsLikeScore[d] = 0;
+      });
+      this.selectIndex = -1;
     },
     handleLineStartYPosChange(val) {
       this.lineStartYPos = val;
+    },
+    handleSaveComparison() {
+      this.$refs["fundProfileLayout"].saveCurFundsLikeScore();
+      this.historyFundsLikeScore = this.$refs[
+        "fundProfileLayout"
+      ].historyFundsLikeScore;
+      this.selectIndex = this.historyFundsLikeScore.length - 1;
+      this.$message.success("Saving successful!");
+    },
+    handleUpdateWeight() {
+      this.$refs["fundProfileLayout"].saveCurFundsLikeScore();
+      this.historyFundsLikeScore = this.$refs[
+        "fundProfileLayout"
+      ].historyFundsLikeScore;
+      console.log(this.historyFundsLikeScore);
     },
   },
 };
@@ -220,5 +280,42 @@ export default {
   font-size: 16px;
   font-family: "PingFangSC-Semibold";
   letter-spacing: 0;
+}
+#funds_comparison_title {
+  position: absolute;
+  display: flex;
+  left: 20px;
+}
+#funds_comparison_title text {
+  font-family: PingFangSC-Semibold;
+  font-size: 19px;
+  color: #185bbd;
+  letter-spacing: 0;
+  white-space: nowrap;
+  margin-top: 5px;
+  margin-left: 5px;
+}
+.menuIcon {
+  color: #185bbd;
+  font-size: 23px;
+  bottom: 4px;
+}
+#comparison_buttons {
+  display: flex;
+  margin-left: 900px;
+}
+#comparison_buttons .button {
+  width: 140px;
+  height: 30px;
+  margin: auto;
+  margin-left: 20px;
+  border-radius: 6px;
+}
+#comparison_buttons .button text {
+  font-size: 13px;
+  font-family: "PingFangSC-Semibold";
+  letter-spacing: 0;
+  color: #ffffff;
+  margin: auto;
 }
 </style>
