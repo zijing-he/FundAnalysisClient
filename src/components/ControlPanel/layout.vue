@@ -15,7 +15,7 @@
 
     <a-row class="custormer_type">
       <text id="custormer_type_text">Custormer Type</text>
-      <a-dropdown>
+      <!-- <a-dropdown>
         <template #overlay>
           <a-menu @click="handleMenuClick">
             <a-menu-item key="1">
@@ -36,7 +36,21 @@
           <text>Conservative Investor</text>
           <DownOutlined class="dropdown_button_downicon" />
         </a-button>
-      </a-dropdown>
+      </a-dropdown> -->
+
+      <select
+        style="
+          width: 300px;
+          margin-top: 2px;
+          margin-left: 30px;
+          border-radius: 6px;
+        "
+        @change="handleMenuClick"
+      >
+        <option value="1">Conservative Investor</option>
+        <option value="2">Robust Investor</option>
+        <option value="3">Radical Investor</option>
+      </select>
     </a-row>
     <a-row id="divider"></a-row>
     <a-row>
@@ -108,12 +122,13 @@ export default {
   emits: ["updateFundWeight"],
   components: {
     ControlPanelRaderChart,
-    UserOutlined,
-    DownOutlined,
+    // UserOutlined,
+    // DownOutlined,
   },
   methods: {
     handleMenuClick(d) {
-      if (d.key == 1) {
+      console.log(d);
+      if (d.target.value == 1) {
         this.weight = {
           size: "0.5000",
           three_year_return: "0.5000",
@@ -130,7 +145,7 @@ export default {
           three_year_car: "0.5000",
           one_year_car: "0.5000",
         };
-      } else if (d.key == 2) {
+      } else if (d.target.value == 2) {
         this.weight = {
           size: "-1",
           three_year_return: "-1",
@@ -147,7 +162,7 @@ export default {
           three_year_car: "-1",
           one_year_car: "-1",
         };
-      } else if (d.key == 3) {
+      } else if (d.target.value == 3) {
         this.weight = {
           size: "1",
           three_year_return: "1",
