@@ -1,7 +1,14 @@
 
 <template>
   <!-- <h5>基金经理气泡图</h5> -->
-  <div id="manager_bubble_chart"></div>
+  <div id="manager_bubble_chart_container">
+    <a-row>
+      <span id="manager_relation_text">Manager relation</span>
+    </a-row>
+    <a-row>
+      <div id="manager_bubble_chart"></div>
+    </a-row>
+  </div>
 </template>
 
 <script>
@@ -15,8 +22,8 @@ export default {
   data() {
     return {
       svg: null,
-      width: 390,
-      height: 216,
+      width: 165,
+      height: 165,
       margin: { top: 20, right: 20, bottom: 20, left: 20 },
       data: this.fundManagers,
       name: [],
@@ -82,10 +89,10 @@ export default {
         .attr("class", "tooltip")
         .style("visibility", "hidden")
         .style("width", "150px")
-        .style("height", "78px")
+        .style("height", "90px")
         .style("background-color", "black")
         .style("border-radius", "5px")
-        .style("padding", "7px")
+        .style("padding", "11px")
         .style("color", "white");
 
       let showTooltip = (event, d) => {
@@ -99,14 +106,14 @@ export default {
               "<br /> 任职天数：" +
               this.data[d].days
           )
-          .style("left", event.pageX - 520 + "px")
-          .style("top", event.pageY - 70 + "px");
+          .style("left", event.pageX - 850 + "px")
+          .style("top", event.pageY - 100 + "px");
       };
 
       let moveTooltip = (event) => {
         tooltip
-          .style("left", event.pageX - 520 + "px")
-          .style("top", event.pageY - 70 + "px");
+          .style("left", event.pageX - 850 + "px")
+          .style("top", event.pageY - 100 + "px");
       };
 
       let hideTooltip = (event) => {
@@ -142,11 +149,31 @@ export default {
 </script>
 
 <style scoped>
-/* #manager_bubble_chart{
-  height:200px;
-  width:200px;
-  border:1px solid red;
-} */
+#manager_bubble_chart_container {
+  border-right: 1px dashed #979797;
+  height: 190px;
+  width:247px;
+  margin-bottom: 10px;
+  margin-right: 40px;
+ text-align:center;
+}
+#manager_bubble_chart {
+  height: 165px;
+  width: 165px;
+  margin:auto;
+}
+#manager_relation_text {
+  font-family: "PingFangSC-Medium";
+  font-size: 15px;
+  width:100%;
+  /* margin:auto; */
+  /* font-weight: 600; */
+  /* line-height: 32px; */
+  color: #4b4b4b;
+  letter-spacing: -0.22px;
+  /* margin-left: 28px; */
+  /* margin-top: 10px; */
+}
 /* h5 {
   margin-bottom: 0;
 } */

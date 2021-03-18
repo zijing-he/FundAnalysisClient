@@ -1,28 +1,109 @@
 <template>
   <div class="fund_profile" id="fund_profile">
-    <div class="buttons" id="buttons">
+    <!-- <div class="buttons" id="buttons">
       <svg class="icon" aria-hidden="true" @click="turnCounterClockwise()">
         <use xlink:href="#iconnishizhenxuanzhuan"></use>
       </svg>
       <svg class="icon" aria-hidden="true" @click="turnClockwise()">
         <use xlink:href="#iconshunshizhenxuanzhuan"></use>
       </svg>
+      <svg class="icon" aria-hidden="true" @click="likeFund()">
+        <use xlink:href="#iconheart-line"></use>
+      </svg>
+      <svg class="icon" aria-hidden="true" @click="dislikeFund()">
+        <use xlink:href="#icondislike-line"></use>
+      </svg>
+    </div> -->
+    <!-- <a-spin
+      v-if="fundData === null"
+      size="large"
+      tip="Loading..."
+    /> -->
+    <div class="summary" id="summary">
+      <div class="title">
+        <div class="buttons-like">
+          <svg class="icon" aria-hidden="true" @click="likeFund()" v-if="thisFundLikeScore <= 0">
+            <use xlink:href="#iconheart-line"></use>
+          </svg>
+          <svg class="icon" aria-hidden="true" @click="likeFund()" v-if="thisFundLikeScore > 0">
+            <use xlink:href="#iconheart-line-copy"></use>
+          </svg>
+          <svg class="icon" aria-hidden="true" @click="dislikeFund()" v-if="thisFundLikeScore >= 0">
+            <use xlink:href="#icondislike-line"></use>
+          </svg>
+          <svg class="icon" aria-hidden="true" @click="dislikeFund()" v-if="thisFundLikeScore < 0">
+            <use xlink:href="#icondislike-line-copy"></use>
+          </svg>
+        </div>
+        <div style="margin-top: 4px; margin-left: 30%;">{{ fundId }}</div>
+      </div>
+      <div class="summary_box" v-if="fundData !== null">
+        <InvestStyleBox
+          :boxId="fundId + '_summary'"
+          :holdingData="investStyleBoxes[0].holdingData"
+          :max_drop_downData="fundData['total'][fundId]['max_drop_down']"
+          :riskData="fundData['total'][fundId]['risk']"
+          :one_quarter_returnData="
+            fundData['total'][fundId]['one_quarter_return']
+          "
+          :one_quarter_hs300_returnData="
+            investStyleBoxes[0].one_quarter_hs300_returnData
+          "
+          :one_year_returnData="fundData['total'][fundId]['one_year_return']"
+          :one_year_hs300_returnData="
+            investStyleBoxes[20].one_year_hs300_returnData
+          "
+          :three_year_returnData="
+            fundData['total'][fundId]['three_year_return']
+          "
+          :three_year_hs300_returnData="
+            investStyleBoxes[20].three_year_hs300_returnData
+          "
+          :stockData="fundData['total'][fundId]['stock']"
+          :bondData="fundData['total'][fundId]['bond']"
+          :cashData="fundData['total'][fundId]['cash']"
+          :otherData="fundData['total'][fundId]['other']"
+          :sizeData="fundData['total'][fundId]['size']"
+          :alphaData="fundData['total'][fundId]['alpha']"
+          :betaData="fundData['total'][fundId]['beta']"
+          :sharp_ratioData="fundData['total'][fundId]['sharp_ratio']"
+          :information_ratioData="
+            fundData['total'][fundId]['information_ratio']
+          "
+          :boxGap="42"
+          :boxWidth="170"
+          :contentWidth="170"
+          style="margin-top: 15px;"
+        >
+        </InvestStyleBox>
+        <div class="buttons-turn">
+          <svg class="icon" aria-hidden="true" @click="turnCounterClockwise()">
+            <use xlink:href="#iconnishizhenxuanzhuan"></use>
+          </svg>
+          <svg class="icon" aria-hidden="true" @click="turnClockwise()">
+            <use xlink:href="#iconshunshizhenxuanzhuan"></use>
+          </svg>
+        </div>
+      </div>
     </div>
     <div
       class="invest_style_boxes"
       ref="topElement"
       @scroll="topHandleScroll()"
     >
-      <component
-        :is="componentName"
+      <InvestStyleBox
         :ref="item.boxId"
         :boxId="item.boxId"
         :boxText="item.boxText"
         :holdingData="item.holdingData"
         :max_drop_downData="item.max_drop_downData"
         :riskData="item.riskData"
-        :nav_returnData="item.nav_returnData"
-        :hs300Data="item.hs300Data"
+        :one_quarter_returnData="item.one_quarter_returnData"
+        :one_quarter_hs300_returnData="item.one_quarter_hs300_returnData"
+        :one_year_returnData="item.one_year_returnData"
+        :one_year_hs300_returnData="item.one_year_hs300_returnData"
+        :three_year_returnData="item.three_year_returnData"
+        :three_year_hs300_returnData="item.three_year_hs300_returnData"
         :stockData="item.stockData"
         :bondData="item.bondData"
         :cashData="item.cashData"
@@ -39,7 +120,7 @@
         @clickBar="clickBar"
         v-for="item in investStyleBoxes"
       >
-      </component>
+      </InvestStyleBox>
     </div>
     <div
       class="curve"
@@ -49,250 +130,88 @@
     >
       <div class="tooltip" id="tooltip_path"></div>
     </div>
-    <div class="rects" id="rects">
-      <div class="tooltip" id="tooltip_rects"></div>
-    </div>
-    <div class="select-box" id="selectBox">
-      <a-select
-        mode="tags"
-        placeholder="Please select"
-        size="small"
-        :allowClear="true"
-        :maxTagCount="1"
-        style="width: 90%; margin-top: 2px; font-size: 10px"
-        :default-value="selectedRectsCN"
-        @change="handleSelectChange"
-      >
-        <a-select-option :key="item" :value="item" v-for="item in rectDataCN">
-          {{ item }}
-        </a-select-option>
-      </a-select>
-    </div>
   </div>
 </template>
 
 <script>
 import * as d3 from "d3";
 import InvestStyleBox from "./InvestStyleBox";
-import weightKey from "@/data/FundProfile/weight_key.json";
+import weightKey from "@/data/weight_key.json";
+import DataService from "@/utils/data-service";
 
 export default {
   name: "FundProfile",
   props: {
-    fundData: Object,
-    fundIds: Object,
     fundId: String,
+    fundIds: Array, // 要计算空余部分面积，只能一起请求后端数据
     startDate: String,
     endDate: String,
     boxHeight: Number,
+    fundLikeScore: Number,
   },
   components: {
     InvestStyleBox,
   },
   data() {
     return {
-      componentName: "invest-style-box",
+      fundData: null,
       svg: null,
-      rectSvg: null,
-      margin: { top: 10, right: 100, bottom: 100, left: 20 },
+      margin: { top: 10, right: 100, bottom: 100, left: 100 },
       width: 900,
       height: 270,
       isSyncTop: false,
       isSyncBottom: false,
       dateData: [],
-      detailNavReturnData: [],
+      detailChangeRateData: [],
       detailCarData: [],
       sizeData: [],
       investStyleBoxes: [],
-      emptyBoxes: [], // 为同步不同FundProfile的长度
-      thisReturnData: 0,
-      thisCarData: 0,
-      thisStockData: 0,
-      thisBondData: 0,
-      thisCashData: 0,
-      thisOtherData: 0,
-      thisSizeData: 0,
-      thisAlphaData: 0,
-      thisBetaData: 0,
-      thisSharpData: 0,
-      thisDropData: 0,
-      thisInfoData: 0,
-      thisRiskData: 0,
-      thisWeightData: 0,
-      rectMarginRight: 30,
+      // emptyBoxes: [], // 为同步不同FundProfile的长度
       investStyleBoxWidth: (200 * this.boxHeight) / 270,
       contentWidth: (200 * this.boxHeight) / 270,
       boxGap: 200,
       // version 4
-      maxPathWidth: 60,
-      minPathWidth: 30,
-      rectDataKeys: [
-        "nav_return",
-        "car",
-        "stock",
-        "bond",
-        "cash",
-        "other",
-        "size",
-        "alpha",
-        "beta",
-        "sharp_ratio",
-        "max_drop_down",
-        "information_ratio",
-        "risk",
-        "instl_weight",
-      ],
-      rectObject: {},
-      selectedRectKeys: ["alpha", "beta", "sharp_ratio"],
+      thisFundLikeScore: this.fundLikeScore,
     };
   },
 
+  // watch: {
+  //   // startDate: function(val) {
+  //   //   console.log("In FundProfile(startDate): ", val);
+  //   // },
+  //   // fundData: function(val) {
+  //   //   console.log("In FundProfile(fundData): ", val);
+  //   // },
+  //   fundIds: function(val) {
+  //     console.log("In FundProfile(fundIds): ", val);
+  //     for (let i = 0; i < this.investStyleBoxes.length; i++) {
+  //       this.$refs[this.investStyleBoxes[i].boxId].$forceUpdate();
+  //     }
+  //     this.$forceUpdate();
+  //   }
+  // },
+
   mounted: function() {
-    for (let i in this.fundData["detail"][this.fundId]) {
-      if (Object.keys(this.fundData["detail"][this.fundId][i]).length === 0) {
-        this.emptyBoxes.push(i);
-        continue;
+    DataService.post(
+      "get_view_funds",
+      {
+        f_ids: this.fundIds,
+        start_date: this.startDate,
+        end_date: this.endDate,
+      },
+      (data) => {
+        // console.log(data);
+        this.fundData = data;
+        this.calcAttrs();
+        this.renderInit();
+        this.renderUpdate();
       }
-      let tmpDetailCarData = this.fundData["detail"][this.fundId][i][
-        "detail_car"
-      ];
-      let tmpdetailNavReturnData = this.fundData["detail"][this.fundId][i][
-        "detail_nav_return"
-      ];
-      let tmpDateData = Object.keys(tmpDetailCarData);
-      tmpDateData = tmpDateData.map(
-        (d) => `${d.substring(0, 4)}-${d.substring(4, 6)}-${d.substring(6)}`
-      );
-      this.sizeData.push(this.fundData["detail"][this.fundId][i]["size"].norm);
-      this.dateData = [...this.dateData, ...tmpDateData];
-      this.detailNavReturnData = [
-        ...this.detailNavReturnData,
-        ...Object.values(tmpdetailNavReturnData),
-      ];
-      this.detailCarData.push(Object.values(tmpDetailCarData));
-      let holdingData = this.fundData["detail"][this.fundId][i]["holding"];
-      let holdingDataKeys = Object.keys(holdingData)
-        .sort((a, b) => holdingData[b] - holdingData[a])
-        .slice(0, 10);
-      let thisHoldingData = [];
-      holdingDataKeys.forEach((d) => {
-        thisHoldingData.push({
-          name: d,
-          value: holdingData[d],
-        });
-      });
-      thisHoldingData = {
-        name: "all",
-        children: thisHoldingData,
-      };
-
-      this.investStyleBoxes.push({
-        boxId: this.fundId + "_" + tmpDateData[tmpDateData.length - 1],
-        boxText: tmpDateData[tmpDateData.length - 1],
-        holdingData: thisHoldingData,
-        nav_returnData: this.fundData["detail"][this.fundId][i]["nav_return"],
-        hs300Data: this.fundData["detail"][this.fundId][i]["hs300_return"],
-        max_drop_downData: this.fundData["detail"][this.fundId][i][
-          "max_drop_down"
-        ],
-        riskData: this.fundData["detail"][this.fundId][i]["risk"],
-        stockData: this.fundData["detail"][this.fundId][i]["stock"],
-        bondData: this.fundData["detail"][this.fundId][i]["bond"],
-        cashData: this.fundData["detail"][this.fundId][i]["cash"],
-        otherData: this.fundData["detail"][this.fundId][i]["other"],
-        alphaData: this.fundData["detail"][this.fundId][i]["alpha"],
-        betaData: this.fundData["detail"][this.fundId][i]["beta"],
-        sharp_ratioData: this.fundData["detail"][this.fundId][i]["sharp_ratio"],
-        information_ratioData: this.fundData["detail"][this.fundId][i][
-          "information_ratio"
-        ],
-      });
-    }
-
-    this.thisReturnData = this.fundData["total"][this.fundId]["return"];
-    this.thisCarData = this.fundData["total"][this.fundId]["car"];
-    this.thisStockData = this.fundData["total"][this.fundId]["stock"];
-    this.thisBondData = this.fundData["total"][this.fundId]["bond"];
-    this.thisCashData = this.fundData["total"][this.fundId]["cash"];
-    this.thisOtherData = this.fundData["total"][this.fundId]["other"];
-    this.thisSizeData = this.fundData["total"][this.fundId]["size"];
-    this.thisAlphaData = this.fundData["total"][this.fundId]["alpha"];
-    this.thisBetaData = this.fundData["total"][this.fundId]["beta"];
-    this.thisSharpData = this.fundData["total"][this.fundId]["sharp_ratio"];
-    this.thisDropData = this.fundData["total"][this.fundId]["max_drop_down"];
-    this.thisInfoData = this.fundData["total"][this.fundId][
-      "information_ratio"
-    ];
-    this.thisRiskData = this.fundData["total"][this.fundId]["risk"];
-    this.thisWeightData = this.fundData["total"][this.fundId]["instl_weight"];
-
-    this.rectObject = {
-      nav_return: {
-        color: "#ff7f00",
-        thisData: this.thisReturnData,
-      },
-      car: {
-        color: "#fddaec",
-        thisData: this.thisCarData,
-      },
-      stock: {
-        color: "#a65628",
-        thisData: this.thisStockData,
-      },
-      bond: {
-        color: "#377eb8",
-        thisData: this.thisBondData,
-      },
-      cash: {
-        color: "#f781bf",
-        thisData: this.thisCashData,
-      },
-      other: {
-        color: "#999999",
-        thisData: this.thisOtherData,
-      },
-      size: {
-        color: "#e5d8bd",
-        thisData: this.thisSizeData,
-      },
-      alpha: {
-        color: "#ffff33",
-        thisData: this.thisAlphaData,
-      },
-      beta: {
-        color: "#ffffcc",
-        thisData: this.thisBetaData,
-      },
-      sharp_ratio: {
-        color: "#984ea3",
-        thisData: this.thisSharpData,
-      },
-      max_drop_down: {
-        color: "#b3cde3",
-        thisData: this.thisDropData,
-      },
-      information_ratio: {
-        color: "#decbe4",
-        thisData: this.thisInfoData,
-      },
-      risk: {
-        color: "#fed9a6",
-        thisData: this.thisRiskData,
-      },
-      instl_weight: {
-        color: "#f2f2f2",
-        thisData: this.thisWeightData,
-      },
-    };
-
-    this.renderInit();
-    this.renderUpdate();
+    );
   },
 
   updated: function() {
     this.updateMargin();
-    this.updateRects();
-    this.updateGapPath();
+    this.updateCurve();
   },
 
   computed: {
@@ -300,74 +219,43 @@ export default {
       return d3
         .scaleTime()
         .domain([
-          new Date(
-            `${this.startDate.substring(0, 4)}-${this.startDate.substring(
-              4,
-              6
-            )}-${this.startDate.substring(6)}`
-          ),
-          new Date(
-            `${this.endDate.substring(0, 4)}-${this.endDate.substring(
-              4,
-              6
-            )}-${this.endDate.substring(6)}`
-          ),
+          new Date(this.dateData[0]),
+          new Date(this.dateData[this.dateData.length - 1]),
         ])
         .range([this.margin.left, this.width - this.margin.right]);
     },
-    rectXScale() {
+    yScale() {
       return d3
         .scaleLinear()
-        .range([
-          0,
-          document.getElementById(`rects_${this.fundId}`).clientWidth -
-            this.rectMarginRight,
-        ]);
-    },
-    selectedRectsEN() {
-      return this.selectedRectKeys.map((d) => weightKey[d].en_name);
-    },
-    selectedRectsCN() {
-      return this.selectedRectKeys.map((d) => weightKey[d].cn_name);
-    },
-    rectDataEN() {
-      return this.rectDataKeys.map((d) => weightKey[d].en_name);
-    },
-    rectDataCN() {
-      return this.rectDataKeys.map((d) => weightKey[d].cn_name);
+        .domain([-1, 1])
+        .range([this.height - this.margin.bottom, this.margin.top]);
     },
   },
 
   methods: {
-    handleSelectChange(value) {
-      this.$emit("handleSelect", value);
-    },
-    handleSelect(value) {
-      // console.log(`selected ${value}`);
-      this.selectedRectKeys = [];
-      value.forEach((d) => {
-        for (let i = 0; i < this.rectDataKeys.length; i++) {
-          if (weightKey[this.rectDataKeys[i]].cn_name === d) {
-            this.selectedRectKeys.push(this.rectDataKeys[i]);
-            break;
-          }
-        }
-      });
-      this.updateRects();
-    },
-    turnClockwise() {
+    turnClockwise(isFatherCall = false) {
       this.svg.select("#dashline").remove();
       this.investStyleBoxes.forEach((d) => {
         this.$refs[d.boxId].removeDashline();
         this.$refs[d.boxId].turnClockwise();
       });
+      if (!isFatherCall) this.$emit("turn", true, this.fundId);
     },
-    turnCounterClockwise() {
+    turnCounterClockwise(isFatherCall = false) {
       this.svg.select("#dashline").remove();
       this.investStyleBoxes.forEach((d) => {
         this.$refs[d.boxId].removeDashline();
         this.$refs[d.boxId].turnCounterClockwise();
       });
+      if (!isFatherCall) this.$emit("turn", false, this.fundId);
+    },
+    likeFund() {
+      this.thisFundLikeScore = 1;
+      // console.log(`${this.fundId}: ${this.thisFundLikeScore}`);
+    },
+    dislikeFund() {
+      this.thisFundLikeScore = -1;
+      // console.log(`${this.fundId}: ${this.thisFundLikeScore}`);
     },
     clickBar(type) {
       this.svg.select("#dashline").remove();
@@ -380,21 +268,9 @@ export default {
       // only consider nonnegative values
       let selectedBoxIndices = [];
       for (let i = 0; i < this.investStyleBoxes.length; i++) {
-        let value;
-        if (
-          [
-            "nav_return",
-            "risk",
-            "alpha",
-            "beta",
-            "sharp_ratio",
-            "information_ratio",
-          ].indexOf(type) !== -1
-        )
-          value = eval(`this.investStyleBoxes[${i}].${type}Data.norm`).toFixed(
-            2
-          );
-        else value = eval(`this.investStyleBoxes[${i}].${type}Data`).toFixed(2);
+        let value = eval(
+          `this.investStyleBoxes[${i}].${type}Data.norm`
+        ).toFixed(2);
         if (value >= 0) {
           selectedBoxIndices.push(i);
         }
@@ -408,6 +284,7 @@ export default {
         const endPoint = this.$refs[
           this.investStyleBoxes[selectedBoxIndices[i + 1]].boxId
         ].getSelectedBarCenterPoint(type);
+        // 坐标转换
         const startX =
           this.xScale(
             new Date(this.investStyleBoxes[selectedBoxIndices[i]].boxText)
@@ -449,7 +326,18 @@ export default {
             this.investStyleBoxWidth / 2;
           let traverseStartY = thisK * traverseStartX + thisB;
           let traverseEndY = thisK * traverseEndX + thisB;
-          if (["nav_return", "risk"].indexOf(type) !== -1) {
+          // 坐标转换
+          if (
+            [
+              "one_quarter_return",
+              "one_quarter_hs300_return",
+              "one_year_return",
+              "one_year_hs300_return",
+              "three_year_return",
+              "three_year_hs300_return",
+              "risk",
+            ].indexOf(type) !== -1
+          ) {
             // top
             traverseStartX = 0;
             traverseStartY =
@@ -509,7 +397,17 @@ export default {
           this.investStyleBoxWidth / 2;
         let thisY2 = thisK * thisX2 + thisB;
         let thatX1, thatY1, thatX2, thatY2;
-        if (["nav_return", "risk"].indexOf(type) !== -1) {
+        if (
+          [
+            "one_quarter_return",
+            "one_quarter_hs300_return",
+            "one_year_return",
+            "one_year_hs300_return",
+            "three_year_return",
+            "three_year_hs300_return",
+            "risk",
+          ].indexOf(type) !== -1
+        ) {
           // top
           thatX1 = 0;
           thatY1 = thisY1 - (20 * this.investStyleBoxWidth) / 200 - 5;
@@ -554,6 +452,7 @@ export default {
         lastK = thisK;
         lastB = thisB;
       }
+      // 最后一个invest_style_box内的虚线需要单独处理
       let lastTmpX =
         this.xScale(
           new Date(
@@ -565,7 +464,17 @@ export default {
         this.investStyleBoxWidth / 2;
       let lastTmpY = lastK * lastTmpX + lastB;
       let lastX, lastY;
-      if (["nav_return", "risk"].indexOf(type) !== -1) {
+      if (
+        [
+          "one_quarter_return",
+          "one_quarter_hs300_return",
+          "one_year_return",
+          "one_year_hs300_return",
+          "three_year_return",
+          "three_year_hs300_return",
+          "risk",
+        ].indexOf(type) !== -1
+      ) {
         // top
         lastX = 0;
         lastY = lastTmpY - (20 * this.investStyleBoxWidth) / 200 - 5;
@@ -619,53 +528,124 @@ export default {
       // console.log(`${this.fundId} notify to scroll`, value);
       this.$refs.topElement.scrollLeft = this.$refs.bottomElement.scrollLeft = value;
     },
+    calcAttrs() {
+      for (let i in this.fundData["detail"][this.fundId]) {
+        // if (Object.keys(this.fundData["detail"][this.fundId][i]).length === 0) {
+        //   this.emptyBoxes.push(i);
+        //   continue;
+        // }
+        let tmpDetailCarData = this.fundData["detail"][this.fundId][i][
+          "detail_car"
+        ];
+        let tmpDetailChangeRateData = this.fundData["detail"][this.fundId][i][
+          "detail_change_rate"
+        ];
+        let tmpDateData = Object.keys(tmpDetailCarData);
+        tmpDateData = tmpDateData.map(
+          (d) => `${d.substring(0, 4)}-${d.substring(4, 6)}-${d.substring(6)}`
+        );
+        this.sizeData.push(
+          this.fundData["detail"][this.fundId][i]["size"].norm
+        );
+        this.dateData = [...this.dateData, ...tmpDateData];
+        this.detailChangeRateData.push(Object.values(tmpDetailChangeRateData));
+        this.detailCarData.push(Object.values(tmpDetailCarData));
+        let holdingData = this.fundData["detail"][this.fundId][i]["holding"];
+        let holdingDataKeys = Object.keys(holdingData)
+          .sort((a, b) => holdingData[b] - holdingData[a])
+          .slice(0, 10);
+        let thisHoldingData = [];
+        holdingDataKeys.forEach((d) => {
+          thisHoldingData.push({
+            name: d,
+            value: holdingData[d],
+          });
+        });
+        thisHoldingData = {
+          name: "all",
+          children: thisHoldingData,
+        };
+
+        this.investStyleBoxes.push({
+          boxId: this.fundId + "_" + `${i.substring(0, 4)}-${i.substring(4, 6)}-${i.substring(6)}`,
+          boxText: `${i.substring(0, 4)}-${i.substring(4, 6)}-${i.substring(6)}`,
+          holdingData: thisHoldingData,
+          one_quarter_returnData:
+            "one_quarter_return" in this.fundData["detail"][this.fundId][i]
+              ? this.fundData["detail"][this.fundId][i]["one_quarter_return"]
+              : undefined,
+          one_quarter_hs300_returnData:
+            "one_quarter_hs300_return" in
+            this.fundData["detail"][this.fundId][i]
+              ? this.fundData["detail"][this.fundId][i][
+                  "one_quarter_hs300_return"
+                ]
+              : undefined,
+          one_year_returnData:
+            "one_year_return" in this.fundData["detail"][this.fundId][i]
+              ? this.fundData["detail"][this.fundId][i]["one_year_return"]
+              : undefined,
+          one_year_hs300_returnData:
+            "one_year_hs300_return" in this.fundData["detail"][this.fundId][i]
+              ? this.fundData["detail"][this.fundId][i]["one_year_hs300_return"]
+              : undefined,
+          three_year_returnData:
+            "three_year_return" in this.fundData["detail"][this.fundId][i]
+              ? this.fundData["detail"][this.fundId][i]["three_year_return"]
+              : undefined,
+          three_year_hs300_returnData:
+            "three_year_hs300_return" in this.fundData["detail"][this.fundId][i]
+              ? this.fundData["detail"][this.fundId][i][
+                  "three_year_hs300_return"
+                ]
+              : undefined,
+          max_drop_downData: this.fundData["detail"][this.fundId][i][
+            "max_drop_down"
+          ],
+          riskData: this.fundData["detail"][this.fundId][i]["risk"],
+          stockData: this.fundData["detail"][this.fundId][i]["stock"],
+          bondData: this.fundData["detail"][this.fundId][i]["bond"],
+          cashData: this.fundData["detail"][this.fundId][i]["cash"],
+          otherData: this.fundData["detail"][this.fundId][i]["other"],
+          alphaData: this.fundData["detail"][this.fundId][i]["alpha"],
+          betaData: this.fundData["detail"][this.fundId][i]["beta"],
+          sharp_ratioData: this.fundData["detail"][this.fundId][i][
+            "sharp_ratio"
+          ],
+          information_ratioData: this.fundData["detail"][this.fundId][i][
+            "information_ratio"
+          ],
+        });
+      }
+    },
     renderInit() {
-      this.margin.right = this.investStyleBoxWidth / 2;
+      this.margin.left = this.margin.right = this.investStyleBoxWidth / 2;
       this.width = Math.max(
         (this.investStyleBoxWidth + this.boxGap) *
-          (this.investStyleBoxes.length + this.emptyBoxes.length) +
+          this.investStyleBoxes.length +
           this.margin.left +
           this.margin.right -
           this.investStyleBoxWidth / 2,
         this.width
       );
+      // 将实际宽度传递给父组件进行同步
+      this.$emit("updateWidth", this.width);
       this.height = this.boxHeight;
-      this.maxPathWidth = (60 * this.investStyleBoxWidth) / 200;
-      this.minPathWidth = this.maxPathWidth / 2;
+      this.margin.top = this.margin.bottom = this.height / 4;
+      // this.maxPathWidth = (60 * this.investStyleBoxWidth) / 200;
+      // this.minPathWidth = this.maxPathWidth / 2;
       d3.select("#fund_profile")
         .attr("id", `fund_profile_${this.fundId}`)
         .style("height", this.height + "px");
-      d3.select("#buttons")
-        .attr("id", `buttons_${this.fundId}`)
-        .style("height", (30 * this.investStyleBoxWidth) / 200 + "px")
-        .style("left", (20 * this.investStyleBoxWidth) / 200 + "px")
-        .style("top", (25 * this.investStyleBoxWidth) / 200 + "px")
-        .style("font-size", (30 * this.investStyleBoxWidth) / 200 + "px");
+      d3.select("#summary").attr("id", `summary_${this.fundId}`);
       d3.select("#curve").attr("id", `curve_${this.fundId}`);
-      d3.select("#rects").attr("id", `rects_${this.fundId}`);
-      d3.select("#tooltip_rects").attr("id", `tooltip_rects_${this.fundId}`);
       d3.select("#tooltip_path").attr("id", `tooltip_path_${this.fundId}`);
-      d3.select("#selectBox").attr("id", `selectBox_${this.fundId}`);
       this.svg = d3
         .select(`#curve_${this.fundId}`)
         .append("svg")
         .attr("width", this.width)
         .attr("height", this.height)
         .attr("viewBox", [0, 0, this.width, this.height]);
-      this.rectSvg = d3
-        .select(`#rects_${this.fundId}`)
-        .append("svg")
-        .attr(
-          "width",
-          document.getElementById(`rects_${this.fundId}`).clientWidth
-        )
-        .attr("height", this.height)
-        .attr("viewBox", [
-          0,
-          0,
-          document.getElementById(`rects_${this.fundId}`).clientWidth,
-          this.height,
-        ]);
     },
     renderUpdate() {
       // Remove all groups in svg
@@ -709,119 +689,31 @@ export default {
         lastPos = this.xScale(new Date(this.investStyleBoxes[i].boxText));
       }
     },
-    updateRects() {
-      let that = this;
-      this.rectSvg.selectAll("g").remove();
-      const defs = this.rectSvg.append("defs");
-      defs
-        .append("pattern")
-        .attr("id", `pattern_stripe_${this.fundId}`)
-        .attr("width", 4)
-        .attr("height", 4)
-        .attr("patternUnits", "userSpaceOnUse")
-        .attr("patternTransform", "rotate(45)")
-        .append("rect")
-        .attr("width", 2)
-        .attr("height", 4)
-        .attr("transform", "translate(0, 0)")
-        .attr("fill", "white");
-      defs
-        .append("mask")
-        .attr("id", `mask_stripe_${this.fundId}`)
-        .append("rect")
-        .attr("x", 0)
-        .attr("y", 0)
-        .attr("width", "100%")
-        .attr("height", "100%")
-        .attr("fill", `url(#pattern_stripe_${this.fundId})`);
-      const gRects = this.rectSvg
-        .append("g")
-        .attr("transform", `translate(0, ${this.height / 5})`);
-      const rectHeight = (this.height * 0.6) / this.selectedRectKeys.length;
-      for (let i = 0; i < this.selectedRectKeys.length; i++) {
-        if (["size", "risk"].indexOf(this.selectedRectKeys[i]) !== -1)
-          this.rectXScale.domain([0, 1.1]);
-        else this.rectXScale.domain([0, 1]);
-        let thisData, value;
-        if (
-          [
-            "size",
-            "risk",
-            "alpha",
-            "beta",
-            "sharp_ratio",
-            "information_ratio",
-          ].indexOf(this.selectedRectKeys[i]) !== -1
-        ) {
-          thisData = this.rectObject[this.selectedRectKeys[i]].thisData.norm;
-          value = this.rectObject[
-            this.selectedRectKeys[i]
-          ].thisData.value.toFixed(2);
-        } else {
-          thisData = this.rectObject[this.selectedRectKeys[i]].thisData;
-          value = thisData.toFixed(2);
-        }
-        gRects
-          .append("rect")
-          .attr("fill", this.rectObject[this.selectedRectKeys[i]].color)
-          .attr(
-            "mask",
-            thisData < 0 ? `url(#mask_stripe_${this.fundId})` : "none"
-          )
-          .attr("stroke", "black")
-          .attr("x", 0)
-          .attr("y", 0 + i * rectHeight)
-          .attr("width", this.rectXScale(Math.abs(thisData)))
-          .attr("height", rectHeight)
-          .on("mouseover", function() {
-            d3.select(`#tooltip_rects_${that.fundId}`).style(
-              "display",
-              "block"
-            );
-          })
-          .on("mousemove", function(e) {
-            let key = that.selectedRectsCN[i];
-            d3.select(`#tooltip_rects_${that.fundId}`)
-              .html(key + "<br>" + value)
-              .style("left", e.offsetX + 10 + "px")
-              .style("top", e.offsetY + 10 + "px");
-          })
-          .on("mouseout", function() {
-            d3.select(`#tooltip_rects_${that.fundId}`).style("display", "none");
-          });
-      }
-    },
-    updateGapPath() {
-      const maxSize = Math.max(...this.sizeData);
-      const minSize = Math.min(...this.sizeData);
-      const k = (this.maxPathWidth - this.minPathWidth) / (maxSize - minSize);
-      const b = this.maxPathWidth - k * maxSize;
+    updateCurve() {
       let tmpSum = 0;
       let that = this;
       for (let i = 0; i < this.investStyleBoxes.length; i++) {
-        let thisPathWidth = k * this.sizeData[i] + b;
-        if (this.investStyleBoxes.length === 1)
-          thisPathWidth = this.maxPathWidth;
         for (
           let j = 0;
-          j < this.detailCarData[i].length &&
+          j < this.detailChangeRateData[i].length - 1 &&
           tmpSum + j < this.dateData.length - 1;
           j++
         ) {
           let key = this.dateData[tmpSum + j];
-          let value = this.detailCarData[i][j].value.toFixed(2);
+          let value = this.detailChangeRateData[i][j].value.toFixed(4);
           this.svg
             .append("path")
             .attr("fill", "none")
             .attr("stroke", this.detailCarData[i][j].color)
-            .attr("stroke-width", thisPathWidth)
+            .attr("stroke-width", 10)
             .attr(
               "d",
-              `M ${this.xScale(new Date(this.dateData[tmpSum + j]))} ${(this
-                .height -
-                6) /
-                2}
-              H ${this.xScale(new Date(this.dateData[tmpSum + j + 1]))}`
+              `M ${this.xScale(
+                new Date(this.dateData[tmpSum + j])
+              )} ${this.yScale(this.detailChangeRateData[i][j].norm)}
+              L ${this.xScale(
+                new Date(this.dateData[tmpSum + j + 1])
+              )} ${this.yScale(this.detailChangeRateData[i][j + 1].norm)}`
             )
             .on("mouseover", function() {
               d3.select(`#tooltip_path_${that.fundId}`).style(
@@ -857,8 +749,18 @@ export default {
               );
             });
         }
-        tmpSum += this.detailCarData[i].length;
+        tmpSum += this.detailChangeRateData[i].length;
       }
+      // 添加基准虚线
+      this.svg
+        .append("path")
+        .attr("stroke-dasharray", "2, 2")
+        .attr("stroke", "#979797")
+        .attr(
+          "d",
+          `M ${this.margin.left} ${this.height / 2} H ${this.width -
+            this.margin.right}`
+        );
     },
   },
 };
@@ -868,15 +770,60 @@ export default {
 .fund_profile {
   position: relative;
   height: 270px;
-  width: 100%;
+  width: calc(100% - 30px);
+  background: #ffffff;
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  margin: 20px 20px 20px 0;
+}
+
+.summary {
+  position: absolute;
+  height: 100%;
+  width: 15%;
+}
+
+.summary .title {
+  display: flex;
+  height: 35px;
+  width: 80%;
+  margin-left: 10%;
+  margin-top: 20px;
+  background: #ffffff;
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  font-size: 19px;
+}
+
+.buttons-like {
+  margin-top: 5px;
+  margin-left: 5px;
+  justify-content: space-around;
+}
+
+.buttons-turn {
+  position: absolute;
+  left: 215px;
+  top: 70px;
+  font-size: 27px;
+}
+
+.icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
+  cursor: pointer;
 }
 
 .invest_style_boxes {
   position: absolute;
   display: flex;
   height: 100%;
-  width: 80%;
-  border: 1px solid black;
+  width: 85%;
+  left: 15%;
+  border-left: 1px dashed #979797;
   overflow-x: auto;
   overflow-y: hidden;
 }
@@ -884,19 +831,12 @@ export default {
 .curve {
   position: absolute;
   height: 100%;
-  width: 80%;
-  border: 1px solid black;
+  width: 85%;
+  left: 15%;
+  border-left: 1px dashed #979797;
   z-index: 2;
   overflow-x: auto;
   overflow-y: hidden;
-}
-
-.rects {
-  position: absolute;
-  height: 100%;
-  width: 20%;
-  left: 80%;
-  z-index: 1;
 }
 
 /* 设置滚动条的样式 */
@@ -913,45 +853,21 @@ export default {
   background: rgba(0, 0, 0, 0.1);
 }
 
-.buttons {
-  position: absolute;
-  display: flex;
-  width: 80px;
-  height: 30px;
-  left: 20px;
-  top: 25px;
-  font-size: 30px;
-  z-index: 999;
-  justify-content: space-around;
-}
-
-.select-box {
-  position: absolute;
-  height: 20%;
-  width: 20%;
-  left: 80%;
-  z-index: 2;
-}
-
-.icon {
-  width: 1em;
-  height: 1em;
-  vertical-align: -0.15em;
-  fill: currentColor;
-  overflow: hidden;
-  cursor: pointer;
+.invest_style_boxes::-webkit-scrollbar {
+  display: none;
 }
 
 .tooltip {
   position: absolute;
   text-align: center;
   max-width: 150px;
-  max-height: 50px;
+  max-height: 300px;
   padding: 6px;
   border: none;
   background: black;
   color: white;
   pointer-events: none;
   display: none;
+  font-size: 10px;
 }
 </style>

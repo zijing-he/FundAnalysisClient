@@ -1,19 +1,36 @@
 
 <template>
-  <div>
-    <!-- justify="end" -->
-    <a-row type="flex">
+  <div class="selectedContainer">
+    <!-- type="flex" justify="start" -->
+    <a-row>
       <a-col :span="24">
         <a-select
           v-model:value="selectedIndustries"
-          mode="tags"
+          mode="multiple"
           showArrow
-          style="width: 100%"
+          style="
+            width: 91%;
+            border: 1px solid #aeaeae;
+            box-shadow: 0 20px 15px -12px rgba(21, 85, 194, 0.13);
+            border-radius: 5px;
+          "
           placeholder="选择您所关注的行业"
           @change="handleChange"
         >
           <a-select-option v-for="item in sectors" :key="item" :value="item">
-            {{ item }}
+            <span>
+              <svg
+                class="icon"
+                aria-hidden="true"
+                :style="activationSelect(item)"
+              >
+                <!-- <use v-if="item === '医药生物'" xlink:href="#iconyiyao"></use>
+                <use v-if="item === '电子'" xlink:href="#icondianzi"></use> -->
+                <use :xlink:href="sectorItem[item]"></use>
+              </svg>
+              <!-- <text :style="activationSelect(item)">██ </text> -->
+              <text>{{ item }}</text>
+            </span>
           </a-select-option>
         </a-select>
       </a-col>
@@ -29,8 +46,9 @@
 <script>
 import * as d3 from "d3";
 import dataJSON from "@/data/StreamGraph/market_date_sector.json";
-import sectorJSON from "@/data/StreamGraph/market_sector_date.json";
-import sectorDict from "@/data/StreamGraph/sector_dict.json";
+import sectorJSON from "@/data/market_sector_date.json";
+import sectorDict from "@/data/sector_dict.json";
+import market_hs300 from "@/data/CurveChart/market_hs300.json";
 export default {
   name: "MarketAnalysisStramGraph",
   props: {},
@@ -38,26 +56,73 @@ export default {
   data() {
     return {
       svg: null,
-      margin: { top: 10, right: 20, bottom: 20, left: 15 },
-      width: 990,
-      height: 110,
+      margin: { top: 60, right: 20, bottom: 30, left: 55 },
+      width: 519,
+      height: 290,
       date: Object.keys(dataJSON),
-      keys: [],
       data: dataJSON,
       sector_data: sectorJSON,
       sectors: [],
       selectedIndustries: [],
+      fund_hs300: Object.values(market_hs300),
+      sectorItem: {
+        医药生物: "#iconyiyao",
+        电子: "#icondianzi",
+        食品饮料: "#iconshipinyinliao",
+        化工: "#iconhuagong",
+        计算机: "#iconjisuanjicomputer160",
+        机械设备: "#iconjixieshebei",
+        非银金融: "#iconfeiyinjinrong",
+        传媒: "#iconmediatb",
+        汽车: "#iconche1-copy",
+        电气设备: "#icondianqishebei",
+        房地产: "#iconreal-estate",
+        银行: "#iconyinhang1",
+        家用电器: "#iconappliances",
+        公用事业: "#icongongyongshiye",
+        通信: "#icontongxin-copy",
+        建筑装饰: "#iconjianzhuzhuangshi",
+        有色金属: "#iconyousejinshu",
+        农林牧渔: "#iconnonglinmuyu",
+        交通运输: "#iconjiaotongyunshu",
+        轻工制造: "#iconqinggongzhizao",
+        商业贸易: "#iconshangyemaoyi",
+        国防军工: "#iconguofangjungong",
+        建筑材料: "#iconjianzhucailiao",
+        采掘: "#iconcaijue",
+        休闲服务: "#iconxiuxianfuwu",
+        纺织服装: "#iconfangzhifuzhuang",
+        综合: "#iconzonghe",
+        钢铁: "#icongangtie",
+        未知: "#iconweizhi",
+      },
     };
   },
 
   mounted: function () {
-    // console.log(this.sectors);
-    // console.log(sectorJSON);
-
     this.renderInit();
     this.renderUpdate();
   },
   computed: {
+    iconScale() {
+      return d3
+        .scaleOrdinal()
+        .domain(this.sectors)
+        .range(["iconyiyao", "icondianzi", "iconshipinyinliao", "iconhuagong"]);
+    },
+    colorScale() {
+      return d3
+        .scaleOrdinal()
+        .domain(this.sectors)
+        .range(["#D6AA9F", "#B7E6C7", "#B2C0E0"]);
+    },
+    //根据内容不同改变颜色
+    activationSelect() {
+      return (item) => {
+        // return { color: sectorDict[item].color };
+        return { color: this.colorScale(item) };
+      };
+    },
     innerWidth() {
       return this.width - this.margin.left - this.margin.right;
     },
@@ -72,14 +137,13 @@ export default {
         .nice();
     },
     yScale() {
-      return d3
-        .scaleLinear()
-        .domain([
-          0,
-          d3.max(Object.values(this.data), (d) => d.avg),
-          // d3.max(Object.values(this.data), (d) => d3.max(Object.values(d))),
-        ])
-        .range([this.innerHeight, 0]);
+      let yscale = d3.scaleLinear().range([this.innerHeight, 0]);
+      let maxArray = [d3.max(Object.values(this.data), (d) => d.avg)];
+      this.selectedIndustries.forEach((d) => {
+        maxArray.push(d3.max(Object.values(this.sector_data[d])));
+      });
+
+      return yscale.domain([0, d3.max(maxArray)]);
     },
     linePath() {
       return d3
@@ -95,22 +159,18 @@ export default {
         .y0((d) => this.yScale(0))
         .y1((d) => this.yScale(d.avg));
     },
-    stackedData() {
-      // offset(d3.stackOffsetSilhouette) ——>河流图
-      return d3.stack().keys(this.keys)(
-        Object.values(this.data)
-        // .filter((d, i) => i % 2 != 0)
-      );
-    },
+    // stackedData() {
+    //   // offset(d3.stackOffsetSilhouette) ——>河流图
+    //   return d3.stack().keys(this.sectors)(Object.values(this.data));
+    // },
   },
   methods: {
     handleChange(value) {
-      console.log(`selected：`,value);
-      console.log(this.selectedIndustries)
+      this.renderUpdate();
     },
     renderInit() {
       this.sectors = Object.keys(sectorDict);
-      this.keys = Object.keys(this.data[this.date[0]]);
+      console.log(this.sectors);
       this.date = this.date.map(
         (d) =>
           new Date(
@@ -127,18 +187,50 @@ export default {
         .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
     },
     renderUpdate() {
+      this.svg.selectAll("g").remove();
       // Add X axis
       this.svg
         .append("g")
+        .attr("class", "xAxis")
         .attr("transform", `translate(0,${this.innerHeight})`)
         .call(
-          d3.axisBottom(this.xScale).ticks(d3.timeYear.every(1))
+          d3.axisBottom(this.xScale).ticks(d3.timeYear.every(2))
+          // .tickValues([2010,2020])
           // .tickSize(this.innerHeight / 2 - 3)
-        );
-      // .select(".domain")
-      // .remove();
+        )
+        //删除坐标tick line
+        .select(".domain")
+        .remove();
+
+      this.svg
+        .append("g")
+        .attr("class", "yAxis")
+        .call(
+          d3.axisLeft(this.yScale).tickFormat(d3.format("~s")).ticks(5)
+          // .ticks(d3.timeYear.every(2))
+          // .tickValues([2010,2020])
+          // .tickSize(this.innerHeight / 2 - 3)
+        )
+        .select(".domain")
+        .remove();
+
+      this.svg.selectAll(".tick line").remove();
+      this.svg
+        .select(".xAxis")
+        .selectAll(".tick text")
+        .style("font-size", "13px")
+        .style("font-family", "PingFangSC-Regular")
+        .style("letter-spacing", "-0.08px")
+        .style("color", "#6C7B8A");
+      this.svg
+        .select(".yAxis")
+        .selectAll(".tick text")
+        .style("font-family", "Helvetica")
+        .style("font-size", "10px")
+        .style("color", "#6C7B8A");
+
       // Customization
-      this.svg.selectAll(".tick line").attr("stroke", "black");
+      // this.svg.selectAll(".tick line").attr("stroke", "#595959");
       // Add X axis label:
       // this.svg
       //   .append("text")
@@ -169,47 +261,100 @@ export default {
       //     .style("stroke", "none");
       // };
       // Show the areas
-      let color = d3
-        .scaleOrdinal()
-        .domain(this.keys)
-        .range([...d3.schemeCategory10, ...d3.schemePaired, ...d3.schemeSet1]);
+      // let color = d3
+      //   .scaleOrdinal()
+      //   .domain(this.sectors)
+      //   .range([...d3.schemeCategory10, ...d3.schemePaired, ...d3.schemeSet1]);
 
-      let streamGraph = this.svg.append("g");
+      this.svg.selectAll("#streamGraphLayers").remove();
+      let streamGraph = this.svg.append("g").attr("id", "streamGraphLayers");
 
       streamGraph
         .append("path")
         .datum(Object.values(this.data))
         .attr("class", "streamGraphLayers")
-        .style("stroke", "#69b3a2")
-        .style("fill", "#cce5df")
+        .style("stroke", "rgba(80,161,255,0.10)")
+        .style("fill", "rgba(80,161,255,0.10)")
         // .style("stroke-width", "0.1px")
         // .style("fill", "#9F9D9D")
         .attr("d", this.area);
       //   .on("mouseenter", mouseenter)
       //   .on("mouseleave", mouseleave);
-
-      let sectorChart = this.svg.append("g");
-
-      this.yScale.domain([
-        0,
-        d3.max(Object.values(this.sector_data["医药生物"])),
-      ]);
-      sectorChart
+      this.svg.selectAll("#sectorChartLayers").remove();
+      let sectorChart = this.svg
         .append("g")
+        .attr("id", "sectorChartLayers")
+        .selectAll(".sectorLegend")
+        .data(this.selectedIndustries)
+        .enter();
+
+      // this.yScale.domain([0, 154677212676.10007]);
+      // let color = d3
+      //   .scaleOrdinal()
+      //   .domain(this.sectors)
+      //   .range(["#D6AA9F", "#B7E6C7", "#B2C0E0"]);
+      // let handleMouseover = function (event, d) {
+      //   d3.selectAll(".line-path-sector").attr("stroke", "#B8B8B8");
+      //   d3.select(this).attr("stroke", color(d)).attr("stroke-width", 5);
+      // };
+      // let handleMouseout = function (event, d) {
+      //   d3.selectAll(".line-path-sector")
+      //     .attr("stroke", color(d))
+      //     .attr("stroke-width", "3px");
+      // };
+      sectorChart
         .append("path")
-        .attr("class", "line-path-yiyao")
-        .attr("d", this.linePath(Object.values(this.sector_data["医药生物"])))
+        .attr("class", "line-path-sector")
+        .attr("d", (d) => this.linePath(Object.values(this.sector_data[d])))
         .attr("fill", "none")
-        .attr("stroke-width", 1.5)
-        .attr("stroke", "#FA2B2B");
+        .attr("stroke-width", "3px")
+        // .attr("stroke", (d) => sectorDict[d].color)
+        .attr("stroke", (d) => this.colorScale(d));
+      // .on("mouseover", handleMouseover)
+      // .on("mouseout", handleMouseout);
+
+      this.svg
+        .append("circle")
+        .attr("cx", this.innerWidth - 151)
+        .attr("cy", -16)
+        .attr("r", 7)
+        .style("fill", "rgba(80,161,255,0.30)");
+      // .style("fill", "red");
+      this.svg
+        .append("text")
+        .attr("x", this.innerWidth - 134)
+        .attr("y", -15)
+        .style("fill", "#9F9F9F")
+        .style("font-family", "PingFangSC-Regular")
+        .style("letter-spacing", "-0.18px")
+        .style("font-size", "17px")
+        .text("Industry average")
+        .attr("text-anchor", "left")
+        .style("alignment-baseline", "middle");
+      this.svg
+        .append("text")
+        .attr("x", -30)
+        .attr("y", -15)
+        .style("fill", "#6A6A6A")
+        .style("font-family", "Helvetica")
+        .style("letter-spacing", "0.2px")
+        .style("font-size", "13px")
+        .text("(rmb)")
+        .attr("text-anchor", "left")
+        .style("alignment-baseline", "middle");
     },
   },
 };
 </script>
 
 <style scoped>
+.selectedContainer {
+  width: 100%;
+  /* border: 1px solid red; */
+}
 #market_streamgraph {
-  height: 110px;
-  width: 50%;
+  height: 290px;
+  width: 100%;
+  /* border: 1px solid black; */
 }
 </style>

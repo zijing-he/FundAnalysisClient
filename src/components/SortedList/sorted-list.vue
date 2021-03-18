@@ -1,5 +1,5 @@
 <template>
-  <div class="search_container">
+  <!-- <div class="search_container">
     <div class="search_fund">
     <a-input-search
       v-model:value="fundValue"
@@ -16,36 +16,48 @@
       @search="onSearchManager"
     />
     </div>
+  </div> -->
+
+  <div>
+    <a-row type="flex" align="middle" class="first_row">
+      <!-- <div class="button_container"> -->
+      <a-col :span="2">
+        <!-- <div class="button"> -->
+        <a-button
+          type="primary"
+          :disabled="!hasSelected"
+          :loading="loading"
+          @click="handleClick"
+        >
+          确定
+        </a-button>
+        <!-- </div> -->
+      </a-col>
+      <a-col :span="2">
+        <!-- <div class="text"> -->
+        <template v-if="hasSelected">
+          {{ `选择了 ${selectedRowKeys.length} 支基金` }}
+        </template>
+        <!-- </div> -->
+      </a-col>
+      <!-- </div> -->
+    </a-row>
+    <a-row class="second_row">
+      <!-- <div> -->
+
+      <a-table
+        :row-selection="{
+          selectedRowKeys: selectedRowKeys,
+          onChange: onSelectChange,
+        }"
+        :columns="columns"
+        :data-source="list"
+        :scroll="{ x: 1800 }"
+      >
+      </a-table>
+      <!-- </div> -->
+    </a-row>
   </div>
-  <div class="button_container">
-    <div class="button">
-    <a-button
-      type="primary"
-      :disabled="!hasSelected"
-      :loading="loading"
-      @click="handleClick"
-    >
-      确定
-    </a-button>
-    </div>
-    
-    <div class="text">
-      <template v-if="hasSelected">
-        {{ `选择了 ${selectedRowKeys.length} 支基金` }}
-      </template>
-    </div>
-    
-  </div>
-  <a-table
-    :row-selection="{
-      selectedRowKeys: selectedRowKeys,
-      onChange: onSelectChange,
-    }"
-    :columns="columns"
-    :data-source="list"
-    :scroll="{ x: 1800 }"
-  >
-  </a-table>
 </template>
 <script>
 import { message } from "ant-design-vue";
@@ -144,7 +156,7 @@ export default {
       loading: false,
       fundId: [],
       fundValue: "",
-      managerValue:""
+      managerValue: "",
     };
   },
   components: {},
@@ -153,14 +165,13 @@ export default {
       return this.selectedRowKeys.length > 0;
     },
   },
-  emits:["updateFundId"],
+  emits: ["updateFundId"],
   methods: {
     onSearchFund(fundValue) {
-      console.log("查找的基金ID：", fundValue,this.fundValue);
-      
+      console.log("查找的基金ID：", fundValue, this.fundValue);
     },
     onSearchManager(managerValue) {
-      console.log("查找的基金经理ID",managerValue,this.managerValue);
+      console.log("查找的基金经理ID", managerValue, this.managerValue);
     },
     onSelectChange(selectedRowKeys) {
       //点击之后的反应
@@ -206,35 +217,45 @@ export default {
 };
 </script>
 <style scoped>
-.search_container{
-  
+.search_container {
   display: flex;
   flex-direction: row;
-  justify-content:space-around;
+  justify-content: space-around;
   /* margin-top:10px; */
 }
-.search_fund{
-  width:50%;
+.search_fund {
+  width: 50%;
 }
-.search_manager{
-  width:50%;
+.search_manager {
+  width: 50%;
 }
-.button_container{
+.button_container {
   display: flex;
   flex-direction: row;
-  justify-content:center;
-  align-items:center;
-  height:50px;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
 }
 
-.text{
-  margin-left:10px;
-  font-size:15px;
+.text {
+  margin-left: 10px;
+  font-size: 15px;
 }
 .ant-table td {
   font-size: 12px;
 }
 .ant-table th {
   font-size: 12px;
+}
+.first_row {
+  /* style="width:2533px;margin-top:10px;border:1px solid black;" */
+  width: 2533px;
+  margin-top: 10px;
+  border: 1px solid black;
+}
+.second_row{
+   border-left: 1px solid black;
+   border-right: 1px solid black;
+   border-bottom: 1px solid black;
 }
 </style>
