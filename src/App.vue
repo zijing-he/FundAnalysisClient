@@ -38,7 +38,7 @@
     </a-col>
     <a-col :span="16">
       <a-row id="fund_list_extent"></a-row>
-      <a-row class="funds_title" style="margin-top: 0px;">
+      <a-row class="funds_title" style="margin-top: 0px">
         <svg class="icon menuIcon" aria-hidden="true">
           <use xlink:href="#iconxitongcaidan"></use>
         </svg>
@@ -58,7 +58,7 @@
         <text>Funds Comparison</text>
         <div id="comparison_buttons">
           <select
-            style="width: 180px; margin-top: 2px; border-radius: 6px;"
+            style="width: 180px; margin-top: 2px; border-radius: 6px"
             v-model="selectIndex"
           >
             <option value="-1" disabled>History Comparison</option>
@@ -66,7 +66,8 @@
               :value="index"
               :key="index"
               v-for="(item, index) in historyFundsLikeScore"
-              >{{ index + 1 }}
+            >
+              {{ index + 1 }}
             </option>
           </select>
           <a-button type="primary" class="button" @click="handleSaveComparison">
@@ -113,7 +114,7 @@ export default {
     FundRankingLayout,
   },
   watch: {
-    selectIndex: function(val) {
+    selectIndex: function (val) {
       if (val === -1) return;
       this.isTotalChange = false;
       this.showFundsLikeScore = this.historyFundsLikeScore[val];
@@ -130,8 +131,21 @@ export default {
       fundsID: null, // 给散点图的
       startDate: "20110331", // 默认起始值
       endDate: "20191231",
-      userWeight: null,
-      incomingWeight:null,   //基金画像调整后传入的权重存放在这
+      userWeight:   //初始化权重
+      {
+        one_quarter_return: "1.0",
+        one_year_return: "1.0",
+        three_year_return: "1.0",
+        max_drop_down: "0.0",
+        risk: "1.0",
+        sharp_ratio: "0.0",
+        information_ratio: "0.0",
+        alpha: "0.0",
+        beta: "0.0",
+        size: "1.0",
+        instl_weight: "0.0",
+      },
+      incomingWeight: null, //基金画像调整后传入的权重存放在这
       rankFundsID: null, // 给FundRanking
       rankFundsData: null,
       showFundsID: [], // 展示的FundProfile
@@ -149,34 +163,33 @@ export default {
   methods: {
     //点击update获得id
     handleUpdateClick() {
-        this.isRequestRanking = true;
-        DataService.post(
-          "get_fund_ranks",
-          {
-            weights: this.userWeight,
-            start_date: this.startDate,
-            end_date: this.endDate,
-          },
-          (data) => {
-            this.isTotalChange = true;
-            // 已排序和未排序基金ID合成一个数组
-            let tempID = data.ranks.map((d) => d.id);
-            console.log(data);
+      this.isRequestRanking = true;
+      DataService.post(
+        "get_fund_ranks",
+        {
+          weights: this.userWeight,
+          start_date: this.startDate,
+          end_date: this.endDate,
+        },
+        (data) => {
+          console.log(data);
+          this.isTotalChange = true;
+          // 已排序和未排序基金ID合成一个数组
+          let tempID = data.ranking.map((d) => d.id);
 
-            //散点图展示的基金id(先只展示已排序的)
-            this.fundsID = JSON.parse(JSON.stringify(tempID)).slice(0, 1); //深拷贝，给散点图的id
-            // data.un_ranks.forEach((d) => {
-            //   tempID.push(d.id);
-            // });
-            this.rankFundsID = tempID.slice(0, 20);
-            this.rankFundsData = data.ranks.slice(0, 20);
-            // this.rankFundsID = tempID;
-            // this.rankFundsData = data.ranks;
-            this.unRanksStart = data.ranks.length; //没有放入未排序的数组，这个参数可以先不管
-            this.getFundManagers();
-          }
-        );
-      
+          //散点图展示的基金id(先只展示已排序的)
+          this.fundsID = JSON.parse(JSON.stringify(tempID)).slice(0, 1); //深拷贝，给散点图的id
+          // data.un_ranks.forEach((d) => {
+          //   tempID.push(d.id);
+          // });
+          this.rankFundsID = tempID.slice(0, 20);
+          this.rankFundsData = data.ranks.slice(0, 20);
+          // this.rankFundsID = tempID;
+          // this.rankFundsData = data.ranks;
+          this.unRanksStart = data.ranks.length; //没有放入未排序的数组，这个参数可以先不管
+          this.getFundManagers();
+        }
+      );
     },
     // 从雷达图获取权重
     handleUpdateFundWeight(weight) {

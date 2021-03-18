@@ -117,7 +117,6 @@ export default {
     //根据内容不同改变颜色
     activationSelect() {
       return (item) => {
-        // return { color: sectorDict[item].color };
         return { color: this.colorScale(item) };
       };
     },
@@ -135,7 +134,7 @@ export default {
         .nice();
     },
     yScale() {
-      let yscale = d3.scaleLinear().range([this.innerHeight, 0]);
+      let yscale = d3.scaleLinear().range([this.innerHeight, 0]).nice();
       let maxArray = [d3.max(Object.values(this.data), (d) => d.avg)];
       this.selectedIndustries.forEach((d) => {
         maxArray.push(d3.max(Object.values(this.sector_data[d])));
@@ -191,7 +190,7 @@ export default {
         .attr("class", "xAxis")
         .attr("transform", `translate(0,${this.innerHeight})`)
         .call(
-          d3.axisBottom(this.xScale).ticks(d3.timeYear.every(2))
+          d3.axisBottom(this.xScale).ticks(d3.timeYear.every(1))
           // .tickValues([2010,2020])
           // .tickSize(this.innerHeight / 2 - 3)
         )

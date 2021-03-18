@@ -41,6 +41,7 @@ export default {
     },
   },
   mounted: function () {
+    console.log(this.data);
     this.svg = d3
       .select("#market_raderchart")
       .append("svg")
@@ -75,7 +76,7 @@ export default {
       this.raderChart = this.svg.append("g").attr("id", "raderChartGroup");
 
       // 生成环
-      for (let i = 0; i < this.levels; i++) {
+      for (let i = 1; i < this.levels; i++) {
         let levelFactor = this.factor * this.radius * ((i + 1) / this.levels);
         this.raderChart
           .selectAll(".levels")
@@ -198,33 +199,27 @@ export default {
 
       this.raderChart.attr("transform", "translate(28,0)");
 
-      axis.select("#text_sharp_ratio").attr("transform", "translate(-45,-20)");
-      axis.select("#text_instl_weight").attr("transform", "translate(10,-8)");
-      axis.select("#text_risk").attr("transform", "translate(69,-19)");
+      axis.select("#text_sharp_ratio").attr("transform", "translate(-10,-10)");
       axis
         .select("#text_information_ratio")
-        .attr("transform", "translate(43,-15)");
-      axis.select("#text_max_drop_down").attr("transform", "translate(38,-13)");
-      axis
-        .select("#text_one_quarter_car")
-        .attr("transform", "translate(12,-15)");
-      //这里
-      axis
-        .select("#text_three_year_car")
-        .attr("transform", "translate(14,-16)");
-      axis.select("#text_one_year_car").attr("transform", "translate(12,-16)");
-      axis.select("#text_size").attr("transform", "translate(0,-20)");
+        .attr("transform", "translate(35,-10)");
+      axis.select("#text_instl_weight").attr("transform", "translate(50,-35)");
+      axis.select("#text_risk").attr("transform", "translate(-20,-5)");
+      
+      axis.select("#text_max_drop_down").attr("transform", "translate(-15,-12)");
+    
+      axis.select("#text_size").attr("transform", "translate(20,-28)");
       axis
         .select("#text_three_year_return")
-        .attr("transform", "translate(-12,-16)");
+        .attr("transform", "translate(-12,-18)");
       axis
         .select("#text_one_year_return")
-        .attr("transform", "translate(-7,-17)");
+        .attr("transform", "translate(0,-26)");
       axis
         .select("#text_one_quarter_return")
-        .attr("transform", "translate(-8,-18)");
-      axis.select("#text_beta").attr("transform", "translate(-7,-18)");
-      axis.select("#text_alpha").attr("transform", "translate(-7,-16)");
+        .attr("transform", "translate(0,-20)");
+      axis.select("#text_beta").attr("transform", "translate(8,-18)");
+      axis.select("#text_alpha").attr("transform", "translate(13,-5)");
     },
     renderUpdate() {
       let maxDataValues = [];
