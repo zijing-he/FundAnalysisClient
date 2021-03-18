@@ -22,16 +22,36 @@
     <div class="summary" id="summary">
       <div class="title">
         <div class="buttons-like">
-          <svg class="icon" aria-hidden="true" @click="likeFund()" v-if="thisFundLikeScore <= 0">
+          <svg
+            class="icon"
+            aria-hidden="true"
+            @click="likeFund()"
+            v-if="thisFundLikeScore <= 0"
+          >
             <use xlink:href="#iconheart-line"></use>
           </svg>
-          <svg class="icon" aria-hidden="true" @click="likeFund()" v-if="thisFundLikeScore > 0">
+          <svg
+            class="icon"
+            aria-hidden="true"
+            @click="likeFund()"
+            v-if="thisFundLikeScore > 0"
+          >
             <use xlink:href="#iconheart-line-copy"></use>
           </svg>
-          <svg class="icon" aria-hidden="true" @click="dislikeFund()" v-if="thisFundLikeScore >= 0">
+          <svg
+            class="icon"
+            aria-hidden="true"
+            @click="dislikeFund()"
+            v-if="thisFundLikeScore >= 0"
+          >
             <use xlink:href="#icondislike-line"></use>
           </svg>
-          <svg class="icon" aria-hidden="true" @click="dislikeFund()" v-if="thisFundLikeScore < 0">
+          <svg
+            class="icon"
+            aria-hidden="true"
+            @click="dislikeFund()"
+            v-if="thisFundLikeScore < 0"
+          >
             <use xlink:href="#icondislike-line-copy"></use>
           </svg>
         </div>
@@ -40,36 +60,24 @@
       <div class="summary_box" v-if="fundData !== null">
         <InvestStyleBox
           :boxId="fundId + '_summary'"
-          :holdingData="investStyleBoxes[0].holdingData"
-          :max_drop_downData="fundData['total'][fundId]['max_drop_down']"
-          :riskData="fundData['total'][fundId]['risk']"
-          :one_quarter_returnData="
-            fundData['total'][fundId]['one_quarter_return']
-          "
-          :one_quarter_hs300_returnData="
-            investStyleBoxes[0].one_quarter_hs300_returnData
-          "
-          :one_year_returnData="fundData['total'][fundId]['one_year_return']"
-          :one_year_hs300_returnData="
-            investStyleBoxes[20].one_year_hs300_returnData
-          "
-          :three_year_returnData="
-            fundData['total'][fundId]['three_year_return']
-          "
-          :three_year_hs300_returnData="
-            investStyleBoxes[20].three_year_hs300_returnData
-          "
-          :stockData="fundData['total'][fundId]['stock']"
-          :bondData="fundData['total'][fundId]['bond']"
-          :cashData="fundData['total'][fundId]['cash']"
-          :otherData="fundData['total'][fundId]['other']"
-          :sizeData="fundData['total'][fundId]['size']"
-          :alphaData="fundData['total'][fundId]['alpha']"
-          :betaData="fundData['total'][fundId]['beta']"
-          :sharp_ratioData="fundData['total'][fundId]['sharp_ratio']"
-          :information_ratioData="
-            fundData['total'][fundId]['information_ratio']
-          "
+          :holdingData="summaryHoldingData"
+          :max_drop_downData="summaryMaxDropDownData"
+          :riskData="summaryRiskData"
+          :one_quarter_returnData="summaryOneQuarterData"
+          :one_quarter_hs300_returnData="summaryOneQuarterHsData"
+          :one_year_returnData="summaryOneYearData"
+          :one_year_hs300_returnData="summaryOneYearHsData"
+          :three_year_returnData="summaryThreeYearData"
+          :three_year_hs300_returnData="summaryThreeYearHsData"
+          :stockData="summaryStockData"
+          :bondData="summaryBondData"
+          :cashData="summaryCashData"
+          :otherData="summaryOtherData"
+          :sizeData="summarySizeData"
+          :alphaData="summaryAlphaData"
+          :betaData="summaryBetaData"
+          :sharp_ratioData="summarySharpRatioData"
+          :information_ratioData="summaryInfoRatioData"
           :boxGap="63"
           :boxWidth="120"
           :contentWidth="120"
@@ -91,6 +99,12 @@
       ref="topElement"
       @scroll="topHandleScroll()"
     >
+      <a-spin
+        v-if="isLoading"
+        size="large"
+        tip="Loading..."
+        style="margin: auto;"
+      />
       <InvestStyleBox
         :ref="item.boxId"
         :boxId="item.boxId"
@@ -143,7 +157,7 @@ export default {
   name: "FundProfile",
   props: {
     fundId: String,
-    fundIds: Array, // 要计算空余部分面积，只能一起请求后端数据
+    // fundIds: Array, // 要计算空余部分面积，只能一起请求后端数据
     startDate: String,
     endDate: String,
     boxHeight: Number,
@@ -154,6 +168,7 @@ export default {
   },
   data() {
     return {
+      isLoading: true,
       fundData: null,
       svg: null,
       margin: { top: 10, right: 100, bottom: 100, left: 100 },
@@ -170,8 +185,26 @@ export default {
       investStyleBoxWidth: (200 * this.boxHeight) / 270,
       contentWidth: (200 * this.boxHeight) / 270,
       boxGap: 200,
-      // version 4
       thisFundLikeScore: this.fundLikeScore,
+      // summary中的数据
+      summaryHoldingData: undefined,
+      summaryMaxDropDownData: undefined,
+      summaryRiskData: undefined,
+      summaryOneQuarterData: undefined,
+      summaryOneQuarterHsData: undefined,
+      summaryOneYearData: undefined,
+      summaryOneYearHsData: undefined,
+      summaryThreeYearData: undefined,
+      summaryThreeYearHsData: undefined,
+      summaryStockData: undefined,
+      summaryBondData: undefined,
+      summaryCashData: undefined,
+      summaryOtherData: undefined,
+      summarySizeData: undefined,
+      summaryAlphaData: undefined,
+      summaryBetaData: undefined,
+      summarySharpRatioData: undefined,
+      summaryInfoRatioData: undefined,
     };
   },
 
@@ -192,10 +225,11 @@ export default {
   // },
 
   mounted: function() {
+    this.isLoading = false;
     DataService.post(
       "get_view_funds",
       {
-        f_ids: this.fundIds,
+        f_ids: [this.fundId],
         start_date: this.startDate,
         end_date: this.endDate,
       },
@@ -205,6 +239,9 @@ export default {
         this.calcAttrs();
         this.renderInit();
         this.renderUpdate();
+        this.$nextTick(() => {
+          this.isLoading = true;
+        });
       }
     );
   },
@@ -567,8 +604,13 @@ export default {
         };
 
         this.investStyleBoxes.push({
-          boxId: this.fundId + "_" + `${i.substring(0, 4)}-${i.substring(4, 6)}-${i.substring(6)}`,
-          boxText: `${i.substring(0, 4)}-${i.substring(4, 6)}-${i.substring(6)}`,
+          boxId:
+            this.fundId +
+            "_" +
+            `${i.substring(0, 4)}-${i.substring(4, 6)}-${i.substring(6)}`,
+          boxText: `${i.substring(0, 4)}-${i.substring(4, 6)}-${i.substring(
+            6
+          )}`,
           holdingData: thisHoldingData,
           one_quarter_returnData:
             "one_quarter_return" in this.fundData["detail"][this.fundId][i]
@@ -617,6 +659,64 @@ export default {
           ],
         });
       }
+
+      // summary中的数据
+      let sumHoldingData = this.fundData["total"][this.fundId]["holding"];
+      let sumHoldingDataKeys = Object.keys(sumHoldingData)
+        .sort((a, b) => sumHoldingData[b] - sumHoldingData[a])
+        .slice(0, 10);
+      let thisSumHoldingData = [];
+      sumHoldingDataKeys.forEach((d) => {
+        thisSumHoldingData.push({
+          name: d,
+          value: sumHoldingData[d],
+        });
+      });
+      thisSumHoldingData = {
+        name: "all",
+        children: thisSumHoldingData,
+      };
+      this.summaryHoldingData = thisSumHoldingData;
+      this.summaryMaxDropDownData = this.fundData["total"][this.fundId][
+        "max_drop_down"
+      ];
+      this.summaryRiskData = this.fundData["total"][this.fundId]["risk"];
+      this.summaryStockData = this.fundData["total"][this.fundId]["stock"];
+      this.summaryBondData = this.fundData["total"][this.fundId]["bond"];
+      this.summaryCashData = this.fundData["total"][this.fundId]["cash"];
+      this.summaryOtherData = this.fundData["total"][this.fundId]["other"];
+      this.summaryAlphaData = this.fundData["total"][this.fundId]["alpha"];
+      this.summaryBetaData = this.fundData["total"][this.fundId]["beta"];
+      this.summarySharpRatioData = this.fundData["total"][this.fundId][
+        "sharp_ratio"
+      ];
+      this.summaryInfoRatioData = this.fundData["total"][this.fundId][
+        "information_ratio"
+      ];
+      this.summaryOneQuarterData =
+        "one_quarter_return" in this.fundData["total"][this.fundId]
+          ? this.fundData["total"][this.fundId]["one_quarter_return"]
+          : undefined;
+      this.summaryOneQuarterHsData =
+        "one_quarter_hs300_return" in this.fundData["total"][this.fundId]
+          ? this.fundData["total"][this.fundId]["one_quarter_hs300_return"]
+          : undefined;
+      this.summaryOneYearData =
+        "one_year_return" in this.fundData["total"][this.fundId]
+          ? this.fundData["total"][this.fundId]["one_year_return"]
+          : undefined;
+      this.summaryOneYearHsData =
+        "one_year_hs300_return" in this.fundData["total"][this.fundId]
+          ? this.fundData["total"][this.fundId]["one_year_hs300_return"]
+          : undefined;
+      this.summaryThreeYearData =
+        "three_year_return" in this.fundData["total"][this.fundId]
+          ? this.fundData["total"][this.fundId]["three_year_return"]
+          : undefined;
+      this.summaryThreeYearHsData =
+        "three_year_hs300_return" in this.fundData["total"][this.fundId]
+          ? this.fundData["total"][this.fundId]["three_year_hs300_return"]
+          : undefined;
     },
     renderInit() {
       this.margin.left = this.margin.right = this.investStyleBoxWidth / 2;

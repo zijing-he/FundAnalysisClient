@@ -131,7 +131,7 @@ export default {
       startDate: "20110331", // 默认起始值
       endDate: "20191231",
       userWeight: null,
-      incomingWeight:null,   //基金画像调整后传入的权重存放在这
+      incomingWeight: null, //基金画像调整后传入的权重存放在这
       rankFundsID: null, // 给FundRanking
       rankFundsData: null,
       showFundsID: [], // 展示的FundProfile
@@ -149,34 +149,33 @@ export default {
   methods: {
     //点击update获得id
     handleUpdateClick() {
-        this.isRequestRanking = true;
-        DataService.post(
-          "get_fund_ranks",
-          {
-            weights: this.userWeight,
-            start_date: this.startDate,
-            end_date: this.endDate,
-          },
-          (data) => {
-            this.isTotalChange = true;
-            // 已排序和未排序基金ID合成一个数组
-            let tempID = data.ranks.map((d) => d.id);
-            console.log(data);
+      this.isRequestRanking = true;
+      DataService.post(
+        "get_fund_ranks",
+        {
+          weights: this.userWeight,
+          start_date: this.startDate,
+          end_date: this.endDate,
+        },
+        (data) => {
+          this.isTotalChange = true;
+          // 已排序和未排序基金ID合成一个数组
+          let tempID = data.ranks.map((d) => d.id);
+          console.log(data);
 
-            //散点图展示的基金id(先只展示已排序的)
-            this.fundsID = JSON.parse(JSON.stringify(tempID)).slice(0, 1); //深拷贝，给散点图的id
-            // data.un_ranks.forEach((d) => {
-            //   tempID.push(d.id);
-            // });
-            this.rankFundsID = tempID.slice(0, 20);
-            this.rankFundsData = data.ranks.slice(0, 20);
-            // this.rankFundsID = tempID;
-            // this.rankFundsData = data.ranks;
-            this.unRanksStart = data.ranks.length; //没有放入未排序的数组，这个参数可以先不管
-            this.getFundManagers();
-          }
-        );
-      
+          //散点图展示的基金id(先只展示已排序的)
+          this.fundsID = JSON.parse(JSON.stringify(tempID)).slice(0, 1); //深拷贝，给散点图的id
+          // data.un_ranks.forEach((d) => {
+          //   tempID.push(d.id);
+          // });
+          this.rankFundsID = tempID.slice(0, 20);
+          this.rankFundsData = data.ranks.slice(0, 20);
+          // this.rankFundsID = tempID;
+          // this.rankFundsData = data.ranks;
+          this.unRanksStart = data.ranks.length; //没有放入未排序的数组，这个参数可以先不管
+          this.getFundManagers();
+        }
+      );
     },
     // 从雷达图获取权重
     handleUpdateFundWeight(weight) {
@@ -256,7 +255,16 @@ export default {
       this.historyFundsLikeScore = this.$refs[
         "fundProfileLayout"
       ].historyFundsLikeScore;
-      console.log(this.historyFundsLikeScore);
+      // console.log(this.historyFundsLikeScore);
+      DataService.post("update_weights", {
+        weights: this.userWeight,
+        pairs: this.historyFundsLikeScore,
+        start_date: this.startDate,
+        end_date: this.endDate,
+      }, (data) => {
+        console.log(data);
+        this.incomingWeight = data;
+      });
     },
   },
 };

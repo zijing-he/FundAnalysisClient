@@ -16,7 +16,6 @@
       <FundProfile
         :ref="item"
         :fundId="item"
-        :fundIds="fundsID"
         :startDate="start_date"
         :endDate="end_date"
         :boxHeight="eachHeight"
