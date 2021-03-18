@@ -15,8 +15,8 @@
           <a-input v-model="queryParam.managerCode"></a-input>
         </a-form-item>
         <a-form-item>
-          <a-button type="primary" html-type="submit" @click="handleSubmit">
-            Submit
+          <a-button class="submit-btn" type="primary" html-type="submit" @click="handleSubmit">
+            <text>Submit</text>
           </a-button>
         </a-form-item>
       </a-form>
@@ -120,7 +120,7 @@ export default {
         if (this.isFundProfileIDChecked.get(d)) {
           this.showFundProfileIDs.push(d);
           this.lineStartYPos.push(
-            i * 127 + 63.5 + 127 + 24 - 34 - this.$refs["ranking"].scrollTop
+            i * 127 + 63.5 + 127 + 24 - 63 - this.$refs["ranking"].scrollTop
           );
         }
       });
@@ -152,7 +152,7 @@ export default {
         this.rankFundsID.forEach((d, i) => {
           if (this.isFundProfileIDChecked.get(d)) {
             this.lineStartYPos.push(
-              i * 127 + 63.5 + 127 + 24 - 34 - this.$refs["ranking"].scrollTop
+              i * 127 + 63.5 + 127 + 24 - 63 - this.$refs["ranking"].scrollTop
             );
           }
         });
@@ -164,6 +164,13 @@ export default {
 </script>
 
 <style scoped>
+.container {
+  background: #ffffff;
+  width: 100%;
+  /* box-shadow: 12px 2px 44px 0 rgba(0, 0, 0, 0.05); */
+  /* border: 1px solid black; */
+}
+
 .title {
   display: flex;
   margin-left: 10px;
@@ -172,6 +179,7 @@ export default {
 .title text {
   font-family: PingFangSC-Semibold;
   font-size: 19px;
+  font-weight: 800;
   color: #185bbd;
   letter-spacing: 0;
   white-space: nowrap;
@@ -189,8 +197,20 @@ export default {
   margin-top: 10px;
 }
 
+.submit-btn {
+  border-radius: 6px;
+}
+
+.submit-btn text {
+  font-size: 13px;
+  font-family: "PingFangSC-Semibold";
+  letter-spacing: 0;
+  color: #ffffff;
+  margin: auto;
+}
+
 .ranking {
-  max-height: 995px;
+  max-height: 982px;
   overflow-y: auto;
   overflow-x: hidden;
   font-size: 15px;

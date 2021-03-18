@@ -103,7 +103,7 @@ export default {
           }
           this.svg.attr(
             "height",
-            Math.max(document.getElementById("fund_profiles").scrollHeight, 905)
+            Math.max(document.getElementById("fund_profiles").scrollHeight, 945)
           );
           this.drawConnectLines();
         }
@@ -125,7 +125,7 @@ export default {
       // donutChartData: [],
       isRequesting: true,
       isFirst: true,
-      eachHeight: 270,
+      eachHeight: 213,
       fundsLikeScore_n: this.fundsLikeScore,
       historyFundsLikeScore: [],
       refresh: true,
@@ -354,11 +354,12 @@ export default {
 
 <style scoped>
 .container {
+  background: #ffffff;
   position: relative;
-  margin-top: 34px;
+  margin-top: 50px;
   width: 100%;
+  height: 945px;
   /* border: 1px solid black; */
-  height: 1000px;
   overflow-y: auto;
   overflow-x: hidden;
 }
