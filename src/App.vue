@@ -3,8 +3,7 @@
     <a-col :span="5">
       <ControlPanelLayout
         v-on:updateFundWeight="handleUpdateFundWeight"
-        :start_date="startDate"
-        :end_date="endDate"
+        :weights="incomingWeight"
       />
       <a-row>
         <MarketAnalysisLayout
@@ -97,7 +96,6 @@ import MarketAnalysisLayout from "@/components/MarketAnalysis/layout";
 import OverViewLayout from "@/components/Overview/layout";
 import FundRankingLayout from "@/components/FundRanking/FundRankingLayout";
 import DataService from "@/utils/data-service";
-import { message } from "ant-design-vue";
 
 export default {
   name: "App",
@@ -127,6 +125,7 @@ export default {
       startDate: "20110331", // 默认起始值
       endDate: "20191231",
       userWeight: null,
+      incomingWeight:null,   //基金画像调整后传入的权重存放在这
       rankFundsID: null, // 给FundRanking
       rankFundsData: null,
       showFundsID: [], // 展示的FundProfile
@@ -144,7 +143,6 @@ export default {
   methods: {
     //点击update获得id
     handleUpdateClick() {
-      if (this.userWeight) {
         this.isRequestRanking = true;
         DataService.post(
           "get_fund_ranks",
@@ -172,9 +170,7 @@ export default {
             this.getFundManagers();
           }
         );
-      } else {
-        message.error("还未得到用户权重", 2);
-      }
+      
     },
     // 从雷达图获取权重
     handleUpdateFundWeight(weight) {

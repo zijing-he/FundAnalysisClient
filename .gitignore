@@ -1,8 +1,7 @@
 .DS_Store
 node_modules
 /dist
-#数据保密
-data
+
 
 
 # local env files

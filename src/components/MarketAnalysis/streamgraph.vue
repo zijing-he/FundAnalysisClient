@@ -46,9 +46,8 @@
 <script>
 import * as d3 from "d3";
 import dataJSON from "@/data/StreamGraph/market_date_sector.json";
-import sectorJSON from "@/data/market_sector_date.json";
+import sectorJSON from "@/data/StreamGraph/market_sector_date.json";
 import sectorDict from "@/data/sector_dict.json";
-import market_hs300 from "@/data/CurveChart/market_hs300.json";
 export default {
   name: "MarketAnalysisStramGraph",
   props: {},
@@ -64,7 +63,6 @@ export default {
       sector_data: sectorJSON,
       sectors: [],
       selectedIndustries: [],
-      fund_hs300: Object.values(market_hs300),
       sectorItem: {
         医药生物: "#iconyiyao",
         电子: "#icondianzi",
@@ -170,7 +168,6 @@ export default {
     },
     renderInit() {
       this.sectors = Object.keys(sectorDict);
-      console.log(this.sectors);
       this.date = this.date.map(
         (d) =>
           new Date(

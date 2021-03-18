@@ -1,0 +1,16 @@
+{
+    "size": 1.0,
+    "instl_weight": 1.0,
+    "alpha": 1.0,
+    "beta": 1.0,
+    "sharp_ratio": 1.0,
+    "max_drop_down": 1.0,
+    "information_ratio": 1.0,
+    "risk": 1.0,
+    "one_quarter_return": 1.0,
+    "one_year_return": 1.0,
+    "three_year_return": 1.0,
+    "one_quarter_car": 1.0,
+    "one_year_car": 1.0,
+    "three_year_car": 1.0
+}

@@ -14,10 +14,8 @@
 
 <script>
 import * as d3 from "d3";
-import market_income from "@/data/CurveChart/market_fund_income.json";
-import market_number from "@/data/CurveChart/market_fund_number.json";
-import market_size from "@/data/CurveChart/market_fund_size.json";
-import market_hs300 from "@/data/CurveChart/market_hs300.json";
+import market_nav_date from "@/data/CurveChart/market_nav_date.json";
+import market_number_date from "@/data/CurveChart/market_number_date.json";
 
 export default {
   name: "MarketAnalysisCurveChart",
@@ -29,12 +27,10 @@ export default {
       margin: { top: 70, right: 20, bottom: 30, left: 55 },
       width: 520,
       height: 253,
-      date: Object.keys(market_income),
-      fund_size: Object.values(market_size),
-      fund_number: Object.values(market_number),
-      fund_income: Object.values(market_income),
-      fund_hs300: Object.values(market_hs300),
-      keys: ["基金平均收益", "基金规模"],
+      date: Object.keys(market_nav_date),
+      marketNav: Object.values(market_nav_date),
+      marketNumber: Object.values(market_number_date),
+      keys: ["基金净值", "基金规模"],
     };
   },
 
@@ -71,7 +67,7 @@ export default {
       return d3
         .scaleOrdinal()
         .domain(this.keys)
-        .range(["#855FFA", "#FE6AAC", "rgba(80,161,255,0.30)"]);
+        .range(["#FE6AAC", "rgba(80,161,255,0.30)"]);
     },
     area() {
       return d3
@@ -127,17 +123,17 @@ export default {
         .select(".domain")
         .remove();
 
-      this.svg
-        .append("g")
-        .attr("class", "yAxis")
-        .call(
-          d3.axisLeft(this.yScale).tickFormat(d3.format(".0%")).ticks(5)
-          // .ticks(d3.timeYear.every(2))
-          // .tickValues([2010,2020])
-          // .tickSize(this.innerHeight / 2 - 3)
-        )
-        .select(".domain")
-        .remove();
+      // this.svg
+      //   .append("g")
+      //   .attr("class", "yAxis")
+      //   .call(
+      //     d3.axisLeft(this.yScale).tickFormat(d3.format(".0%")).ticks(5)
+      //     // .ticks(d3.timeYear.every(2))
+      //     // .tickValues([2010,2020])
+      //     // .tickSize(this.innerHeight / 2 - 3)
+      //   )
+      // .select(".domain")
+      // .remove();
       this.svg.selectAll(".tick line").remove();
       this.svg
         .select(".xAxis")
@@ -146,12 +142,12 @@ export default {
         .style("font-family", "PingFangSC-Regular")
         .style("letter-spacing", "-0.08px")
         .style("color", "#6C7B8A");
-      this.svg
-        .select(".yAxis")
-        .selectAll(".tick text")
-        .style("font-family", "Helvetica")
-        .style("font-size", "10px")
-        .style("color", "#6C7B8A");
+      // this.svg
+      //   .select(".yAxis")
+      //   .selectAll(".tick text")
+      //   .style("font-family", "Helvetica")
+      //   .style("font-size", "10px")
+      //   .style("color", "#6C7B8A");
 
       // .attr("transform", `translate(0,${this.innerHeight})`);
 
@@ -170,8 +166,8 @@ export default {
 
       let curveChart = this.svg.append("g");
 
-      //fund_size
-      this.yScale.domain([0, d3.max(this.fund_size)]);
+      //fund_size ——>marketNumber
+      this.yScale.domain([0, d3.max(this.marketNumber)]);
       // console.log(this.yScale(0),this.yScale(100000));
       // curveChart
       //   .append("g")
@@ -185,7 +181,7 @@ export default {
       curveChart
         .append("g")
         .append("path")
-        .datum(this.fund_size)
+        .datum(this.marketNumber)
         .attr("class", "streamGraphLayers")
         .style("stroke", "rgba(80,161,255,0.30)")
         .style("fill", "rgba(80,161,255,0.30)")
@@ -193,48 +189,16 @@ export default {
         // .style("fill", "#9F9D9D")
         .attr("d", this.area);
 
-      // curveChart
-      //   .selectAll(".points")
-      //   .data(this.fund_size)
-      //   .enter()
-      //   .append("circle")
-      //   .attr("cx", (d, i) => this.xScale(this.date[i]))
-      //   .attr("cy", (d) => this.yScale(d))
-      //   .attr("r", 1)
-      //   .attr("fill", "red");
-
-      // fund_number
-      // this.yScale.domain(d3.extent(this.fund_number));
-      // curveChart
-      //   .append("g")
-      //   .append("path")
-      //   .attr("class", "line-path-number")
-      //   .attr("d", this.linePath(this.fund_number))
-      //   .attr("fill", "none")
-      //   .attr("stroke-width", 2)
-      //   .attr("stroke", "#fbe8d3");
-
-      //fund_income
-      this.yScale.domain(d3.extent(this.fund_income));
+      //fund_income——>marketNav
+      this.yScale.domain(d3.extent(this.marketNav));
       curveChart
         .append("g")
         .append("path")
         .attr("class", "line-path-income")
-        .attr("d", this.linePath(this.fund_income))
+        .attr("d", this.linePath(this.marketNav))
         .attr("fill", "none")
         .attr("stroke-width", 2)
         .attr("stroke", "#FE6AAC");
-
-      // fund_hs300——紫色
-      // this.yScale.domain(d3.extent(this.fund_hs300));
-      // curveChart
-      //   .append("g")
-      //   .append("path")
-      //   .attr("class", "line-path-fund_hs300")
-      //   .attr("d", this.linePath(this.fund_hs300))
-      //   .attr("fill", "none")
-      //   .attr("stroke-width", 2)
-      //   .attr("stroke", "#855FFA");
 
       curveChart.append("g").attr("class", "brush").call(brush);
 
@@ -244,17 +208,17 @@ export default {
         .data(this.keys)
         .enter()
         .append("circle")
-        .attr("cx", (d, i) => 210 + i * 150)
+        .attr("cx", (d, i) => 170 + i * 150)
         .attr("cy", -50)
         .attr("r", "6px")
         .style("fill", (d) => this.colorScale(d));
 
       this.svg
         .selectAll(".labels")
-        .data(["Average return", "Fund size"])
+        .data(["Market nav", "Market number"])
         .enter()
         .append("text")
-        .attr("x", (d, i) => 230 + i * 150)
+        .attr("x", (d, i) => 190 + i * 150)
         .attr("y", -48)
         .style("fill", "#9F9F9F")
         .style("font-family", "PingFangSC-Medium")

@@ -25,22 +25,23 @@ export default {
       levels: 6,
       maxValue: 3,
       radians: 2 * Math.PI,
-      data: [
-        { axis: "size", value: 2.5 },
-        { axis: "three_year_return", value: 2.5 },
-        { axis: "one_year_return", value: 2.5 },
-        { axis: "one_quarter_return", value: 2.5 },
-        { axis: "beta", value: 2.5 },
-        { axis: "alpha", value: 2.5 },
-        { axis: "sharp_ratio", value: 2.5 },
-        { axis: "instl_weight", value: 2.5 },
-        { axis: "risk", value: 2.5 },
-        { axis: "information_ratio", value: 2.5 },
-        { axis: "max_drop_down", value: 2.5 },
-        { axis: "one_quarter_car", value: 2.5 },
-        { axis: "three_year_car", value: 2.5 },
-        { axis: "one_year_car", value: 2.5 },
-      ],
+      data: this.proData,
+      //  [
+      //   { axis: "size", value: 2.5 },
+      //   { axis: "three_year_return", value: 2.5 },
+      //   { axis: "one_year_return", value: 2.5 },
+      //   { axis: "one_quarter_return", value: 2.5 },
+      //   { axis: "beta", value: 2.5 },
+      //   { axis: "alpha", value: 2.5 },
+      //   { axis: "sharp_ratio", value: 2.5 },
+      //   { axis: "instl_weight", value: 2.5 },
+      //   { axis: "risk", value: 2.5 },
+      //   { axis: "information_ratio", value: 2.5 },
+      //   { axis: "max_drop_down", value: 2.5 },
+      //   { axis: "one_quarter_car", value: 2.5 },
+      //   { axis: "three_year_car", value: 2.5 },
+      //   { axis: "one_year_car", value: 2.5 },
+      // ],
       dataValues: [],
       allAxis: [],
       total: 0,
@@ -56,7 +57,6 @@ export default {
     },
   },
   mounted: function () {
-    console.log(nameDictionary);
     this.svg = d3
       .select("#market_raderchart")
       .append("svg")
@@ -79,6 +79,7 @@ export default {
 
   methods: {
     renderInit() {
+      //计算画雷达图所需的参数
       this.allAxis = this.data.map((d) => d.axis);
       this.maxValue = Math.max(
         this.maxValue,
@@ -185,11 +186,6 @@ export default {
           else return "1px";
         })
         .style("stroke-dasharray", "4");
-
-      // font-family: PingFangSC-Regular;
-      // font-size: 12px;
-      // color: #939393;
-      // letter-spacing: 0;
 
       axis
         .append("text")
@@ -347,7 +343,8 @@ export default {
 
           toolTip
             .style("left", newX + width / 2 + 75 + "px")
-            .style("top", height / 2 - newY - 20 + "px").style("visibility", "visible");
+            .style("top", height / 2 - newY - 20 + "px")
+            .style("visibility", "visible");
           d3.select(".update_value_weight").text((newValue - 2).toFixed(2));
 
           // d3.select(".update_value_value")
@@ -396,6 +393,9 @@ export default {
 
         //传数据
         this.$emit("updateUserData", userData);
+        //   setTimeout(() => {
+        //   this.$emit("updateUserData", userData);
+        // }, 1000);
       };
 
       let dragended = function (event, d) {
@@ -462,15 +462,6 @@ export default {
 <style scoped>
 .update_value {
   position: absolute;
-  /*left: 220px;
-  top: 112px;
-  width: 66px;
-  height: 66px;
-  background-color: #a8a8a8;
-  color: white;
-  border-radius: 50%;
-  opacity: 1;
-  z-index: 1; */
   background-image: linear-gradient(-153deg, #f15887 0%, #fe9b86 100%);
   width: 44px;
   height: 25px;
