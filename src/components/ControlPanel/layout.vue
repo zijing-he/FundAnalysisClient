@@ -192,7 +192,7 @@ export default {
 <style scoped>
 .container {
   height: 529px;
-  width: 533.328px;
+  width: 523px;
   background: #ffffff;
   box-shadow: 12px 2px 44px 0 rgba(0, 0, 0, 0.05);
 }
@@ -218,7 +218,7 @@ export default {
   left: 22px;
 }
 .investment_style {
-  margin-top: 15px;
+  margin-top: 5px;
   margin-bottom: 5px;
 }
 .investment_style text {

@@ -38,6 +38,12 @@
     </a-col>
     <a-col :span="16">
       <a-row id="fund_list_extent"></a-row>
+      <a-row class="funds_title" style="margin-top: 0px;">
+        <svg class="icon menuIcon" aria-hidden="true">
+          <use xlink:href="#iconxitongcaidan"></use>
+        </svg>
+        <text>Fund Manager</text>
+      </a-row>
       <a-row>
         <OverViewLayout
           :fundsData="fundsData"
@@ -45,7 +51,7 @@
           :scrollLeft="scrollLeft"
         />
       </a-row>
-      <a-row id="funds_comparison_title">
+      <a-row class="funds_title">
         <svg class="icon menuIcon" aria-hidden="true">
           <use xlink:href="#iconxitongcaidan"></use>
         </svg>
@@ -261,6 +267,7 @@ export default {
   text-align: center;
   width: 100%;
   height: 100%;
+  overflow: hidden;
 }
 .icon {
   width: 1.2em;
@@ -287,14 +294,16 @@ export default {
   font-family: "PingFangSC-Semibold";
   letter-spacing: 0;
 }
-#funds_comparison_title {
+.funds_title {
   position: absolute;
   display: flex;
   left: 20px;
+  margin-top: 10px;
 }
-#funds_comparison_title text {
+.funds_title text {
   font-family: PingFangSC-Semibold;
   font-size: 19px;
+  font-weight: 800;
   color: #185bbd;
   letter-spacing: 0;
   white-space: nowrap;
@@ -309,6 +318,7 @@ export default {
 #comparison_buttons {
   display: flex;
   margin-left: 900px;
+  margin-top: 5px;
 }
 #comparison_buttons .button {
   width: 140px;

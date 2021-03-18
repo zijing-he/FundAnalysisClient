@@ -70,9 +70,9 @@
           :information_ratioData="
             fundData['total'][fundId]['information_ratio']
           "
-          :boxGap="42"
-          :boxWidth="170"
-          :contentWidth="170"
+          :boxGap="63"
+          :boxWidth="120"
+          :contentWidth="120"
           style="margin-top: 15px;"
         >
         </InvestStyleBox>
@@ -158,7 +158,7 @@ export default {
       svg: null,
       margin: { top: 10, right: 100, bottom: 100, left: 100 },
       width: 900,
-      height: 270,
+      height: 213,
       isSyncTop: false,
       isSyncBottom: false,
       dateData: [],
@@ -769,7 +769,7 @@ export default {
 <style scoped>
 .fund_profile {
   position: relative;
-  height: 270px;
+  height: 213px;
   width: calc(100% - 30px);
   background: #ffffff;
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.1);

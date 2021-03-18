@@ -1,11 +1,11 @@
 <template>
   <div class="container">
-    <a-row class="fund_manager_text">
+    <!-- <a-row class="fund_manager_text">
       <svg class="icon fund_manager_text_icon" aria-hidden="true">
         <use xlink:href="#iconxitongcaidan"></use>
       </svg>
       <text>Fund Manager</text>
-    </a-row>
+    </a-row> -->
     <!-- <div class="inner_container"> -->
 
     <!-- <div class="manager_bubble_chart_container" v-if="!isRequesting">
@@ -88,13 +88,15 @@ export default {
 
 <style scoped>
 .container {
-  margin-left: 28px;
-  width: 1660px;
+  margin-top: 44px;
+  margin-left: 30px;
+  margin-right: 36px;
+  width: calc(100% - 30px);
   /* border: 1px solid red; */
   background: #ffffff;
-  border-radius: 15px;
+  border-radius: 8px;
   /* box-shadow: 12px 2px 44px 0 rgba(0, 0, 0, 0.05); */
-  box-shadow: 2px 4px 12px 0px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
 .inner_container {
