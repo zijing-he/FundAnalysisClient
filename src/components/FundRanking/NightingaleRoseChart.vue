@@ -4,7 +4,7 @@
 
 <script>
 import * as d3 from "d3";
-import DataService from "@/utils/data-service";
+import { eachRight } from "lodash";
 
 const colorMap = {
   all_hs300_return: "#d8d8d8",
@@ -26,6 +26,12 @@ const colorMap = {
   instl_weight: "#d8d8d8",
 };
 
+const dataGroup = [
+  ["one_quarter_return", "one_year_return", "three_year_return"],
+  ["max_drop_down", "risk", "size", "beta"],
+  ["alpha", "sharp_ratio", "information_ratio"],
+];
+
 export default {
   name: "NightingaleRoseChart",
   props: {
@@ -39,17 +45,17 @@ export default {
       svg: null,
       width: 127,
       height: 127,
-      datum: [],
+      // datum: [],
     };
   },
   computed: {
-    pie() {
-      return d3
-        .pie()
-        .value((d) => d.norm)
-        .sort(null)
-        .sortValues(null);
-    },
+    // pie() {
+    //   return d3
+    //     .pie()
+    //     .value((d) => d.norm)
+    //     .sort(null)
+    //     .sortValues(null);
+    // },
     scaleRadius() {
       const maxRadius = Math.min(this.width, this.height) / 2;
       const minRadius = maxRadius / 3;
@@ -62,7 +68,7 @@ export default {
   mounted: function() {
     this.width = document.getElementById("rose_chart").clientWidth;
     this.renderInit();
-    this.parseFundData();
+    // this.parseFundData();
     this.renderUpdate();
   },
   methods: {
@@ -78,7 +84,7 @@ export default {
     renderUpdate() {
       this.svg.selectAll("g").remove();
 
-      const arcs = this.pie(this.datum);
+      // const arcs = this.pie(this.datum);
       const gChart = this.svg
         .append("g")
         .attr("transform", `translate(${this.width / 2}, ${this.height / 2})`);
@@ -106,48 +112,87 @@ export default {
         .attr("height", "100%")
         .attr("fill", `url(#pattern_stripe_${this.fundId})`);
       const that = this;
-      gChart
-        .selectAll("path")
-        .data(arcs)
-        .join("path")
-        .attr("stroke", "black")
-        .attr("fill", (d) => colorMap[d.data.name])
-        .attr("mask", (d) => {
-          d.data.norm < 0 ? `url(#mask_stripe_${this.fundId})` : "none";
-        })
-        .transition()
-        .duration(300)
-        .attrTween("d", function(d) {
-          let curRadius = this._current;
-          if (!curRadius) curRadius = 0;
-          const interpolate = d3.interpolate(
-            curRadius,
-            that.scaleRadius(d.data.norm)
-          );
-          this._current = interpolate(1);
-          return function(t) {
-            let arc = d3
-              .arc()
-              .innerRadius(0)
-              .outerRadius(interpolate(t));
-            return arc(d);
-          };
-        });
-      gChart
-        .selectAll("path")
-        .data(arcs)
-        .append("title")
-        .text((d) => `${d.data.name}: ${d.data.value.toFixed(2)}`);
-    },
-    parseFundData() {
-      for (let key in this.fundData) {
-        this.datum.push({
-          name: key,
-          norm: this.fundData[key].norm,
-          value: this.fundData[key].value,
-        });
+      for (let i = 0; i < dataGroup.length; i++) {
+        let curGroup = dataGroup[i];
+        let eachAngle = (Math.PI * 2) / 3 / curGroup.length;
+        for (let j = 0; j < curGroup.length; j++) {
+          gChart
+            .append("path")
+            .attr("id", `path_${this.fundId}_${curGroup[j]}`)
+            .attr("stroke", "black")
+            .attr("fill", colorMap[curGroup[j]])
+            .attr(
+              "mask",
+              this.fundData[curGroup[j]].norm < 0
+                ? `url(#mask_stripe_${this.fundId})`
+                : "none"
+            )
+            .transition()
+            .duration(300)
+            .attrTween("d", function() {
+              let curRadius = this._current;
+              if (!curRadius) curRadius = 0;
+              const interpolate = d3.interpolate(
+                curRadius,
+                that.scaleRadius(that.fundData[curGroup[j]].norm)
+              );
+              this._current = interpolate(1);
+              return function(t) {
+                let arc = d3
+                  .arc()
+                  .innerRadius(0)
+                  .outerRadius(interpolate(t))
+                  .startAngle((Math.PI * 2) / 3 * i + j * eachAngle)
+                  .endAngle((Math.PI * 2) / 3 * i + (j + 1) * eachAngle);
+                return arc();
+              };
+            });
+          d3.select(`#path_${this.fundId}_${curGroup[j]}`)
+            .append("title")
+            .text(`${curGroup[j]} ${this.fundData[curGroup[j]].value.toFixed(2)}`);
+        }
       }
+      // gChart
+      //   .selectAll("path")
+      //   .data(arcs)
+      //   .join("path")
+      //   .attr("stroke", "black")
+      //   .attr("fill", (d) => colorMap[d.data.name])
+      //   .attr("mask", (d) => {
+      //     d.data.norm < 0 ? `url(#mask_stripe_${this.fundId})` : "none";
+      //   })
+      //   .transition()
+      //   .duration(300)
+      //   .attrTween("d", function(d) {
+      //     let curRadius = this._current;
+      //     if (!curRadius) curRadius = 0;
+      //     const interpolate = d3.interpolate(
+      //       curRadius,
+      //       that.scaleRadius(d.data.norm)
+      //     );
+      //     this._current = interpolate(1);
+      //     return function(t) {
+      //       let arc = d3
+      //         .arc()
+      //         .innerRadius(0)
+      //         .outerRadius(interpolate(t));
+      //       return arc(d);
+      //     };
+      //   });
+      // gChart
+      //   .selectAll("path")
+      //   .append("title")
+      //   .text((d) => `${d.data.name}: ${d.data.value.toFixed(2)}`);
     },
+    // parseFundData() {
+    //   for (let key in this.fundData) {
+    //     this.datum.push({
+    //       name: key,
+    //       norm: this.fundData[key].norm,
+    //       value: this.fundData[key].value,
+    //     });
+    //   }
+    // },
   },
 };
 </script>
