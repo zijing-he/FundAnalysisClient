@@ -248,10 +248,12 @@ export default {
     },
     handleUpdateWidth(width) {
       // console.log(width);
+      console.log("得到的width",width)
       this.totalWidth = width;
     },
     handleScrollLeft(value) {
       // console.log(value);
+      console.log("得到的left:",value);
       this.scrollLeft = value;
     },
     handleFundProfileIDChange(showFundsID, lineStartYPos) {
