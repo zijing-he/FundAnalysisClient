@@ -1,7 +1,7 @@
 <template>
-  <div class="fund_bubble_chart_inner_container" :style="autoLeft">
+  <div  ref="fund_bubble_chart_container" class="fund_bubble_chart_inner_container" :style="autoLeft">
     <div class="text">{{ date }}</div>
-    <div id="fund_bubble_chart_item" class="fund_bubble_chart_item"></div>
+    <div  id="fund_bubble_chart_item" class="fund_bubble_chart_item" ></div>
   </div>
 </template>
 
@@ -16,6 +16,7 @@ export default {
     fundManagers: Object,
     managerGruop: Object,
     marginLeft: Number,
+    scrollLeft: Number,
   },
   components: {},
   watch: {
@@ -25,6 +26,7 @@ export default {
     mangerId: function () {
       // this.renderUpdate();
     },
+   
   },
   data() {
     return {

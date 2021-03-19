@@ -24,6 +24,7 @@
       <div class="fund_manager_container" v-if="!isRequesting">
         <managerBubbleChart :fundManagers="managers" />
         <div
+          ref="fund_bubble_container"
           class="fund_bubble_chart_outer_container"
           :style="autoWidth"
           v-if="!isRequesting"
@@ -35,7 +36,7 @@
             :date="key"
             :key="key"
             :marginLeft="marginLeftArray[index]"
-            v-for="(val, key,index) in funds"
+            v-for="(val, key, index) in funds"
           >
           </fundBubbleChart>
         </div>
@@ -64,7 +65,7 @@ export default {
       mangerId: undefined,
       managerFunds: undefined,
       isRequesting: true,
-      marginLeftArray:null,
+      marginLeftArray: null,
     };
   },
   components: {
@@ -74,19 +75,24 @@ export default {
   watch: {
     fundsData: function () {
       // console.log("totalWidth:", this.totalWidth);
+      console.log("scrollLeft:", this.scrollLeft);
       this.isRequesting = true;
       this.managers = this.fundsData.managers;
       this.funds = this.fundsData.funds;
       this.managerFunds = this.fundsData.manager_funds;
       this.marginLeftArray = this.marginLeft;
       this.isRequesting = false;
-      console.log("funds是：",this.funds)
+      console.log("funds是：", this.funds);
+    },
+    scrollLeft: function (value) {
+      console.log("到fund_bubble_container,", value);
+      this.$refs.fund_bubble_container.scrollLeft = value;
     },
   },
   computed: {
     autoWidth() {
       const style = {};
-      style.width = 1300 + "px";  //每个都是svg的，需要container宽度比较小，才可以出现滚动轴
+      style.width = this.totalWidth + "px"; //每个都是svg的，需要container宽度比较小，才可以出现滚动轴
       return style;
     },
   },
@@ -119,7 +125,8 @@ export default {
 .fund_bubble_chart_outer_container {
   /* position: absolute; */
 
-  width: 1300px;
+  /* width: 1300px; */
+  max-width: 1400px;
   /* margin-left:100px; */
   /* border: 1px solid #ccc; */
   display: flex;

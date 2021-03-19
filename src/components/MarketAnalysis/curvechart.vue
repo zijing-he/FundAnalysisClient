@@ -224,11 +224,13 @@ export default {
         .attr("d", this.area);
 
       //marketNav
-      this.yScale.domain(d3.extent(this.marketNav));
+      this.yScale.domain([0.8,d3.max(this.marketNav)]);
       this.svg
         .append("g")
         .attr("id", "marketNav_yAxis")
-        .call(d3.axisRight(this.yScale).ticks(6))
+        .call(d3.axisRight(this.yScale)
+        .ticks(6)
+        )
         .attr("transform", `translate(${this.innerWidth},0)`)
         .select(".domain")
         .remove();
