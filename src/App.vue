@@ -123,7 +123,7 @@ export default {
     FundRankingLayout,
   },
   watch: {
-    selectIndex: function (val) {
+    selectIndex: function(val) {
       if (val === -1) return;
       this.isTotalChange = false;
       this.showFundsLikeScore = this.historyFundsLikeScore[val];
@@ -194,13 +194,13 @@ export default {
         (data) => {
           // console.log(data);
           this.isTotalChange = true;
-          this.allFundsID = Object.keys(data.ranking);
-          this.allFundsData = data.ranking;
+          this.allFundsID = data.ranking.map((d) => d[0]);
+          this.allFundsData = data.ranking.map((d) => d[1]);
           this.rankFundsID = this.allFundsID.slice(0, 20); // 默认展示前20个
           this.rankFundsData = {};
-          this.allFundsID.forEach(d => {
-            this.rankFundsData[d] = this.allFundsData[d];
-          })
+          this.allFundsID.forEach((d, i) => {
+            this.rankFundsData[d] = this.allFundsData[i];
+          });
           this.managerToFund = data.manager2fund;
           this.isRequestRanking = false;
         }
