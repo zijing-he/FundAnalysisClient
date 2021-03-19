@@ -29,7 +29,11 @@ const colorMap = {
   one_quarter_return: "#d8d8d8",
   one_year_return: "#d8d8d8",
   three_year_return: "#d8d8d8",
+  one_quarter_hs300_return: "#d8d8d8",
+  one_year_hs300_return: "#d8d8d8",
+  three_year_hs300_return: "#d8d8d8",
   risk: "#d8d8d8",
+  size: "#d8d8d8",
 };
 
 // 柱状图的起始x和宽度，根据每条边有多少根柱子而定 (以边长为80确定，后根据实际边长调整)
@@ -49,6 +53,19 @@ const barAttrs = {
   four: {
     startX: [4, 23, 42, 61],
     width: 15,
+  },
+  // 顶部需要特殊处理下
+  two_top: {
+    startX: [20, 40],
+    width: 20,
+  },
+  four_top: {
+    startX: [7, 22, 43, 58],
+    width: 15,
+  },
+  six_top: {
+    startX: [4, 14, 30, 40, 56, 66],
+    width: 10,
   },
 };
 
@@ -92,9 +109,9 @@ export default {
       topSvg: null,
       rightSvg: null,
       bottomSvg: null,
-      initRightBars: ["sharp_ratio", "information_ratio"],
+      initRightBars: ["sharp_ratio", "information_ratio", "alpha"],
       initBottomBars: ["stock", "bond", "cash", "other"],
-      initLeftBars: ["alpha", "beta"],
+      initLeftBars: ["risk", "size", "beta"],
       barTopMargin: 5,
       curDegree: 0,
       lastTopBars: [],
@@ -110,6 +127,7 @@ export default {
   },
 
   mounted: function() {
+    // console.log(this.$props);
     this.renderInit();
     this.renderUpdate();
   },
@@ -128,12 +146,19 @@ export default {
     },
     initTopBars() {
       // quarter, year, 3-year 有些可能为空，确定下具体有几个
-      let tmp = ["risk"];
-      if (this.one_quarter_returnData !== undefined)
+      let tmp = [];
+      if (this.one_quarter_returnData !== undefined) {
         tmp.push("one_quarter_return");
-      if (this.one_year_returnData !== undefined) tmp.push("one_year_return");
-      if (this.three_year_returnData !== undefined)
+        tmp.push("one_quarter_hs300_return");
+      }
+      if (this.one_year_returnData !== undefined) {
+        tmp.push("one_year_return");
+        tmp.push("one_year_hs300_return");
+      }
+      if (this.three_year_returnData !== undefined) {
         tmp.push("three_year_return");
+        tmp.push("three_year_hs300_return");
+      }
       return tmp;
     },
     curTopBars() {
@@ -279,55 +304,58 @@ export default {
         .attr("y", 0)
         .attr("width", "100%")
         .attr("height", "100%")
-        .attr("fill", `url(#top_pattern_stripe_${this.boxId})`);
+        .attr("fill", `url(#top_pattern_stripe_${this.boxId})`)
+        .attr("stroke", "black");
       const gRectsTop = this.topSvg
         .append("g")
         .attr("transform", `translate(${(60 * this.boxWidth) / 200}, 0)`);
-      const returnToHs300 = {
-        one_quarter_return: this.one_quarter_hs300_returnData,
-        one_year_return: this.one_year_hs300_returnData,
-        three_year_return: this.three_year_hs300_returnData,
-      };
-      if (this.initTopBars.length === 1) {
-        gRectsTop
-          .append("rect")
-          .attr("id", `risk-${this.boxId}`)
-          .attr("fill", colorMap.risk)
-          .attr("stroke", colorMap.risk)
-          .attr(
-            "mask",
-            this.riskData.norm < 0
-              ? `url(#top_mask_stripe_${this.boxId})`
-              : "none"
-          )
-          .attr("x", (barAttrs.one.startX[0] * this.boxWidth) / 200)
-          .attr("y", this.yScale(Math.abs(this.riskData.norm)))
-          .attr("width", (barAttrs.one.width * this.boxWidth) / 200)
-          .attr(
-            "height",
-            this.yScale(0) - this.yScale(Math.abs(this.riskData.norm))
-          );
-      } else if (this.initTopBars.length === 2) {
+      // const returnToHs300 = {
+      //   one_quarter_return: this.one_quarter_hs300_returnData,
+      //   one_year_return: this.one_year_hs300_returnData,
+      //   three_year_return: this.three_year_hs300_returnData,
+      // };
+      // if (this.initTopBars.length === 1) {
+      //   gRectsTop
+      //     .append("rect")
+      //     .attr("id", `risk-${this.boxId}`)
+      //     .attr("fill", colorMap.risk)
+      //     .attr("stroke", colorMap.risk)
+      //     .attr(
+      //       "mask",
+      //       this.riskData.norm < 0
+      //         ? `url(#top_mask_stripe_${this.boxId})`
+      //         : "none"
+      //     )
+      //     .attr("x", (barAttrs.one.startX[0] * this.boxWidth) / 200)
+      //     .attr("y", this.yScale(Math.abs(this.riskData.norm)))
+      //     .attr("width", (barAttrs.one.width * this.boxWidth) / 200)
+      //     .attr(
+      //       "height",
+      //       this.yScale(0) - this.yScale(Math.abs(this.riskData.norm))
+      //     );
+      // } else
+      if (this.initTopBars.length === 2) {
         for (let i = 0; i < this.initTopBars.length; i++) {
           gRectsTop
             .append("rect")
             .attr("id", `${this.initTopBars[i]}-${this.boxId}`)
             .attr("fill", eval(`colorMap.${this.initTopBars[i]}`))
-            .attr("stroke", eval(`colorMap.${this.initTopBars[i]}`))
+            .attr("stroke-dasharray", i % 2 === 0 ? "none" : "2, 2")
+            .attr("stroke", "black")
             .attr(
               "mask",
               eval(`this.${this.initTopBars[i]}Data.norm`) < 0
                 ? `url(#top_mask_stripe_${this.boxId})`
                 : "none"
             )
-            .attr("x", (barAttrs.two.startX[i] * this.boxWidth) / 200)
+            .attr("x", (barAttrs.two_top.startX[i] * this.boxWidth) / 200)
             .attr(
               "y",
               this.yScale(
                 Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`))
               )
             )
-            .attr("width", (barAttrs.two.width * this.boxWidth) / 200)
+            .attr("width", (barAttrs.two_top.width * this.boxWidth) / 200)
             .attr(
               "height",
               this.yScale(0) -
@@ -335,72 +363,74 @@ export default {
                   Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`))
                 )
             );
+          // 最新设计不画虚线了
           // 根据return和hs300的差值画虚线
-          if (i > 0 && i < this.initTopBars.length - 1) {
-            if (
-              Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`)) >
-              Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
-            ) {
-              gRectsTop
-                .append("path")
-                .attr("stroke-dasharray", "2, 2")
-                .attr("stroke", "black")
-                .attr(
-                  "d",
-                  `m ${(barAttrs.two.startX[i] * this.boxWidth) /
-                    200} ${this.yScale(
-                    Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
-                  )} h ${(barAttrs.two.width * this.boxWidth) / 200}`
-                );
-            } else {
-              gRectsTop
-                .append("rect")
-                .attr("fill", "none")
-                .attr("stroke-dasharray", "2, 2")
-                .attr("stroke", "black")
-                .attr("x", (barAttrs.two.startX[i] * this.boxWidth) / 200)
-                .attr(
-                  "y",
-                  this.yScale(
-                    Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
-                  )
-                )
-                .attr("width", (barAttrs.two.width * this.boxWidth) / 200)
-                .attr(
-                  "height",
-                  this.yScale(
-                    Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`))
-                  ) -
-                    this.yScale(
-                      Math.abs(
-                        eval(`returnToHs300.${this.initTopBars[i]}.norm`)
-                      )
-                    )
-                );
-            }
-          }
+          // if (i > 0 && i < this.initTopBars.length - 1) {
+          //   if (
+          //     Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`)) >
+          //     Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
+          //   ) {
+          //     gRectsTop
+          //       .append("path")
+          //       .attr("stroke-dasharray", "2, 2")
+          //       .attr("stroke", "black")
+          //       .attr(
+          //         "d",
+          //         `m ${(barAttrs.two.startX[i] * this.boxWidth) /
+          //           200} ${this.yScale(
+          //           Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
+          //         )} h ${(barAttrs.two.width * this.boxWidth) / 200}`
+          //       );
+          //   } else {
+          //     gRectsTop
+          //       .append("rect")
+          //       .attr("fill", "none")
+          //       .attr("stroke-dasharray", "2, 2")
+          //       .attr("stroke", "black")
+          //       .attr("x", (barAttrs.two.startX[i] * this.boxWidth) / 200)
+          //       .attr(
+          //         "y",
+          //         this.yScale(
+          //           Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
+          //         )
+          //       )
+          //       .attr("width", (barAttrs.two.width * this.boxWidth) / 200)
+          //       .attr(
+          //         "height",
+          //         this.yScale(
+          //           Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`))
+          //         ) -
+          //           this.yScale(
+          //             Math.abs(
+          //               eval(`returnToHs300.${this.initTopBars[i]}.norm`)
+          //             )
+          //           )
+          //       );
+          //   }
+          // }
         }
-      } else if (this.initTopBars.length === 3) {
+      } else if (this.initTopBars.length === 4) {
         for (let i = 0; i < this.initTopBars.length; i++) {
           gRectsTop
             .append("rect")
             .attr("id", `${this.initTopBars[i]}-${this.boxId}`)
             .attr("fill", eval(`colorMap.${this.initTopBars[i]}`))
-            .attr("stroke", eval(`colorMap.${this.initTopBars[i]}`))
+            .attr("stroke-dasharray", i % 2 === 0 ? "none" : "2, 2")
+            .attr("stroke", "black")
             .attr(
               "mask",
               eval(`this.${this.initTopBars[i]}Data.norm`) < 0
                 ? `url(#top_mask_stripe_${this.boxId})`
                 : "none"
             )
-            .attr("x", (barAttrs.three.startX[i] * this.boxWidth) / 200)
+            .attr("x", (barAttrs.four_top.startX[i] * this.boxWidth) / 200)
             .attr(
               "y",
               this.yScale(
                 Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`))
               )
             )
-            .attr("width", (barAttrs.three.width * this.boxWidth) / 200)
+            .attr("width", (barAttrs.four_top.width * this.boxWidth) / 200)
             .attr(
               "height",
               this.yScale(0) -
@@ -409,49 +439,49 @@ export default {
                 )
             );
           // 根据return和hs300的差值画虚线
-          if (i > 0 && i < this.initTopBars.length - 1) {
-            if (
-              Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`)) >
-              Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
-            ) {
-              gRectsTop
-                .append("path")
-                .attr("stroke-dasharray", "2, 2")
-                .attr("stroke", "black")
-                .attr(
-                  "d",
-                  `m ${(barAttrs.three.startX[i] * this.boxWidth) /
-                    200} ${this.yScale(
-                    Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
-                  )} h ${(barAttrs.three.width * this.boxWidth) / 200}`
-                );
-            } else {
-              gRectsTop
-                .append("rect")
-                .attr("fill", "none")
-                .attr("stroke-dasharray", "2, 2")
-                .attr("stroke", "black")
-                .attr("x", (barAttrs.three.startX[i] * this.boxWidth) / 200)
-                .attr(
-                  "y",
-                  this.yScale(
-                    Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
-                  )
-                )
-                .attr("width", (barAttrs.three.width * this.boxWidth) / 200)
-                .attr(
-                  "height",
-                  this.yScale(
-                    Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`))
-                  ) -
-                    this.yScale(
-                      Math.abs(
-                        eval(`returnToHs300.${this.initTopBars[i]}.norm`)
-                      )
-                    )
-                );
-            }
-          }
+          // if (i > 0 && i < this.initTopBars.length - 1) {
+          //   if (
+          //     Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`)) >
+          //     Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
+          //   ) {
+          //     gRectsTop
+          //       .append("path")
+          //       .attr("stroke-dasharray", "2, 2")
+          //       .attr("stroke", "black")
+          //       .attr(
+          //         "d",
+          //         `m ${(barAttrs.three.startX[i] * this.boxWidth) /
+          //           200} ${this.yScale(
+          //           Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
+          //         )} h ${(barAttrs.three.width * this.boxWidth) / 200}`
+          //       );
+          //   } else {
+          //     gRectsTop
+          //       .append("rect")
+          //       .attr("fill", "none")
+          //       .attr("stroke-dasharray", "2, 2")
+          //       .attr("stroke", "black")
+          //       .attr("x", (barAttrs.three.startX[i] * this.boxWidth) / 200)
+          //       .attr(
+          //         "y",
+          //         this.yScale(
+          //           Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
+          //         )
+          //       )
+          //       .attr("width", (barAttrs.three.width * this.boxWidth) / 200)
+          //       .attr(
+          //         "height",
+          //         this.yScale(
+          //           Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`))
+          //         ) -
+          //           this.yScale(
+          //             Math.abs(
+          //               eval(`returnToHs300.${this.initTopBars[i]}.norm`)
+          //             )
+          //           )
+          //       );
+          //   }
+          // }
         }
       } else {
         for (let i = 0; i < this.initTopBars.length; i++) {
@@ -459,21 +489,22 @@ export default {
             .append("rect")
             .attr("id", `${this.initTopBars[i]}-${this.boxId}`)
             .attr("fill", eval(`colorMap.${this.initTopBars[i]}`))
-            .attr("stroke", eval(`colorMap.${this.initTopBars[i]}`))
+            .attr("stroke-dasharray", i % 2 === 0 ? "none" : "2, 2")
+            .attr("stroke", "black")
             .attr(
               "mask",
               eval(`this.${this.initTopBars[i]}Data.norm`) < 0
                 ? `url(#top_mask_stripe_${this.boxId})`
                 : "none"
             )
-            .attr("x", (barAttrs.four.startX[i] * this.boxWidth) / 200)
+            .attr("x", (barAttrs.six_top.startX[i] * this.boxWidth) / 200)
             .attr(
               "y",
               this.yScale(
                 Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`))
               )
             )
-            .attr("width", (barAttrs.four.width * this.boxWidth) / 200)
+            .attr("width", (barAttrs.six_top.width * this.boxWidth) / 200)
             .attr(
               "height",
               this.yScale(0) -
@@ -482,49 +513,49 @@ export default {
                 )
             );
           // 根据return和hs300的差值画虚线
-          if (i > 0 && i < this.initTopBars.length - 1) {
-            if (
-              Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`)) >
-              Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
-            ) {
-              gRectsTop
-                .append("path")
-                .attr("stroke-dasharray", "2, 2")
-                .attr("stroke", "black")
-                .attr(
-                  "d",
-                  `m ${(barAttrs.four.startX[i] * this.boxWidth) /
-                    200} ${this.yScale(
-                    Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
-                  )} h ${(barAttrs.four.width * this.boxWidth) / 200}`
-                );
-            } else {
-              gRectsTop
-                .append("rect")
-                .attr("fill", "none")
-                .attr("stroke-dasharray", "2, 2")
-                .attr("stroke", "black")
-                .attr("x", (barAttrs.four.startX[i] * this.boxWidth) / 200)
-                .attr(
-                  "y",
-                  this.yScale(
-                    Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
-                  )
-                )
-                .attr("width", (barAttrs.four.width * this.boxWidth) / 200)
-                .attr(
-                  "height",
-                  this.yScale(
-                    Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`))
-                  ) -
-                    this.yScale(
-                      Math.abs(
-                        eval(`returnToHs300.${this.initTopBars[i]}.norm`)
-                      )
-                    )
-                );
-            }
-          }
+          // if (i > 0 && i < this.initTopBars.length - 1) {
+          //   if (
+          //     Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`)) >
+          //     Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
+          //   ) {
+          //     gRectsTop
+          //       .append("path")
+          //       .attr("stroke-dasharray", "2, 2")
+          //       .attr("stroke", "black")
+          //       .attr(
+          //         "d",
+          //         `m ${(barAttrs.four.startX[i] * this.boxWidth) /
+          //           200} ${this.yScale(
+          //           Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
+          //         )} h ${(barAttrs.four.width * this.boxWidth) / 200}`
+          //       );
+          //   } else {
+          //     gRectsTop
+          //       .append("rect")
+          //       .attr("fill", "none")
+          //       .attr("stroke-dasharray", "2, 2")
+          //       .attr("stroke", "black")
+          //       .attr("x", (barAttrs.four.startX[i] * this.boxWidth) / 200)
+          //       .attr(
+          //         "y",
+          //         this.yScale(
+          //           Math.abs(eval(`returnToHs300.${this.initTopBars[i]}.norm`))
+          //         )
+          //       )
+          //       .attr("width", (barAttrs.four.width * this.boxWidth) / 200)
+          //       .attr(
+          //         "height",
+          //         this.yScale(
+          //           Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`))
+          //         ) -
+          //           this.yScale(
+          //             Math.abs(
+          //               eval(`returnToHs300.${this.initTopBars[i]}.norm`)
+          //             )
+          //           )
+          //       );
+          //   }
+          // }
         }
       }
 
@@ -560,7 +591,7 @@ export default {
           .append("rect")
           .attr("id", `${this.initRightBars[i]}-${this.boxId}`)
           .attr("fill", eval(`colorMap.${this.initRightBars[i]}`))
-          .attr("stroke", eval(`colorMap.${this.initRightBars[i]}`))
+          .attr("stroke", "black")
           .attr(
             "mask",
             eval(`this.${this.initRightBars[i]}Data.norm`) < 0
@@ -568,14 +599,14 @@ export default {
               : "none"
           )
           .attr("x", 0)
-          .attr("y", (barAttrs.two.startX[i] * this.boxWidth) / 200)
+          .attr("y", (barAttrs.three.startX[i] * this.boxWidth) / 200)
           .attr(
             "width",
             this.yScale(
               Math.abs(eval(`this.${this.initRightBars[i]}Data.norm`))
             ) - this.yScale(0)
           )
-          .attr("height", (barAttrs.two.width * this.boxWidth) / 200);
+          .attr("height", (barAttrs.three.width * this.boxWidth) / 200);
       }
 
       // bottom
@@ -610,7 +641,7 @@ export default {
           .append("rect")
           .attr("id", `${this.initBottomBars[i]}-${this.boxId}`)
           .attr("fill", eval(`colorMap.${this.initBottomBars[i]}`))
-          .attr("stroke", eval(`colorMap.${this.initBottomBars[i]}`))
+          .attr("stroke", "black")
           .attr(
             "mask",
             eval(`this.${this.initBottomBars[i]}Data.norm`) < 0
@@ -663,7 +694,7 @@ export default {
           .append("rect")
           .attr("id", `${this.initLeftBars[i]}-${this.boxId}`)
           .attr("fill", eval(`colorMap.${this.initLeftBars[i]}`))
-          .attr("stroke", eval(`colorMap.${this.initLeftBars[i]}`))
+          .attr("stroke", "black")
           .attr(
             "mask",
             eval(`this.${this.initLeftBars[i]}Data.norm`) < 0
@@ -674,7 +705,7 @@ export default {
             "x",
             this.yScale(Math.abs(eval(`this.${this.initLeftBars[i]}Data.norm`)))
           )
-          .attr("y", (barAttrs.two.startX[i] * this.boxWidth) / 200)
+          .attr("y", (barAttrs.three.startX[i] * this.boxWidth) / 200)
           .attr(
             "width",
             this.yScale(0) -
@@ -682,7 +713,7 @@ export default {
                 Math.abs(eval(`this.${this.initLeftBars[i]}Data.norm`))
               )
           )
-          .attr("height", (barAttrs.two.width * this.boxWidth) / 200);
+          .attr("height", (barAttrs.three.width * this.boxWidth) / 200);
       }
 
       // 添加tooltip
@@ -987,7 +1018,7 @@ export default {
   position: absolute;
   height: 80px;
   width: 80px;
-  /* border: 1px solid black; */
+  border: 1px solid black;
   left: 60px;
   top: 60px;
 }

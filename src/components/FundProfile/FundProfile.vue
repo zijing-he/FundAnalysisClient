@@ -155,7 +155,7 @@ export default {
       isLoading: true,
       fundData: null,
       svg: null,
-      margin: { top: 10, right: 100, bottom: 100, left: 100 },
+      margin: { top: 10, right: 100, bottom: 100, left: 20 },
       width: 900,
       height: 213,
       isSyncTop: false,
@@ -573,9 +573,9 @@ export default {
         tmpDateData = tmpDateData.map(
           (d) => `${d.substring(0, 4)}-${d.substring(4, 6)}-${d.substring(6)}`
         );
-        this.sizeData.push(
-          this.fundData["detail"][this.fundId][i]["size"].norm
-        );
+        // this.sizeData.push(
+        //   this.fundData["detail"][this.fundId][i]["size"].norm
+        // );
         this.dateData = [...this.dateData, ...tmpDateData];
         this.detailChangeRateData.push(Object.values(tmpDetailChangeRateData));
         this.detailCarData.push(Object.values(tmpDetailCarData));
@@ -641,6 +641,7 @@ export default {
           bondData: this.fundData["detail"][this.fundId][i]["bond"],
           cashData: this.fundData["detail"][this.fundId][i]["cash"],
           otherData: this.fundData["detail"][this.fundId][i]["other"],
+          sizeData: this.fundData["detail"][this.fundId][i]["size"],
           alphaData: this.fundData["detail"][this.fundId][i]["alpha"],
           betaData: this.fundData["detail"][this.fundId][i]["beta"],
           sharp_ratioData: this.fundData["detail"][this.fundId][i][
@@ -679,6 +680,7 @@ export default {
       this.summaryBondData = this.fundData["total"][this.fundId]["bond"];
       this.summaryCashData = this.fundData["total"][this.fundId]["cash"];
       this.summaryOtherData = this.fundData["total"][this.fundId]["other"];
+      this.summarySizeData = this.fundData["total"][this.fundId]["size"];
       this.summaryAlphaData = this.fundData["total"][this.fundId]["alpha"];
       this.summaryBetaData = this.fundData["total"][this.fundId]["beta"];
       this.summarySharpRatioData = this.fundData["total"][this.fundId][
@@ -713,7 +715,7 @@ export default {
           : undefined;
     },
     renderInit() {
-      this.margin.left = this.margin.right = this.investStyleBoxWidth / 2;
+      // this.margin.left = this.margin.right = this.investStyleBoxWidth / 2;
       this.width = Math.max(
         (this.investStyleBoxWidth + this.boxGap) *
           this.investStyleBoxes.length +
