@@ -120,7 +120,9 @@ export default {
           .toISOString()
           .slice(0, 10)
           .replace(/-/g, "");
-        this.$emit("updateBrush", start, end, selection[0], selection[1]);
+        if (start !== end) {
+          this.$emit("updateBrush", start, end, selection[0], selection[1]);
+        }
       }
       this.isSelf = true;
 
@@ -276,15 +278,14 @@ export default {
       this.svg.selectAll(".tick line").remove();
 
       //timebrush
-       let brush = d3
+      let brush = d3
         .brushX()
         .extent([
-          [0, -this.margin.top+65],
+          [0, -this.margin.top + 65],
           [this.innerWidth, this.innerHeight],
         ])
         .on("end", this.updateDate);
-       this.svg.append("g").attr("class", "brush").call(brush);
-
+      this.svg.append("g").attr("class", "brush").call(brush);
     },
   },
 };

@@ -130,7 +130,6 @@ export default {
   },
   methods: {
     handleMenuClick(d) {
-      console.log(d);
       if (d.target.value == 1) {
         this.weight = {
           one_quarter_return: "1.0",
@@ -147,30 +146,30 @@ export default {
         };
       } else if (d.target.value == 2) {
         this.weight = {
-          one_quarter_return: "1.0",
-          one_year_return: "1.0",
-          three_year_return: "1.0",
-          max_drop_down: "0.0",
-          risk: "1.0",
-          sharp_ratio: "0.0",
-          information_ratio: "0.0",
-          alpha: "0.0",
-          beta: "0.0",
+          one_quarter_return: "0",
+          one_year_return: "0.4",
+          three_year_return: "0.8",
+          max_drop_down: "-1",
+          risk: "-1",
+          sharp_ratio: "0.3",
+          information_ratio: "0.4",
+          alpha: "0.3",
+          beta: "0.2",
           size: "1.0",
-          instl_weight: "0.0",
+          instl_weight: "0.2",
         };
       } else if (d.target.value == 3) {
         this.weight = {
           one_quarter_return: "1.0",
           one_year_return: "1.0",
           three_year_return: "1.0",
-          max_drop_down: "0.0",
+          max_drop_down: "1",
           risk: "1.0",
-          sharp_ratio: "0.0",
-          information_ratio: "0.0",
-          alpha: "0.0",
-          beta: "0.0",
-          size: "1.0",
+          sharp_ratio: "1.0",
+          information_ratio: "0.4",
+          alpha: "1",
+          beta: "1",
+          size: "0",
           instl_weight: "0.0",
         };
       }

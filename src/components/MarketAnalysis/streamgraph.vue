@@ -13,7 +13,6 @@
             border: 1px solid #aeaeae;
             box-shadow: 0 20px 15px -12px rgba(21, 85, 194, 0.13);
             border-radius: 5px;
-            
           "
           placeholder="Choose the industry you care about"
           @change="handleChange"
@@ -115,7 +114,7 @@ export default {
     this.renderInit();
     this.renderUpdate();
   },
-  emits:["updateBrushStream","getSector"],
+  emits: ["updateBrushStream", "getSector"],
   computed: {
     iconScale() {
       return d3
@@ -191,10 +190,10 @@ export default {
         .append("g")
         .attr("class", "brush")
         .call(brush)
-        .call(brush.move, [this.start, this.end]);  //move可以让brush显示
+        .call(brush.move, [this.start, this.end]); //move可以让brush显示
     },
     handleChange(sector) {
-      this.$emit("getSector",sector);
+      this.$emit("getSector", sector);
       this.renderUpdate();
       this.updateTimeBrush();
     },
@@ -212,7 +211,15 @@ export default {
           .toISOString()
           .slice(0, 10)
           .replace(/-/g, "");
-        this.$emit("updateBrushStream", start, end, selection[0], selection[1]);
+        if (start !== end) {
+          this.$emit(
+            "updateBrushStream",
+            start,
+            end,
+            selection[0],
+            selection[1]
+          );
+        }
       }
       this.isSelf = true;
     },
@@ -390,15 +397,14 @@ export default {
         .attr("text-anchor", "left")
         .style("alignment-baseline", "middle");
 
-         let brush = d3
+      let brush = d3
         .brushX()
         .extent([
-          [0, -this.margin.top+55],
+          [0, -this.margin.top + 55],
           [this.innerWidth, this.innerHeight],
         ])
         .on("end", this.updateDate);
-       this.svg.append("g").attr("class", "brush").call(brush);
-
+      this.svg.append("g").attr("class", "brush").call(brush);
     },
   },
 };
