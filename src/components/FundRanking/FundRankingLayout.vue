@@ -135,7 +135,7 @@ export default {
         if (this.isFundProfileIDChecked.get(d)) {
           this.showFundProfileIDs.push(d);
           this.lineStartYPos.push(
-            i * 127 + 63.5 + 127 - 15 + this.$refs["ranking"].scrollTop
+            i * 127 + 63.5 + 127 - 15 - this.$refs["ranking"].scrollTop
           );
         }
       });
