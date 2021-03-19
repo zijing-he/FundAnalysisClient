@@ -38,15 +38,7 @@
         </a-button>
       </a-dropdown> -->
 
-      <select
-        style="
-          width: 300px;
-          margin-top: 2px;
-          margin-left: 30px;
-          border-radius: 6px;
-        "
-        @change="handleMenuClick"
-      >
+      <select id="select_container" @change="handleMenuClick">
         <option value="1">Conservative Investor</option>
         <option value="2">Robust Investor</option>
         <option value="3">Radical Investor</option>
@@ -312,5 +304,14 @@ export default {
 }
 .rader_chart_container {
   position: relative;
+}
+
+#select_container {
+  width: 300px;
+  margin-top: 2px;
+  margin-left: 30px;
+  border-radius: 6px;
+  padding-right: 30px;
+  cursor: pointer;
 }
 </style>

@@ -1,6 +1,10 @@
 <template>
   <a-row class="first_row">
-    <MarketAnalysisCurveChart v-on:updateBrush="handleUpdateBrush" />
+    <MarketAnalysisCurveChart
+      :start="marketStart"
+      :end="marketEnd"
+      v-on:updateBrush="handleUpdateBrush"
+    />
   </a-row>
   <a-row class="second_row">
     <a-row type="flex" class="industry_selection_style">
@@ -9,7 +13,12 @@
       </svg>
       <text>Industry Selection</text>
     </a-row>
-    <MarketAnalysisStramGraph :start="oriStart" :end="oriEnd" />
+    <MarketAnalysisStramGraph
+      :start="industryStart"
+      :end="industryEnd"
+      v-on:updateBrushStream="handleupdateBrushStream"
+      v-on:getSector="handleGetSector"
+    />
   </a-row>
 </template>
 <script>
@@ -19,19 +28,30 @@ export default {
   name: "MarketAnalysisLayout",
   data() {
     return {
-      oriStart:null,
-      oriEnd:null,
+      marketStart: null,
+      marketEnd: null,
+      industryStart: null,
+      industryEnd: null,
     };
   },
   components: {
     MarketAnalysisCurveChart,
     MarketAnalysisStramGraph,
   },
-  emits:["updateTimeBoundary"],
+  emits: ["updateTimeBoundary","updateSector"],
   methods: {
-    handleUpdateBrush(start, end,oriStart, oriEnd) {
-      this.oriStart = oriStart;
-      this.oriEnd = oriEnd;
+    handleGetSector(sector){
+      this.$emit("updateSector",sector);
+    },
+    handleUpdateBrush(start, end, oriStart, oriEnd) {
+      this.industryStart = oriStart;
+      this.industryEnd = oriEnd;
+      this.$emit("updateTimeBoundary", start, end);
+    },
+    //更新market的brush
+    handleupdateBrushStream(start, end, oriStart, oriEnd) {
+      this.marketStart = oriStart;
+      this.marketEnd = oriEnd;
       this.$emit("updateTimeBoundary", start, end);
     },
   },

@@ -19,7 +19,10 @@ import market_number_date from "@/data/CurveChart/market_number_date.json";
 
 export default {
   name: "MarketAnalysisCurveChart",
-  props: {},
+  props: {
+    start: Number,
+    end: Number,
+  },
   components: {},
   data() {
     return {
@@ -27,18 +30,28 @@ export default {
       margin: { top: 70, right: 30, bottom: 30, left: 55 },
       width: 520,
       height: 253,
+      isSelf: true,
       date: Object.keys(market_nav_date),
       marketNav: Object.values(market_nav_date),
       marketShares: Object.values(market_number_date),
       keys: ["Market avgerage fund shares", "Market average fund nav"],
     };
   },
-
+  watch: {
+    start: function () {
+      this.isSelf = false;
+      this.updateTimeBrush();
+    },
+    end: function () {
+      this.isSelf = false;
+      this.updateTimeBrush();
+    },
+  },
   mounted: function () {
     this.renderInit();
     this.renderUpdate();
   },
-
+  emits: ["updateBrush"],
   computed: {
     innerWidth() {
       return this.width - this.margin.left - this.margin.right;
@@ -79,14 +92,37 @@ export default {
   },
 
   methods: {
+    updateTimeBrush() {
+      //Time Brush
+      let brush = d3
+        .brushX()
+        .extent([
+          [0, -this.margin.top + 65],
+          [this.innerWidth, this.innerHeight],
+        ])
+        .on("end", this.updateDate);
+      this.svg.select(".brush").remove();
+      this.svg
+        .append("g")
+        .attr("class", "brush")
+        .call(brush)
+        .call(brush.move, [this.start, this.end]);
+    },
     updateDate({ selection }) {
-      if (selection) {
-        let start = this.xScale.invert(selection[0]).toISOString().slice(0, 10).replace(/-/g, "");
-        let end = this.xScale.invert(selection[1]).toISOString().slice(0, 10).replace(/-/g, "");
-        // console.log("刷取的值：", selection);
-        // console.log("值还原后对比：", start, end);
+      if (selection && this.isSelf) {
+        let start = this.xScale
+          .invert(selection[0])
+          .toISOString()
+          .slice(0, 10)
+          .replace(/-/g, "");
+        let end = this.xScale
+          .invert(selection[1])
+          .toISOString()
+          .slice(0, 10)
+          .replace(/-/g, "");
         this.$emit("updateBrush", start, end, selection[0], selection[1]);
       }
+      this.isSelf = true;
 
       // this.svg.select(".brush").call(this.brush.move, null);  //情况brush后会报错，但是不影响
     },
@@ -141,14 +177,6 @@ export default {
       //   .style("font-family", "Helvetica")
       //   .style("font-size", "10px")
       //   .style("color", "#6C7B8A");
-
-      let brush = d3
-        .brushX()
-        .extent([
-          [0, -this.margin.top + 35],
-          [this.innerWidth, this.innerHeight],
-        ])
-        .on("end", this.updateDate);
 
       let curveChart = this.svg.append("g");
 
@@ -218,8 +246,6 @@ export default {
         .attr("stroke-width", 2)
         .attr("stroke", "#FE6AAC");
 
-      this.svg.append("g").attr("class", "brush").call(brush);
-
       //legend
       this.svg
         .selectAll(".legend")
@@ -248,6 +274,17 @@ export default {
 
       //删除刻度线
       this.svg.selectAll(".tick line").remove();
+
+      //timebrush
+       let brush = d3
+        .brushX()
+        .extent([
+          [0, -this.margin.top+65],
+          [this.innerWidth, this.innerHeight],
+        ])
+        .on("end", this.updateDate);
+       this.svg.append("g").attr("class", "brush").call(brush);
+
     },
   },
 };

@@ -13,8 +13,9 @@
             border: 1px solid #aeaeae;
             box-shadow: 0 20px 15px -12px rgba(21, 85, 194, 0.13);
             border-radius: 5px;
+            
           "
-          placeholder="选择您所关注的行业"
+          placeholder="Choose the industry you care about"
           @change="handleChange"
         >
           <a-select-option v-for="item in sectors" :key="item" :value="item">
@@ -66,6 +67,7 @@ export default {
       sector_data: sectorJSON,
       sectors: [],
       selectedIndustries: [],
+      isSelf: true, //判断是不是这个组件刷取的
       sectorItem: {
         医药生物: "#iconyiyao",
         电子: "#icondianzi",
@@ -100,14 +102,20 @@ export default {
     };
   },
   watch: {
-    start: function (val) {
-      this.updateBrush();
+    start: function () {
+      this.isSelf = false;
+      this.updateTimeBrush();
+    },
+    end: function () {
+      this.isSelf = false;
+      this.updateTimeBrush();
     },
   },
   mounted: function () {
     this.renderInit();
     this.renderUpdate();
   },
+  emits:["updateBrushStream","getSector"],
   computed: {
     iconScale() {
       return d3
@@ -169,12 +177,12 @@ export default {
     // },
   },
   methods: {
-    updateBrush() {
+    updateTimeBrush() {
       //Time Brush
       let brush = d3
         .brushX()
         .extent([
-          [0, -this.margin.top + 35],
+          [0, -this.margin.top + 55],
           [this.innerWidth, this.innerHeight],
         ])
         .on("end", this.updateDate);
@@ -183,16 +191,17 @@ export default {
         .append("g")
         .attr("class", "brush")
         .call(brush)
-        .call(brush.move, [this.start, this.end]);
+        .call(brush.move, [this.start, this.end]);  //move可以让brush显示
     },
-    handleChange(value) {
+    handleChange(sector) {
+      this.$emit("getSector",sector);
       this.renderUpdate();
-      this.updateBrush();
+      this.updateTimeBrush();
     },
 
     //刷子改变就会调动这个值
     updateDate({ selection }) {
-      if (selection) {
+      if (selection && this.isSelf) {
         let start = this.xScale
           .invert(selection[0])
           .toISOString()
@@ -203,9 +212,9 @@ export default {
           .toISOString()
           .slice(0, 10)
           .replace(/-/g, "");
-        console.log("河流图刷取的值：", selection);
-        // this.$emit("updateBrush", start, end);
+        this.$emit("updateBrushStream", start, end, selection[0], selection[1]);
       }
+      this.isSelf = true;
     },
     renderInit() {
       this.sectors = Object.keys(sectorDict);
@@ -380,6 +389,16 @@ export default {
         .text("(rmb)")
         .attr("text-anchor", "left")
         .style("alignment-baseline", "middle");
+
+         let brush = d3
+        .brushX()
+        .extent([
+          [0, -this.margin.top+55],
+          [this.innerWidth, this.innerHeight],
+        ])
+        .on("end", this.updateDate);
+       this.svg.append("g").attr("class", "brush").call(brush);
+
     },
   },
 };

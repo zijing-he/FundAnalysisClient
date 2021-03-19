@@ -8,6 +8,7 @@
       <a-row>
         <MarketAnalysisLayout
           v-on:updateTimeBoundary="handleUpdateTimeBoundary"
+          v-on:updateSector="handleUpdateSector"
         />
       </a-row>
       <a-row id="update_button_container">
@@ -58,7 +59,12 @@
         <text>Funds Comparison</text>
         <div id="comparison_buttons">
           <select
-            style="width: 180px; margin-top: 2px; border-radius: 6px"
+            style="
+              width: 180px;
+              margin-top: 2px;
+              border-radius: 6px;
+              cursor: pointer;
+            "
             v-model="selectIndex"
           >
             <option value="-1" disabled>History Comparison</option>
@@ -131,8 +137,8 @@ export default {
       fundsID: null, // 给散点图的
       startDate: "20110331", // 默认起始值
       endDate: "20191231",
-      userWeight:   //初始化权重
-      {
+      //初始化权重
+      userWeight: {
         one_quarter_return: "1.0",
         one_year_return: "1.0",
         three_year_return: "1.0",
@@ -157,10 +163,14 @@ export default {
       historyFundsLikeScore: [],
       selectIndex: -1, // 选中的历史记录index
       isTotalChange: true, // 为真表示是改变了所有rank的数据，要重置historyFundsLikeScore；为假则表示查看历史记录或者重新选取rank，无需重置
+      userSectors: null,
     };
   },
   computed: {},
   methods: {
+    handleUpdateSector(sector) {
+      this.userSectors = sector;
+    },
     //点击update获得id
     handleUpdateClick() {
       this.isRequestRanking = true;
@@ -170,6 +180,7 @@ export default {
           weights: this.userWeight,
           start_date: this.startDate,
           end_date: this.endDate,
+          sectors: this.userSectors,
         },
         (data) => {
           console.log(data);
@@ -229,7 +240,6 @@ export default {
     },
     //第二部，选取时间段
     handleUpdateTimeBoundary(start, end) {
-      // console.log("起始点：", start, end);
       this.startDate = start; //start发生变化，FundProfileLayout里的start也会改变，导致getviewFunds改变
       this.endDate = end;
       // if (this.fundsID && this.userWeight) {
@@ -271,15 +281,19 @@ export default {
         "fundProfileLayout"
       ].historyFundsLikeScore;
       // console.log(this.historyFundsLikeScore);
-      DataService.post("update_weights", {
-        weights: this.userWeight,
-        pairs: this.historyFundsLikeScore,
-        start_date: this.startDate,
-        end_date: this.endDate,
-      }, (data) => {
-        console.log(data);
-        this.incomingWeight = data;
-      });
+      DataService.post(
+        "update_weights",
+        {
+          weights: this.userWeight,
+          pairs: this.historyFundsLikeScore,
+          start_date: this.startDate,
+          end_date: this.endDate,
+        },
+        (data) => {
+          console.log(data);
+          this.incomingWeight = data;
+        }
+      );
     },
   },
 };
