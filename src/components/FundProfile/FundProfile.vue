@@ -189,6 +189,7 @@ export default {
       summaryBetaData: undefined,
       summarySharpRatioData: undefined,
       summaryInfoRatioData: undefined,
+      eachMargin: [], // 传给气泡图
     };
   },
 
@@ -251,14 +252,14 @@ export default {
     yScale() {
       return d3
         .scaleLinear()
-        .domain([-1, 1])
+        .domain([-1.1, 1.1])
         .range([this.height - this.margin.bottom, this.margin.top]);
     },
   },
 
   methods: {
     turnClockwise(isFatherCall = false) {
-      this.svg.select("#dashline").remove();
+      this.svg.select(`#dashline_${this.fundId}`).remove();
       this.investStyleBoxes.forEach((d) => {
         this.$refs[d.boxId].removeDashline();
         this.$refs[d.boxId].turnClockwise();
@@ -266,7 +267,7 @@ export default {
       if (!isFatherCall) this.$emit("turn", true, this.fundId);
     },
     turnCounterClockwise(isFatherCall = false) {
-      this.svg.select("#dashline").remove();
+      this.svg.select(`#dashline_${this.fundId}`).remove();
       this.investStyleBoxes.forEach((d) => {
         this.$refs[d.boxId].removeDashline();
         this.$refs[d.boxId].turnCounterClockwise();
@@ -282,8 +283,12 @@ export default {
       // console.log(`${this.fundId}: ${this.thisFundLikeScore}`);
     },
     clickBar(type) {
-      this.svg.select("#dashline").remove();
-      const gDashline = this.svg.append("g").attr("id", "dashline");
+      this.svg.select(`#dashline_${this.fundId}`).remove();
+      // 这里如果用this.svg.append，有可能会加到别的FundProfile里面，具体原因未知
+      const gDashline = d3
+        .select(`#svg_${this.fundId}`)
+        .append("g")
+        .attr("id", `dashline_${this.fundId}`);
 
       this.investStyleBoxes.forEach((d) => {
         this.$refs[d.boxId].removeDashline();
@@ -575,8 +580,9 @@ export default {
         this.detailChangeRateData.push(Object.values(tmpDetailChangeRateData));
         this.detailCarData.push(Object.values(tmpDetailCarData));
         let holdingData = this.fundData["detail"][this.fundId][i]["holding"];
-        let holdingDataKeys = Object.keys(holdingData)
-          .sort((a, b) => holdingData[b] - holdingData[a]);
+        let holdingDataKeys = Object.keys(holdingData).sort(
+          (a, b) => holdingData[b] - holdingData[a]
+        );
         let thisHoldingData = [];
         holdingDataKeys.forEach((d) => {
           thisHoldingData.push({
@@ -731,6 +737,7 @@ export default {
       this.svg = d3
         .select(`#curve_${this.fundId}`)
         .append("svg")
+        .attr("id", `svg_${this.fundId}`)
         .attr("width", this.width)
         .attr("height", this.height)
         .attr("viewBox", [0, 0, this.width, this.height]);
@@ -759,11 +766,16 @@ export default {
         .call(xAxis);
     },
     updateMargin() {
+      this.eachMargin = [];
       d3.select(`#invest_style_box_${this.investStyleBoxes[0].boxId}`).style(
         "margin-left",
         this.xScale(new Date(this.investStyleBoxes[0].boxText)) -
           this.investStyleBoxWidth / 2 +
           "px"
+      );
+      this.eachMargin.push(
+        this.xScale(new Date(this.investStyleBoxes[0].boxText)) -
+          this.investStyleBoxWidth / 2
       );
       let lastPos = this.xScale(new Date(this.investStyleBoxes[0].boxText));
       for (let i = 1; i < this.investStyleBoxes.length; i++) {
@@ -774,8 +786,14 @@ export default {
             (lastPos + this.investStyleBoxWidth / 2) +
             "px"
         );
+        this.eachMargin.push(
+          this.xScale(new Date(this.investStyleBoxes[i].boxText)) -
+            this.investStyleBoxWidth / 2 -
+            (lastPos + this.investStyleBoxWidth / 2)
+        );
         lastPos = this.xScale(new Date(this.investStyleBoxes[i].boxText));
       }
+      this.$emit("updateMargin", this.eachMargin);
     },
     updateCurve() {
       let tmpSum = 0;
@@ -793,7 +811,7 @@ export default {
             .append("path")
             .attr("fill", "none")
             .attr("stroke", this.detailCarData[i][j].color)
-            .attr("stroke-width", 10)
+            .attr("stroke-width", 8)
             .attr(
               "d",
               `M ${this.xScale(
