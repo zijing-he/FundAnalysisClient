@@ -25,6 +25,7 @@
         :key="item"
         @handleScroll="handleScroll"
         @updateWidth="updateWidth"
+        @updateMargin="updateMargin"
         @turn="handleTurn"
         v-for="item in fundsID"
       >
@@ -295,6 +296,9 @@ export default {
     },
     updateWidth(value) {
       this.$emit("updateWidth", value);
+    },
+    updateMargin(value) {
+      this.$emit("updateMarginLeft", value);
     },
     handleTurn(value, callID) {
       if (value) {

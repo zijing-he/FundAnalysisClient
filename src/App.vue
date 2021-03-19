@@ -97,6 +97,7 @@
           ref="fundProfileLayout"
           @updateWidth="handleUpdateWidth"
           @updateScrollLeft="handleScrollLeft"
+          @updateMarginLeft="handleMarginLeft"
         />
       </a-row>
     </a-col>
@@ -159,8 +160,10 @@ export default {
       showFundsID: [], // 展示的FundProfile
       showFundsLikeScore: {},
       lineStartYPos: [], // 连线起始y坐标
+      // 3个给气泡图的变量
       totalWidth: 900,
       scrollLeft: 0,
+      marginLeft: [],
       historyFundsLikeScore: [],
       selectIndex: -1, // 选中的历史记录index
       isTotalChange: true, // 为真表示是改变了所有rank的数据，要重置historyFundsLikeScore；为假则表示查看历史记录或者重新选取rank，无需重置
@@ -253,6 +256,10 @@ export default {
     handleScrollLeft(value) {
       // console.log(value);
       this.scrollLeft = value;
+    },
+    handleMarginLeft(value) {
+      // console.log(value);
+      this.marginLeft = value;
     },
     handleFundProfileIDChange(showFundsID, lineStartYPos) {
       this.isTotalChange = false;
