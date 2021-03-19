@@ -18,18 +18,18 @@ import sectorDict from "@/data/sector_dict.json";
 import weightKey from "@/data/weight_key.json";
 
 const colorMap = {
-  alpha: "#ffff33",
-  beta: "#ffffcc",
-  sharp_ratio: "#984ea3",
-  information_ratio: "#decbe4",
-  stock: "#a65628",
-  bond: "#377eb8",
-  cash: "#f781bf",
-  other: "#999999",
-  one_quarter_return: "#ff7f00",
-  one_year_return: "#ff7f00",
-  three_year_return: "#ff7f00",
-  risk: "#fed9a6",
+  alpha: "#d8d8d8",
+  beta: "#d8d8d8",
+  sharp_ratio: "#d8d8d8",
+  information_ratio: "#d8d8d8",
+  stock: "#d8d8d8",
+  bond: "#d8d8d8",
+  cash: "#d8d8d8",
+  other: "#d8d8d8",
+  one_quarter_return: "#d8d8d8",
+  one_year_return: "#d8d8d8",
+  three_year_return: "#d8d8d8",
+  risk: "#d8d8d8",
 };
 
 // 柱状图的起始x和宽度，根据每条边有多少根柱子而定 (以边长为80确定，后根据实际边长调整)
@@ -57,6 +57,7 @@ export default {
   props: {
     boxId: String,
     boxText: String,
+    userSectors: Array,
     holdingData: Object,
     max_drop_downData: Object,
     one_quarter_returnData: Object,
@@ -100,6 +101,12 @@ export default {
       midPointX: 0,
       midPointY: 0,
     };
+  },
+
+  watch: {
+    userSectors(val) {
+      if (val) this.updateTreemapColors();
+    },
   },
 
   mounted: function() {
@@ -243,26 +250,8 @@ export default {
         .attr("viewBox", [0, 0, this.boxWidth, (60 * this.boxWidth) / 200]);
     },
     renderUpdate() {
-      // version 4
       // treemap
-      const root = this.treemap(
-        d3
-          .hierarchy(this.holdingData)
-          .sum((d) => d.value)
-          .sort((a, b) => b.value - a.value)
-      );
-      const leaf = this.centerSvg
-        .selectAll("g")
-        .data(root.leaves())
-        .join("g")
-        .attr("transform", (d) => `translate(${d.x0},${d.y0})`);
-      leaf
-        .append("rect")
-        .attr("fill", (d) => sectorDict[d.data.name].color)
-        .attr("fill-opacity", 0.6)
-        .attr("width", (d) => d.x1 - d.x0)
-        .attr("height", (d) => d.y1 - d.y0);
-      leaf.append("title").text((d) => `${d.data.name}\n${d.value.toFixed(2)}`);
+      this.updateTreemapColors();
 
       // bars
       let that = this;
@@ -747,6 +736,31 @@ export default {
           });
       });
       this.lastTopBars = this.curTopBars;
+    },
+    updateTreemapColors() {
+      // treemap
+      const root = this.treemap(
+        d3
+          .hierarchy(this.holdingData)
+          .sum((d) => d.value)
+          .sort((a, b) => b.value - a.value)
+      );
+      const leaf = this.centerSvg
+        .selectAll("g")
+        .data(root.leaves())
+        .join("g")
+        .attr("transform", (d) => `translate(${d.x0},${d.y0})`);
+      leaf
+        .append("rect")
+        .attr("fill", (d) =>
+          this.userSectors && this.userSectors.indexOf(d.data.name) !== -1
+            ? sectorDict[d.data.name].color
+            : "#d8d8d8"
+        )
+        .attr("fill-opacity", 0.6)
+        .attr("width", (d) => d.x1 - d.x0)
+        .attr("height", (d) => d.y1 - d.y0);
+      leaf.append("title").text((d) => `${d.data.name}\n${d.value.toFixed(2)}`);
     },
     turnClockwise() {
       this.curDegree += 90;

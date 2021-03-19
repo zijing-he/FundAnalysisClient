@@ -15,19 +15,24 @@
           <a-input v-model="queryParam.managerCode"></a-input>
         </a-form-item>
         <a-form-item>
-          <a-button class="submit-btn" type="primary" html-type="submit" @click="handleSubmit">
+          <a-button
+            class="submit-btn"
+            type="primary"
+            html-type="submit"
+            @click="handleSubmit"
+          >
             <text>Submit</text>
           </a-button>
         </a-form-item>
       </a-form>
     </div>
     <a-divider />
-    <a-spin v-if="!rankFundsID" size="large" tip="Loading..." />
+    <a-spin v-if="isRequestRanking" size="large" tip="Loading..." />
     <div
       class="ranking"
       ref="ranking"
       @scroll="handleScroll"
-      v-if="rankFundsID"
+      v-if="!isRequestRanking"
     >
       <a-row>
         <a-col :span="10">
@@ -40,6 +45,7 @@
           >
             <NightingaleRoseChart
               :fundId="item"
+              :fundData="rankFundsData[item]"
               :start_date="start_date"
               :end_date="end_date"
             />
@@ -92,6 +98,7 @@ export default {
     rankFundsData: Object,
     start_date: String,
     end_date: String,
+    isRequestRanking: Boolean,
   },
   data() {
     return {
@@ -99,13 +106,21 @@ export default {
         fundCode: "",
         managerCode: "",
       },
+      // form: this.$form.createForm(this),
       showFundProfileIDs: [],
       lineStartYPos: [], // 连线起始坐标
       isFundProfileIDChecked: new Map(),
       lastScrollTop: 0,
     };
   },
-  computed: {},
+  watch: {
+    isRequestRanking(val) {
+      if (val === true) {
+        this.showFundProfileIDs = this.lineStartYPos = [];
+        this.isFundProfileIDChecked = new Map();
+      }
+    },
+  },
   mounted: function() {},
   methods: {
     handleSubmit() {
@@ -120,7 +135,7 @@ export default {
         if (this.isFundProfileIDChecked.get(d)) {
           this.showFundProfileIDs.push(d);
           this.lineStartYPos.push(
-            i * 127 + 63.5 + 127 + 24 - 63 - this.$refs["ranking"].scrollTop
+            i * 127 + 63.5 + 127 - 15 + this.$refs["ranking"].scrollTop
           );
         }
       });
@@ -152,7 +167,7 @@ export default {
         this.rankFundsID.forEach((d, i) => {
           if (this.isFundProfileIDChecked.get(d)) {
             this.lineStartYPos.push(
-              i * 127 + 63.5 + 127 + 24 - 63 - this.$refs["ranking"].scrollTop
+              i * 127 + 63.5 + 127 - 15 - this.$refs["ranking"].scrollTop
             );
           }
         });

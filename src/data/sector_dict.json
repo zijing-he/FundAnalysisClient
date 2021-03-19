@@ -1,98 +1,98 @@
 {
     "\u533b\u836f\u751f\u7269": {
-        "color": "#FA2B2B",
+        "color": "#4F6AA5",
         "en_name": "medical biology"
     },
     "\u7535\u5b50": {
-        "color": "#F9552A",
-        "en_name": "electronic"
+        "color": "#7D1F00",
+        "en_name": "electronics"
     },
     "\u98df\u54c1\u996e\u6599": {
-        "color": "#FB7313",
-        "en_name": "food and drink"
+        "color": "#6182CB",
+        "en_name": "food and beverage"
     },
     "\u5316\u5de5": {
-        "color": "#F89E0B",
-        "en_name": "chemical_industry"
+        "color": "#D3A599",
+        "en_name": "chemical industry"
     },
     "\u8ba1\u7b97\u673a": {
-        "color": "#F4D127",
+        "color": "#01277D",
         "en_name": "computer"
     },
     "\u673a\u68b0\u8bbe\u5907": {
-        "color": "#F3FB18",
-        "en_name": "mechanical design"
+        "color": "#ECCBC1",
+        "en_name": "mechanical equipment"
     },
     "\u975e\u94f6\u91d1\u878d": {
-        "color": "#C5F824",
-        "en_name": "financial without bank"
+        "color": "#E68700",
+        "en_name": "non bank finance"
     },
     "\u4f20\u5a92": {
-        "color": "#9BFD22",
+        "color": "#ECC1D6",
         "en_name": "media"
     },
     "\u6c7d\u8f66": {
-        "color": "#5FFD0C",
+        "color": "#A25A4B",
         "en_name": "car"
     },
     "\u7535\u6c14\u8bbe\u5907": {
-        "color": "#2CF30C",
+        "color": "#B7786B",
         "en_name": "electronic equipment"
     },
     "\u623f\u5730\u4ea7": {
-        "color": "#1CFB2C",
+        "color": "#C8C05C",
         "en_name": "real estate"
     },
     "\u94f6\u884c": {
-        "color": "#20FE5D",
+        "color": "#FFA600",
         "en_name": "bank"
     },
     "\u5bb6\u7528\u7535\u5668": {
-        "color": "#11F880",
+        "color": "#9AA8CA",
         "en_name": "household appliances"
     },
     "\u516c\u7528\u4e8b\u4e1a": {
-        "color": "#33FABC",
+        "color": "#B997A7",
         "en_name": "public utilities"
     },
     "\u901a\u4fe1": {
-        "color": "#20F9E3",
+        "color": "#7D003C",
         "en_name": "communication"
     },
     "\u5efa\u7b51\u88c5\u9970": {
-        "color": "#2AE5FA",
-        "en_name": "building decoration"
+        "color": "#7D7401",
+        "en_name": "architectural decoration"
     },
     "\u6709\u8272\u91d1\u5c5e": {
-        "color": "#13AEF4",
+        "color": "#4BA266",
         "en_name": "non-ferrous metal"
     },
     "\u519c\u6797\u7267\u6e14": {
-        "color": "#1D89FC",
+        "color": "#007D27",
         "en_name": "agriculture,forestry,animal husbandry and fisheries"
     },
     "\u4ea4\u901a\u8fd0\u8f93": {
-        "color": "#2863FD",
+        "color": "#A3004E",
         "en_name": "transportation"
     },
     "\u8f7b\u5de5\u5236\u9020": {
-        "color": "#3442F9",
+        "color": "#C1CEEC",
         "en_name": "light industry manufacturing"
     },
     "\u5546\u4e1a\u8d38\u6613": {
-        "color": "#4C2FFD",
+        "color": "#6E3350",
         "en_name": "commercial trade"
     },
     "\u56fd\u9632\u519b\u5de5": {
-        "color": "#7029F7",
+        "color": "#61352C",
         "en_name": "national defense industry"
     },
     "\u5efa\u7b51\u6750\u6599": {
-        "color": "#9622F5",
+        "color": "#A29C4B",
         "en_name": "building materials"
     },
     "\u91c7\u6398": {
-        "color": "#CB36FA",
+        "color": "#5CC87E",
         "en_name": "mining"
     },
     "\u4f11\u95f2\u670d\u52a1": {
@@ -100,19 +100,19 @@
         "en_name": "leisure service"
     },
     "\u7eba\u7ec7\u670d\u88c5": {
-        "color": "#FC16D4",
+        "color": "#B3C3E4",
         "en_name": "textile and apparel"
     },
     "\u7efc\u5408": {
-        "color": "#F622A6",
+        "color": "#51007D",
         "en_name": "comprehensive"
     },
     "\u94a2\u94c1": {
-        "color": "#FC1E7A",
+        "color": "#A07D74",
         "en_name": "steel"
     },
     "\u672a\u77e5": {
-        "color": "#FC2E59",
+        "color": "#844BA2",
         "en_name": "unknown"
     }
 }

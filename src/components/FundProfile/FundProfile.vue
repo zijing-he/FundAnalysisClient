@@ -1,24 +1,5 @@
 <template>
   <div class="fund_profile" id="fund_profile">
-    <!-- <div class="buttons" id="buttons">
-      <svg class="icon" aria-hidden="true" @click="turnCounterClockwise()">
-        <use xlink:href="#iconnishizhenxuanzhuan"></use>
-      </svg>
-      <svg class="icon" aria-hidden="true" @click="turnClockwise()">
-        <use xlink:href="#iconshunshizhenxuanzhuan"></use>
-      </svg>
-      <svg class="icon" aria-hidden="true" @click="likeFund()">
-        <use xlink:href="#iconheart-line"></use>
-      </svg>
-      <svg class="icon" aria-hidden="true" @click="dislikeFund()">
-        <use xlink:href="#icondislike-line"></use>
-      </svg>
-    </div> -->
-    <!-- <a-spin
-      v-if="fundData === null"
-      size="large"
-      tip="Loading..."
-    /> -->
     <div class="summary" id="summary">
       <div class="title">
         <div class="buttons-like">
@@ -57,9 +38,10 @@
         </div>
         <div style="margin-top: 4px; margin-left: 30%;">{{ fundId }}</div>
       </div>
-      <div class="summary_box" v-if="fundData !== null">
+      <div class="summary_box" v-if="!isLoading">
         <InvestStyleBox
           :boxId="fundId + '_summary'"
+          :userSectors="userSectors"
           :holdingData="summaryHoldingData"
           :max_drop_downData="summaryMaxDropDownData"
           :riskData="summaryRiskData"
@@ -109,6 +91,7 @@
         :ref="item.boxId"
         :boxId="item.boxId"
         :boxText="item.boxText"
+        :userSectors="userSectors"
         :holdingData="item.holdingData"
         :max_drop_downData="item.max_drop_downData"
         :riskData="item.riskData"
@@ -157,11 +140,12 @@ export default {
   name: "FundProfile",
   props: {
     fundId: String,
-    // fundIds: Array, // 要计算空余部分面积，只能一起请求后端数据
+    fundIds: Array, // 要计算空余部分面积，只能一起请求后端数据
     startDate: String,
     endDate: String,
     boxHeight: Number,
     fundLikeScore: Number,
+    userSectors: Array,
   },
   components: {
     InvestStyleBox,
@@ -225,11 +209,11 @@ export default {
   // },
 
   mounted: function() {
-    this.isLoading = false;
+    this.isLoading = true;
     DataService.post(
       "get_view_funds",
       {
-        f_ids: [this.fundId],
+        f_ids: this.fundIds,
         start_date: this.startDate,
         end_date: this.endDate,
       },
@@ -240,16 +224,19 @@ export default {
         this.renderInit();
         this.renderUpdate();
         this.$nextTick(() => {
-          this.isLoading = true;
+          this.isLoading = false;
+          this.updateMargin();
+          this.updateCurve();
         });
       }
     );
   },
 
-  updated: function() {
-    this.updateMargin();
-    this.updateCurve();
-  },
+  // updated: function() {
+  //   console.log(this.investStyleBoxes);
+  //   this.updateMargin();
+  //   this.updateCurve();
+  // },
 
   computed: {
     xScale() {
@@ -589,8 +576,7 @@ export default {
         this.detailCarData.push(Object.values(tmpDetailCarData));
         let holdingData = this.fundData["detail"][this.fundId][i]["holding"];
         let holdingDataKeys = Object.keys(holdingData)
-          .sort((a, b) => holdingData[b] - holdingData[a])
-          .slice(0, 10);
+          .sort((a, b) => holdingData[b] - holdingData[a]);
         let thisHoldingData = [];
         holdingDataKeys.forEach((d) => {
           thisHoldingData.push({
@@ -661,7 +647,9 @@ export default {
       }
 
       // summary中的数据
-      let sumHoldingData = this.fundData["total"][this.fundId]["holding"];
+      let sumHoldingData = this.fundData["total"][this.fundId][
+        "holding_values"
+      ];
       let sumHoldingDataKeys = Object.keys(sumHoldingData)
         .sort((a, b) => sumHoldingData[b] - sumHoldingData[a])
         .slice(0, 10);

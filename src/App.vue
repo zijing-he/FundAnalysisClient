@@ -31,6 +31,7 @@
           :rankFundsData="rankFundsData"
           :start_date="startDate"
           :end_date="endDate"
+          :isRequestRanking="isRequestRanking"
           ref="fundRankingLayout"
           @showFundIDChange="handleFundProfileIDChange"
           @lineStartYPosChange="handleLineStartYPosChange"
@@ -88,11 +89,11 @@
         <FundProfileLayout
           :fundsID="showFundsID"
           :fundsLikeScore="showFundsLikeScore"
-          :unranksStart="unRanksStart"
           :start_date="startDate"
           :end_date="endDate"
           :lineStartYPos="lineStartYPos"
           :isTotalChange="isTotalChange"
+          :userSectors="userSectors"
           ref="fundProfileLayout"
           @updateWidth="handleUpdateWidth"
           @updateScrollLeft="handleScrollLeft"
@@ -152,6 +153,7 @@ export default {
         instl_weight: "0.0",
       },
       incomingWeight: null, //基金画像调整后传入的权重存放在这
+      isRequestRanking: true,
       rankFundsID: null, // 给FundRanking
       rankFundsData: null,
       showFundsID: [], // 展示的FundProfile
@@ -159,11 +161,13 @@ export default {
       lineStartYPos: [], // 连线起始y坐标
       totalWidth: 900,
       scrollLeft: 0,
-      unRanksStart: 0,
       historyFundsLikeScore: [],
       selectIndex: -1, // 选中的历史记录index
       isTotalChange: true, // 为真表示是改变了所有rank的数据，要重置historyFundsLikeScore；为假则表示查看历史记录或者重新选取rank，无需重置
       userSectors: null,
+      managerToFund: {},
+      allFundsID: [],
+      allFundsData: {},
     };
   },
   computed: {},
@@ -174,6 +178,7 @@ export default {
     //点击update获得id
     handleUpdateClick() {
       this.isRequestRanking = true;
+      this.showFundsID = [];
       DataService.post(
         "get_fund_ranks",
         {
@@ -185,20 +190,15 @@ export default {
         (data) => {
           console.log(data);
           this.isTotalChange = true;
-          // 已排序和未排序基金ID合成一个数组
-          let tempID = data.ranking.map((d) => d.id);
-
-          //散点图展示的基金id(先只展示已排序的)
-          this.fundsID = JSON.parse(JSON.stringify(tempID)).slice(0, 1); //深拷贝，给散点图的id
-          // data.un_ranks.forEach((d) => {
-          //   tempID.push(d.id);
-          // });
-          this.rankFundsID = tempID.slice(0, 20);
-          this.rankFundsData = data.ranks.slice(0, 20);
-          // this.rankFundsID = tempID;
-          // this.rankFundsData = data.ranks;
-          this.unRanksStart = data.ranks.length; //没有放入未排序的数组，这个参数可以先不管
-          this.getFundManagers();
+          this.allFundsID = Object.keys(data.ranking);
+          this.allFundsData = data.ranking;
+          this.rankFundsID = this.allFundsID.slice(0, 20); // 默认展示前20个
+          this.rankFundsData = {};
+          this.allFundsID.forEach(d => {
+            this.rankFundsData[d] = this.allFundsData[d];
+          })
+          this.managerToFund = data.manager2fund;
+          this.isRequestRanking = false;
         }
       );
     },
@@ -263,6 +263,9 @@ export default {
         this.showFundsLikeScore[d] = 0;
       });
       this.selectIndex = -1;
+      // 刷新散点图
+      this.fundsID = showFundsID;
+      this.getFundManagers();
     },
     handleLineStartYPosChange(val) {
       this.lineStartYPos = val;
@@ -291,6 +294,9 @@ export default {
         },
         (data) => {
           console.log(data);
+          for (let key in data) {
+            data[key] = data[key].toFixed(4);
+          }
           this.incomingWeight = data;
         }
       );

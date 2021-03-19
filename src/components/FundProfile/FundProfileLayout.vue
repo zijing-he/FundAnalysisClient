@@ -16,10 +16,12 @@
       <FundProfile
         :ref="item"
         :fundId="item"
+        :fundIds="fundsID"
         :startDate="start_date"
         :endDate="end_date"
         :boxHeight="eachHeight"
         :fundLikeScore="fundsLikeScore_n[item]"
+        :userSectors="userSectors"
         :key="item"
         @handleScroll="handleScroll"
         @updateWidth="updateWidth"
@@ -42,9 +44,9 @@ export default {
     fundsLikeScore: Object,
     start_date: String,
     end_date: String,
-    unranksStart: Number, //未排序数组的起点
     lineStartYPos: Array,
     isTotalChange: Boolean,
+    userSectors: Array,
   },
   watch: {
     // start_date: function(newVal, oldVal) {
@@ -60,6 +62,10 @@ export default {
     // },
     fundsID: function(newVal, oldVal) {
       console.log(`new fundsID: ${newVal}`);
+      if (newVal.length === 0) {
+        if (this.svg) this.svg.select("#connectLines").remove();
+        this.lineStartYPos_n = this.lineEndYPos = [];
+      }
       // this.totalPage = newVal.length / this.size;
       // this.updateViewFunds();
       // this.updateViewFundsID("down");
@@ -102,7 +108,7 @@ export default {
           }
           this.svg.attr(
             "height",
-            Math.max(document.getElementById("fund_profiles").scrollHeight, 945)
+            Math.max(document.getElementById("fund_profiles").scrollHeight, 971)
           );
           this.drawConnectLines();
         }
@@ -357,7 +363,7 @@ export default {
   position: relative;
   margin-top: 50px;
   width: 100%;
-  height: 945px;
+  height: 971px;
   /* border: 1px solid black; */
   overflow-y: auto;
   overflow-x: hidden;
