@@ -196,19 +196,19 @@ export default {
       this.userWeight = weight;
     },
 
-    getTimeBoundary() {
-      DataService.post(
-        "get_fund_time_border",
-        { f_ids: this.fundsID },
-        (data) => {
-          this.startDate = data["start_date"].toString();
-          this.endDate = data["end_date"].toString();
-          this.rankFundsID = this.fundsID;
-          //先后
-          this.getFundManagers();
-        }
-      );
-    },
+    // getTimeBoundary() {
+    //   DataService.post(
+    //     "get_fund_time_border",
+    //     { f_ids: this.fundsID },
+    //     (data) => {
+    //       this.startDate = data["start_date"].toString();
+    //       this.endDate = data["end_date"].toString();
+    //       this.rankFundsID = this.fundsID;
+    //       //先后
+    //       this.getFundManagers();
+    //     }
+    //   );
+    // },
     getFundManagers() {
       // console.log("得到基金散点图和基金经理信息");
       //得到基金散点图和基金经理信息
@@ -227,13 +227,14 @@ export default {
         }
       );
     },
+    //第二部，选取时间段
     handleUpdateTimeBoundary(start, end) {
       // console.log("起始点：", start, end);
       this.startDate = start; //start发生变化，FundProfileLayout里的start也会改变，导致getviewFunds改变
       this.endDate = end;
-      if (this.fundsID && this.userWeight) {
-        this.getFundManagers();
-      }
+      // if (this.fundsID && this.userWeight) {
+      //   this.getFundManagers();
+      // }
     },
     handleUpdateWidth(width) {
       // console.log(width);
@@ -269,7 +270,16 @@ export default {
       this.historyFundsLikeScore = this.$refs[
         "fundProfileLayout"
       ].historyFundsLikeScore;
-      console.log(this.historyFundsLikeScore);
+      // console.log(this.historyFundsLikeScore);
+      DataService.post("update_weights", {
+        weights: this.userWeight,
+        pairs: this.historyFundsLikeScore,
+        start_date: this.startDate,
+        end_date: this.endDate,
+      }, (data) => {
+        console.log(data);
+        this.incomingWeight = data;
+      });
     },
   },
 };

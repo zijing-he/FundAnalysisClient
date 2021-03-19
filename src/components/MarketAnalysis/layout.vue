@@ -9,7 +9,7 @@
       </svg>
       <text>Industry Selection</text>
     </a-row>
-    <MarketAnalysisStramGraph />
+    <MarketAnalysisStramGraph :start="oriStart" :end="oriEnd" />
   </a-row>
 </template>
 <script>
@@ -18,7 +18,10 @@ import MarketAnalysisStramGraph from "@/components/MarketAnalysis/streamgraph";
 export default {
   name: "MarketAnalysisLayout",
   data() {
-    return {};
+    return {
+      oriStart:null,
+      oriEnd:null,
+    };
   },
   components: {
     MarketAnalysisCurveChart,
@@ -26,7 +29,9 @@ export default {
   },
   emits:["updateTimeBoundary"],
   methods: {
-    handleUpdateBrush(start, end) {
+    handleUpdateBrush(start, end,oriStart, oriEnd) {
+      this.oriStart = oriStart;
+      this.oriEnd = oriEnd;
       this.$emit("updateTimeBoundary", start, end);
     },
   },

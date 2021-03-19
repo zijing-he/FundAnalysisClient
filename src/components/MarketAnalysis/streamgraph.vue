@@ -50,12 +50,15 @@ import sectorJSON from "@/data/StreamGraph/market_sector_date.json";
 import sectorDict from "@/data/sector_dict.json";
 export default {
   name: "MarketAnalysisStramGraph",
-  props: {},
+  props: {
+    start: Number,
+    end: Number,
+  },
   components: {},
   data() {
     return {
       svg: null,
-      margin: { top: 60, right: 20, bottom: 30, left: 55 },
+      margin: { top: 60, right: 30, bottom: 30, left: 55 },
       width: 519,
       height: 290,
       date: Object.keys(dataJSON),
@@ -96,7 +99,11 @@ export default {
       },
     };
   },
-
+  watch: {
+    start: function (val) {
+      this.updateBrush();
+    },
+  },
   mounted: function () {
     this.renderInit();
     this.renderUpdate();
@@ -162,8 +169,43 @@ export default {
     // },
   },
   methods: {
+    updateBrush() {
+      //Time Brush
+      let brush = d3
+        .brushX()
+        .extent([
+          [0, -this.margin.top + 35],
+          [this.innerWidth, this.innerHeight],
+        ])
+        .on("end", this.updateDate);
+      this.svg.select(".brush").remove();
+      this.svg
+        .append("g")
+        .attr("class", "brush")
+        .call(brush)
+        .call(brush.move, [this.start, this.end]);
+    },
     handleChange(value) {
       this.renderUpdate();
+      this.updateBrush();
+    },
+
+    //刷子改变就会调动这个值
+    updateDate({ selection }) {
+      if (selection) {
+        let start = this.xScale
+          .invert(selection[0])
+          .toISOString()
+          .slice(0, 10)
+          .replace(/-/g, "");
+        let end = this.xScale
+          .invert(selection[1])
+          .toISOString()
+          .slice(0, 10)
+          .replace(/-/g, "");
+        console.log("河流图刷取的值：", selection);
+        // this.$emit("updateBrush", start, end);
+      }
     },
     renderInit() {
       this.sectors = Object.keys(sectorDict);

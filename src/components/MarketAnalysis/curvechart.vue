@@ -35,8 +35,6 @@ export default {
   },
 
   mounted: function () {
-    console.log(market_nav_date);
-    console.log(market_number_date);
     this.renderInit();
     this.renderUpdate();
   },
@@ -83,18 +81,11 @@ export default {
   methods: {
     updateDate({ selection }) {
       if (selection) {
-        let start = this.xScale
-          .invert(selection[0])
-          .toISOString()
-          .slice(0, 10)
-          .replace(/-/g, "");
-        let end = this.xScale
-          .invert(selection[1])
-          .toISOString()
-          .slice(0, 10)
-          .replace(/-/g, "");
-
-        this.$emit("updateBrush", start, end);
+        let start = this.xScale.invert(selection[0]).toISOString().slice(0, 10).replace(/-/g, "");
+        let end = this.xScale.invert(selection[1]).toISOString().slice(0, 10).replace(/-/g, "");
+        // console.log("刷取的值：", selection);
+        // console.log("值还原后对比：", start, end);
+        this.$emit("updateBrush", start, end, selection[0], selection[1]);
       }
 
       // this.svg.select(".brush").call(this.brush.move, null);  //情况brush后会报错，但是不影响
@@ -227,7 +218,7 @@ export default {
         .attr("stroke-width", 2)
         .attr("stroke", "#FE6AAC");
 
-      curveChart.append("g").attr("class", "brush").call(brush);
+      this.svg.append("g").attr("class", "brush").call(brush);
 
       //legend
       this.svg
