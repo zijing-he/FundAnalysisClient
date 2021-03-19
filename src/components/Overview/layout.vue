@@ -19,7 +19,7 @@
         v-if="isRequesting"
         size="large"
         tip="Loading..."
-        style="margin:60px 0 60px 770px"
+        style="margin:73px 0 73px 770px"
       />
       <div class="fund_manager_container" v-if="!isRequesting">
         <managerBubbleChart

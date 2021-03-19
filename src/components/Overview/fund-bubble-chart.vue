@@ -224,9 +224,6 @@ export default {
 </script>
 
 <style scoped>
-h5 {
-  margin-bottom: 0;
-}
 .fund_bubble_chart_inner_container {
   position: relative;
   height: 190px;
