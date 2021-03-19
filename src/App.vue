@@ -51,6 +51,7 @@
           :fundsData="fundsData"
           :totalWidth="totalWidth"
           :scrollLeft="scrollLeft"
+          :marginLeft="marginLeft"
         />
       </a-row>
       <a-row class="funds_title">
@@ -191,7 +192,7 @@ export default {
           sectors: this.userSectors,
         },
         (data) => {
-          console.log(data);
+          // console.log(data);
           this.isTotalChange = true;
           this.allFundsID = Object.keys(data.ranking);
           this.allFundsData = data.ranking;
@@ -236,7 +237,6 @@ export default {
           end_date: this.endDate,
         },
         (data) => {
-          console.log("得到的散点图信息：", data);
           this.fundsData = data;
         }
       );
@@ -256,11 +256,12 @@ export default {
     },
     handleScrollLeft(value) {
       // console.log(value);
-      console.log("得到的left:",value);
+      console.log("得到的ScrollLeft:",value);
       this.scrollLeft = value;
     },
     handleMarginLeft(value) {
       // console.log(value);
+      console.log("得到的margin-left:",value);
       this.marginLeft = value;
     },
     handleFundProfileIDChange(showFundsID, lineStartYPos) {
@@ -302,7 +303,7 @@ export default {
           end_date: this.endDate,
         },
         (data) => {
-          console.log(data);
+          // console.log(data);
           for (let key in data) {
             data[key] = data[key].toFixed(4);
           }

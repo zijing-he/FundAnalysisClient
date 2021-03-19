@@ -62,7 +62,7 @@ export default {
     //     this.fundsLikeScore_n[newVal[i]] = 0;
     // },
     fundsID: function(newVal, oldVal) {
-      console.log(`new fundsID: ${newVal}`);
+      // console.log(`new fundsID: ${newVal}`);
       if (newVal.length === 0) {
         if (this.svg) this.svg.select("#connectLines").remove();
         this.lineStartYPos_n = this.lineEndYPos = [];

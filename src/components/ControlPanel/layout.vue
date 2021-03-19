@@ -95,7 +95,7 @@ export default {
           alpha: "0.0",
           beta: "0.0",
           size: "1.0",
-          instl_weight: "0.0",
+          // instl_weight: "0.0",
         },
       data: [
         { axis: "one_quarter_return", value: 3 },
@@ -108,7 +108,7 @@ export default {
         { axis: "alpha", value: 2 },
         { axis: "beta", value: 2 },
         { axis: "size", value: 3 },
-        { axis: "instl_weight", value: 2 },
+        // { axis: "instl_weight", value: 2 },
       ],
     };
   },
@@ -142,7 +142,7 @@ export default {
           alpha: "0.0",
           beta: "0.0",
           size: "1.0",
-          instl_weight: "0.0",
+          // instl_weight: "0.0",
         };
       } else if (d.target.value == 2) {
         this.weight = {
@@ -156,7 +156,7 @@ export default {
           alpha: "0.3",
           beta: "0.2",
           size: "1.0",
-          instl_weight: "0.2",
+          // instl_weight: "0.2",
         };
       } else if (d.target.value == 3) {
         this.weight = {
@@ -170,7 +170,7 @@ export default {
           alpha: "1",
           beta: "1",
           size: "0",
-          instl_weight: "0.0",
+          // instl_weight: "0.0",
         };
       }
       this.handleWeightToData();

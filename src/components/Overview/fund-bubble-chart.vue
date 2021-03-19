@@ -1,5 +1,5 @@
 <template>
-  <div class="fund_bubble_chart_inner_container">
+  <div class="fund_bubble_chart_inner_container" :style="autoLeft">
     <div class="text">{{ date }}</div>
     <div id="fund_bubble_chart_item" class="fund_bubble_chart_item"></div>
   </div>
@@ -15,6 +15,7 @@ export default {
     quarterFundData: Object,
     fundManagers: Object,
     managerGruop: Object,
+    marginLeft: Number,
   },
   components: {},
   watch: {
@@ -28,8 +29,8 @@ export default {
   data() {
     return {
       svg: null,
-      width: 200,
-      height: 172,
+      width: 157.766,
+      height: 157.766,
       margin: { top: 20, right: 20, bottom: 20, left: 20 },
       data: null,
       data_values: [],
@@ -39,15 +40,21 @@ export default {
     };
   },
   mounted: function () {
-    console.log(this.date);
-    console.log(this.quarterFundData);
-    console.log(this.fundManagers);
+    // console.log(this.date);
+    // console.log(this.quarterFundData);
+    // console.log(this.fundManagers);
     // console.log(this.managerGruop);
+    // console.log("这个的left:", this.marginLeft);
     this.graphInit();
     this.renderInit();
     this.renderUpdate();
   },
   computed: {
+    autoLeft() {
+      const style = {};
+      style["margin-left"] = this.marginLeft + "px";  //动态左边距
+      return style;
+    },
     innerWidth() {
       return this.width - this.margin.left - this.margin.right;
     },
@@ -170,7 +177,7 @@ export default {
         .append("line")
         .attr("class", (d) => `funds_manager_${d[2].managerId}`)
         .style("stroke", (d) => {
-          console.log(d, d[2].managerId, this.fundManagers[d[2].managerId]);
+          // console.log(d, d[2].managerId, this.fundManagers[d[2].managerId]);
           if (this.fundManagers[d[2].managerId]) {
             return this.fundManagers[d[2].managerId].color;
           } else return "#aaa";
@@ -226,12 +233,13 @@ export default {
 <style scoped>
 .fund_bubble_chart_inner_container {
   position: relative;
-  height: 190px;
-  width: 200px;
+  height: 176px;
+  width: 157.766px;
   flex-shrink: 0;
-  margin-right: 105px;
+  /* border: 1px dashed #979797; */
+}
+.fund_bubble_chart_inner_container .fund_bubble_chart_item {
   border: 1px dashed #979797;
-  
 }
 .text {
   text-align: center;
@@ -239,5 +247,6 @@ export default {
   font-size: 10px;
   color: #185bbd;
   letter-spacing: 0;
+  margin-bottom: 5px;
 }
 </style>

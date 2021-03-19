@@ -120,9 +120,9 @@ export default {
         tooltip.style("visibility", "hidden");
       };
 
-      let clickTooltip = (event, d) => {
-        this.$emit("showManager", d);
-      };
+      // let clickTooltip = (event, d) => {
+      //   this.$emit("showManager", d);
+      // };
 
       this.svg.selectAll("circle").remove();
       this.svg
@@ -142,7 +142,7 @@ export default {
         .on("mouseover", showTooltip)
         .on("mousemove", moveTooltip)
         .on("mouseleave", hideTooltip)
-        .on("click", clickTooltip);
+        // .on("click", clickTooltip);
     },
   },
 };
@@ -154,7 +154,6 @@ export default {
   height: 190px;
   width:247px;
   margin-bottom: 10px;
-  margin-right: 40px;
  text-align:center;
 }
 #manager_bubble_chart {

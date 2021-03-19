@@ -19,21 +19,23 @@
         v-if="isRequesting"
         size="large"
         tip="Loading..."
-        style="margin:73px 0 73px 770px"
+        style="margin: 73px 0 73px 770px"
       />
       <div class="fund_manager_container" v-if="!isRequesting">
-        <managerBubbleChart
-          :fundManagers="managers"
-          v-on:showManager="handleShowManager"
-        />
-        <div class="fund_bubble_chart_outer_container" v-if="!isRequesting">
+        <managerBubbleChart :fundManagers="managers" />
+        <div
+          class="fund_bubble_chart_outer_container"
+          :style="autoWidth"
+          v-if="!isRequesting"
+        >
           <fundBubbleChart
             :quarterFundData="val"
             :fundManagers="managers"
             :managerGruop="managerFunds[key]"
             :date="key"
             :key="key"
-            v-for="(val, key) in funds"
+            :marginLeft="marginLeftArray[index]"
+            v-for="(val, key,index) in funds"
           >
           </fundBubbleChart>
         </div>
@@ -52,6 +54,7 @@ export default {
     fundsData: Object,
     totalWidth: Number,
     scrollLeft: Number,
+    marginLeft: Array,
   },
   data() {
     return {
@@ -61,6 +64,7 @@ export default {
       mangerId: undefined,
       managerFunds: undefined,
       isRequesting: true,
+      marginLeftArray:null,
     };
   },
   components: {
@@ -69,12 +73,21 @@ export default {
   },
   watch: {
     fundsData: function () {
-      // console.log(this.fundsData);
+      // console.log("totalWidth:", this.totalWidth);
       this.isRequesting = true;
       this.managers = this.fundsData.managers;
       this.funds = this.fundsData.funds;
       this.managerFunds = this.fundsData.manager_funds;
+      this.marginLeftArray = this.marginLeft;
       this.isRequesting = false;
+      console.log("funds是：",this.funds)
+    },
+  },
+  computed: {
+    autoWidth() {
+      const style = {};
+      style.width = 1300 + "px";  //每个都是svg的，需要container宽度比较小，才可以出现滚动轴
+      return style;
     },
   },
   methods: {
@@ -105,10 +118,11 @@ export default {
 }
 .fund_bubble_chart_outer_container {
   /* position: absolute; */
-  display: flex;
-  width: 1150px;
+
+  width: 1300px;
   /* margin-left:100px; */
   /* border: 1px solid #ccc; */
+  display: flex;
   overflow-x: auto;
   overflow-y: hidden;
   margin-bottom: 10px;

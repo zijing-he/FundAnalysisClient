@@ -41,7 +41,7 @@ export default {
     },
   },
   mounted: function () {
-    console.log(this.data);
+    // console.log(this.data);
     this.svg = d3
       .select("#market_raderchart")
       .append("svg")
