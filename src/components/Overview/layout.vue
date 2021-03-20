@@ -36,7 +36,8 @@
           <fundBubbleChart
             :quarterFundData="val"
             :fundManagers="managers"
-            :showMangerId="mangerId"
+            :showManagerId="mangerId"
+            :showManagerIdLength="mangerIdLength"
             :managerGruop="managerFunds[key]"
             :date="key"
             :key="key"
@@ -67,10 +68,11 @@ export default {
       componentName: fundBubbleChart,
       managers: null,
       funds: null,
-      mangerId: undefined,
+      mangerId: null,
       managerFunds: undefined,
       isRequesting: true,
       marginLeftArray: null,
+      mangerIdLength:0,
     };
   },
   components: {
@@ -99,8 +101,10 @@ export default {
     },
   },
   methods: {
-    handleShowManager(mangerId) {
+    handleShowManager(mangerId,arrLength) {
+      // console.log("有变化：",mangerId,arrLength);
       this.mangerId = mangerId;
+      this.mangerIdLength = arrLength;
     },
     handleScroll() {
       // console.log("滑动轴数值：", this.$refs.fund_bubble_container.scrollLeft);

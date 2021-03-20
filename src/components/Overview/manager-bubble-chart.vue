@@ -28,6 +28,7 @@ export default {
       data: this.fundManagers,
       name: [],
       managerId: [],
+      showManagerArray: [],
     };
   },
   watch: {
@@ -122,21 +123,34 @@ export default {
         tooltip.style("visibility", "hidden");
       };
       let managerData = this.data;
-      let showManagerFn = (d) => {
+      let showManagerFn = (d, isDelete) => {
         //function拿不到外面的this，就自己包装一下
-        this.$emit("showManager", d);
+        // console.log(d, isDelete);
+        if (!isDelete) {
+          //是否删除
+          this.showManagerArray.push(d);
+        } else {
+          if (this.showManagerArray.indexOf(d) !== -1) {
+            //删除d
+            this.showManagerArray.splice(this.showManagerArray.indexOf(), 1);
+          }
+        }
+        // console.log(this.showManagerArray);
+        // this.$emit("showManager", d);
+        this.$emit("showManager", this.showManagerArray,this.showManagerArray.length);
       };
 
       let clickTooltip = function (event, d) {
+        // console.log("看managerData[d]['isShow']", managerData[d]["isShow"]);
         if (!managerData[d]["isShow"]) {
-          managerData[d]["isShow"] = true;
+          managerData[d]["isShow"] = true; //点亮
           d3.select(this).style("fill", (d) => managerData[d].color);
-          showManagerFn(d);
+          showManagerFn(d, false);
         } else {
           //再点击关闭
           managerData[d]["isShow"] = false;
           d3.select(this).style("fill", "#D8D8D8");
-          showManagerFn(undefined);
+          showManagerFn(d, true);
         }
       };
 

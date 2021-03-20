@@ -21,7 +21,8 @@ export default {
     managerGruop: Object,
     marginLeft: Number,
     scrollLeft: Number,
-    showMangerId: String,
+    showManagerId: Array,
+    showManagerIdLength: Number,
   },
   components: {},
   watch: {
@@ -31,8 +32,10 @@ export default {
     mangerId: function () {
       // this.renderUpdate();
     },
-    showMangerId: function () {
+    showManagerIdLength: function (value) {   //watch无法监测数组length的长度
+      // console.log("最终的变化,", this.showManagerId, value);
       this.renderUpdate();
+      // this.svg.selectAll("g").remove();
     },
   },
   data() {
@@ -49,7 +52,6 @@ export default {
     };
   },
   mounted: function () {
-    console.log(this.quarterFundData);
     this.graphInit();
     this.renderInit();
     this.renderUpdate();
@@ -91,8 +93,8 @@ export default {
           managerId: this.quarterFundData[id].manager_ids,
           x: this.quarterFundData[id].loc[0],
           y: this.quarterFundData[id].loc[1],
-          new:this.quarterFundData[id]["new"],
-          delete:this.quarterFundData[id]["delete"]
+          new: this.quarterFundData[id]["new"],
+          delete: this.quarterFundData[id]["delete"],
         });
       }
 
@@ -138,26 +140,38 @@ export default {
       this.data_values = Object.values(this.quarterFundData);
       this.svg.selectAll("g").remove();
 
-      let node = this.svg
+      this.svg
         .append("g")
         .selectAll("circle")
         .data(this.G.nodes(true)) // this.G.nodes(true)
         .enter()
         .append("circle")
-        .attr("class", (d) => `funds_manager_${d[1].managerId[0]}`) //展示时注意：可能一个基金有多个基金经理
+        // .attr("class", (d) => `funds_manager_${d[1].managerId[0]}`) //展示时注意：可能一个基金有多个基金经理
         .attr("r", 6)
         .style("fill", (d) => {
           // console.log("看看点：", d[1].new,d[1].delete);
           //点只展示目前点击的基金经理的颜色
           for (let id of d[1].managerId) {
             // console.log(id === this.showMangerId);
-            if (id === this.showMangerId) {
-              return this.fundManagers[this.showMangerId].color;
+            // if (id === this.showMangerId) {
+            if (this.showManagerIdLength && this.showManagerId.indexOf(id) !== -1) {
+              // return this.fundManagers[this.showMangerId].color;
+              return this.fundManagers[
+                this.showManagerId[this.showManagerId.indexOf(id)]
+              ].color;
             }
           }
 
           return "#D8D8D8";
         })
+        .style("stroke", (d) =>
+          d[1].new == true || d[1].delete == true ? "black" : "none"
+        )
+        // d.new == true : "特殊操作" ? "默认"
+        .style("stroke-dasharray", (d) =>
+          d[1].new == true || d[1].delete == true ? "2" : "0"
+        )
+
         .attr("cx", (d) => this.xScale(d[1].x))
         .attr("cy", (d) => this.yScale(d[1].y));
 
@@ -176,15 +190,25 @@ export default {
           //   this.fundManagers[d[2].managerId]
           // );
 
-          if (d[2].managerId === this.showMangerId) {
-            return this.fundManagers[this.showMangerId].color;
+          // if (d[2].managerId === this.showMangerId) {
+          if (
+            this.showManagerIdLength &&
+            this.showManagerId.indexOf(d[2].managerId) !== -1
+          ) {
+            return this.fundManagers[
+              this.showManagerId[this.showManagerId.indexOf(d[2].managerId)]
+            ].color;
           } else {
             return "#D8D8D8";
           }
         })
         .style("stroke-width", "2")
         .style("visibility", (d) => {
-          if (d[2].managerId === this.showMangerId) {
+          // if (d[2].managerId === this.showMangerId) {
+          if (
+            this.showManagerIdLength &&
+            this.showManagerId.indexOf(d[2].managerId) !== -1
+          ) {
             return "visible";
           } else {
             return "hidden";
@@ -226,11 +250,11 @@ export default {
       //       return "#B6B6B6";
       //     }
       //   })
-        // .style("stroke", (d) =>
-        //   d.new == true || d.delete == true ? "black" : "none"
-        // )
-        // // d.new == true : "特殊操作" ? "默认"
-        // .style("stroke-dasharray", (d) => (d.new == true ? "2" : "0"))
+      // .style("stroke", (d) =>
+      //   d.new == true || d.delete == true ? "black" : "none"
+      // )
+      // // d.new == true : "特殊操作" ? "默认"
+      // .style("stroke-dasharray", (d) => (d.new == true ? "2" : "0"))
       //   .style("fill-opacity", (d) => (d.delete == true ? "0.5" : "1"));
     },
   },
