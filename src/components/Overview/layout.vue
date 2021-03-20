@@ -79,15 +79,12 @@ export default {
   },
   watch: {
     fundsData: function () {
-      // console.log("totalWidth:", this.totalWidth);
-      console.log("scrollLeft:", this.scrollLeft);
       this.isRequesting = true;
       this.managers = this.fundsData.managers;
       this.funds = this.fundsData.funds;
       this.managerFunds = this.fundsData.manager_funds;
       this.marginLeftArray = this.marginLeft;
       this.isRequesting = false;
-      console.log("funds是：", this.funds);
     },
     scrollLeft: function (value) {
       this.$refs.fund_bubble_container.scrollLeft = value;

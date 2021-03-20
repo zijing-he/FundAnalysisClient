@@ -49,6 +49,7 @@ export default {
     };
   },
   mounted: function () {
+    console.log(this.quarterFundData);
     this.graphInit();
     this.renderInit();
     this.renderUpdate();
@@ -90,6 +91,8 @@ export default {
           managerId: this.quarterFundData[id].manager_ids,
           x: this.quarterFundData[id].loc[0],
           y: this.quarterFundData[id].loc[1],
+          new:this.quarterFundData[id]["new"],
+          delete:this.quarterFundData[id]["delete"]
         });
       }
 
@@ -133,11 +136,6 @@ export default {
     },
     renderUpdate() {
       this.data_values = Object.values(this.quarterFundData);
-      // this.fund_id = Object.keys(this.quarterFundData);
-      // this.data_values.forEach((d) => {
-      //   this.managers.push(d.manager_id[0]);
-      // });
-      // this.managersKey = Object.keys(this.fundManagers);
       this.svg.selectAll("g").remove();
 
       let node = this.svg
@@ -149,7 +147,7 @@ export default {
         .attr("class", (d) => `funds_manager_${d[1].managerId[0]}`) //展示时注意：可能一个基金有多个基金经理
         .attr("r", 6)
         .style("fill", (d) => {
-          // console.log("看看点的基金经理：", d[1].managerId);
+          // console.log("看看点：", d[1].new,d[1].delete);
           //点只展示目前点击的基金经理的颜色
           for (let id of d[1].managerId) {
             // console.log(id === this.showMangerId);
@@ -228,11 +226,11 @@ export default {
       //       return "#B6B6B6";
       //     }
       //   })
-      //   .style("stroke", (d) =>
-      //     d.new == true || d.delete == true ? "black" : "none"
-      //   )
-      //   // d.new == true : "特殊操作" ? "默认"
-      //   .style("stroke-dasharray", (d) => (d.new == true ? "2" : "0"))
+        // .style("stroke", (d) =>
+        //   d.new == true || d.delete == true ? "black" : "none"
+        // )
+        // // d.new == true : "特殊操作" ? "默认"
+        // .style("stroke-dasharray", (d) => (d.new == true ? "2" : "0"))
       //   .style("fill-opacity", (d) => (d.delete == true ? "0.5" : "1"));
     },
   },

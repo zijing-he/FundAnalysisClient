@@ -46,7 +46,7 @@
 import * as d3 from "d3";
 import dataJSON from "@/data/StreamGraph/market_date_sector.json";
 import sectorJSON from "@/data/StreamGraph/market_sector_date.json";
-import sectorDict from "@/data/new_sector_dict.json";
+import sectorDict from "@/data/sector_dict.json";
 export default {
   name: "MarketAnalysisStramGraph",
   props: {
