@@ -132,7 +132,7 @@ export default {
         } else {
           if (this.showManagerArray.indexOf(d) !== -1) {
             //删除d
-            this.showManagerArray.splice(this.showManagerArray.indexOf(), 1);
+            this.showManagerArray.splice(this.showManagerArray.indexOf(d), 1);
           }
         }
         // console.log(this.showManagerArray);

@@ -81,6 +81,9 @@ export default {
   },
   watch: {
     fundsData: function () {
+      // console.log("传输到layout",this.fundsData);
+      this.mangerId = [];  //每次要清空
+      this.mangerIdLength = 0;
       this.isRequesting = true;
       this.managers = this.fundsData.managers;
       this.funds = this.fundsData.funds;

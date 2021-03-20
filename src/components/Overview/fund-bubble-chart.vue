@@ -4,7 +4,8 @@
     class="fund_bubble_chart_inner_container"
     :style="autoLeft"
   >
-    <div class="text">{{ date }}</div>
+  <!-- `${i.substring(0, 4)}-${i.substring(4, 6)}-${i.substring(6)}` -->
+    <div class="text">{{thisDate}}</div>
     <div id="fund_bubble_chart_item" class="fund_bubble_chart_item"></div>
   </div>
 </template>
@@ -27,12 +28,14 @@ export default {
   components: {},
   watch: {
     quarterFundData: function (fundData) {
-      // this.renderUpdate();
+      this.graphInit();
+      this.renderUpdate();
     },
     mangerId: function () {
       // this.renderUpdate();
     },
-    showManagerIdLength: function (value) {   //watch无法监测数组length的长度
+    showManagerIdLength: function (value) {
+      //watch无法监测数组length的长度
       // console.log("最终的变化,", this.showManagerId, value);
       this.renderUpdate();
       // this.svg.selectAll("g").remove();
@@ -47,11 +50,14 @@ export default {
       data: null,
       data_values: [],
       fund_id: [],
+      thisDate:`${this.date.substring(0, 4)}-${this.date.substring(4, 6)}-${this.date.substring(6)}`,
       managersKey: [],
       G: null,
     };
   },
   mounted: function () {
+    // console.log(this.date);
+    // console.log(this.quarterFundData);
     this.graphInit();
     this.renderInit();
     this.renderUpdate();
@@ -139,7 +145,11 @@ export default {
     renderUpdate() {
       this.data_values = Object.values(this.quarterFundData);
       this.svg.selectAll("g").remove();
-
+      // console.log(
+      //   "检查基金经理：",
+      //   this.showManagerId,
+      //   this.showManagerIdLength
+      // );
       this.svg
         .append("g")
         .selectAll("circle")
@@ -149,12 +159,13 @@ export default {
         // .attr("class", (d) => `funds_manager_${d[1].managerId[0]}`) //展示时注意：可能一个基金有多个基金经理
         .attr("r", 6)
         .style("fill", (d) => {
-          // console.log("看看点：", d[1].new,d[1].delete);
           //点只展示目前点击的基金经理的颜色
           for (let id of d[1].managerId) {
-            // console.log(id === this.showMangerId);
-            // if (id === this.showMangerId) {
-            if (this.showManagerIdLength && this.showManagerId.indexOf(id) !== -1) {
+            // if (id === this.showManagerId) {
+            if (
+              this.showManagerIdLength &&
+              this.showManagerId.indexOf(id) !== -1
+            ) {
               // return this.fundManagers[this.showMangerId].color;
               return this.fundManagers[
                 this.showManagerId[this.showManagerId.indexOf(id)]
