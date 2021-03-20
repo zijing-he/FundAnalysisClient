@@ -715,7 +715,7 @@ export default {
           : undefined;
     },
     renderInit() {
-      // this.margin.left = this.margin.right = this.investStyleBoxWidth / 2;
+      this.margin.left = this.margin.right = this.investStyleBoxWidth / 2;
       this.width = Math.max(
         (this.investStyleBoxWidth + this.boxGap) *
           this.investStyleBoxes.length +

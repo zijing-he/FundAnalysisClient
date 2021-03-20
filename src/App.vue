@@ -179,7 +179,7 @@ export default {
       userSectors: null,
       managerToFund: {},
       allFundsID: [],
-      allFundsData: {},
+      allFundsData: [],
     };
   },
   computed: {},
@@ -256,6 +256,7 @@ export default {
     },
     handleUpdateScroll(value) {
       this.scrollLeft = value;
+      this.$refs["fundProfileLayout"].handleScroll(value);
     },
     handleFundProfileIDChange(showFundsID, lineStartYPos) {
       this.isTotalChange = false;
@@ -281,7 +282,14 @@ export default {
       this.lineStartYPos = val;
     },
     handleSaveComparison() {
-      this.$refs["fundProfileLayout"].saveCurFundsLikeScore();
+      let res = this.$refs["fundProfileLayout"].saveCurFundsLikeScore();
+      if (res === 1) {
+        this.$message.warn("Please choose at least two funds to compare.");
+        return;
+      } else if (res === 2) {
+        this.$message.warn("Please score at least one fund.");
+        return;
+      }
       this.historyFundsLikeScore = this.$refs[
         "fundProfileLayout"
       ].historyFundsLikeScore;
@@ -289,6 +297,10 @@ export default {
       this.$message.success("Saving successful!");
     },
     handleUpdateWeight() {
+      if (this.historyFundsLikeScore.length === 0) {
+        this.$message.warn("Please save at least one comparison first.");
+        return;
+      }
       this.$refs["fundProfileLayout"].saveCurFundsLikeScore();
       this.historyFundsLikeScore = this.$refs[
         "fundProfileLayout"
@@ -308,6 +320,9 @@ export default {
             data[key] = data[key].toFixed(4);
           }
           this.incomingWeight = data;
+          this.$message.success(
+            "Weights updated! Please click the Update button."
+          );
         }
       );
     },
@@ -352,10 +367,14 @@ export default {
           if (index !== -1 && rankIndex === -1 && searchIndex === -1) {
             this.searchFundsID.push(thisManagerFundsID[i]);
             this.rankFundsID.unshift(thisManagerFundsID[i]);
-            this.rankFundsData[thisManagerFundsID[i]] = this.allFundsData[index];
+            this.rankFundsData[thisManagerFundsID[i]] = this.allFundsData[
+              index
+            ];
           }
         }
-        this.$message.success(`Funds related to Manager ${val} has been added to current Ranking.`);
+        this.$message.success(
+          `Funds related to Manager ${val} has been added to current Ranking.`
+        );
       }
       setTimeout(() => {
         this.isRequestRanking = false;
