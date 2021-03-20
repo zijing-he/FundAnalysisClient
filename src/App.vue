@@ -50,7 +50,9 @@
         <text>Fund Manager</text>
       </a-row>
       <a-row>
+        <div v-if="!isfundsID" id="fakeOverViewLayout"></div>
         <OverViewLayout
+         v-if="isfundsID"
           :fundsData="fundsData"
           :totalWidth="totalWidth"
           :scrollLeft="scrollLeft"
@@ -142,6 +144,7 @@ export default {
     return {
       fundsData: null,
       fundsID: null, // 给散点图的
+      isfundsID:false, //决定显不显示散点图
       startDate: "20110331", // 默认起始值
       endDate: "20191231",
       //初始化权重
@@ -217,19 +220,6 @@ export default {
       this.userWeight = weight;
     },
 
-    // getTimeBoundary() {
-    //   DataService.post(
-    //     "get_fund_time_border",
-    //     { f_ids: this.fundsID },
-    //     (data) => {
-    //       this.startDate = data["start_date"].toString();
-    //       this.endDate = data["end_date"].toString();
-    //       this.rankFundsID = this.fundsID;
-    //       //先后
-    //       this.getFundManagers();
-    //     }
-    //   );
-    // },
     getFundManagers() {
       // console.log("得到基金散点图和基金经理信息");
       //得到基金散点图和基金经理信息
@@ -278,7 +268,14 @@ export default {
       this.selectIndex = -1;
       // 刷新散点图
       this.fundsID = showFundsID;
-      this.getFundManagers();
+      if(this.fundsID.length > 0) {
+        this.isfundsID = true;
+        this.getFundManagers();
+      }
+      else {
+        this.isfundsID = false;
+      }
+      
     },
     handleLineStartYPosChange(val) {
       this.lineStartYPos = val;
@@ -464,5 +461,10 @@ export default {
   width: 1706.66px;
   background: #011f41;
   box-shadow: 1px -3px 4px 0 rgba(36, 15, 57, 0.1);
+}
+#fakeOverViewLayout{
+  width:1647px;
+  height:200px;
+  margin:44px 36px 0 30px;
 }
 </style>
