@@ -9,10 +9,20 @@
     <div class="search-box">
       <a-form :label-col="{ span: 9 }" :wrapper-col="{ span: 14 }">
         <a-form-item label="Fund Code">
-          <a-input v-model="queryParam.fundCode"></a-input>
+          <a-input
+            id="fundCode"
+            :placeholder="fundPlaceHolder"
+            :disabled="isFundDisable"
+            @change="handleFundCodeChange"
+          ></a-input>
         </a-form-item>
         <a-form-item label="Manager Code">
-          <a-input v-model="queryParam.managerCode"></a-input>
+          <a-input
+            id="managerCode"
+            :placeholder="managerPlaceHolder"
+            :disabled="isManagerDisable"
+            @change="handleManagerCodeChange"
+          ></a-input>
         </a-form-item>
         <a-form-item>
           <a-button
@@ -76,7 +86,7 @@
             :key="item + '_rank'"
             v-for="(item, index) in rankFundsID"
           >
-            {{ index + 1 }}
+            {{ rankNumber(index) }}
           </a-row>
         </a-col>
       </a-row>
@@ -99,6 +109,7 @@ export default {
     start_date: String,
     end_date: String,
     isRequestRanking: Boolean,
+    searchFundsID: Array, // 搜索得到的基金
   },
   data() {
     return {
@@ -106,11 +117,14 @@ export default {
         fundCode: "",
         managerCode: "",
       },
-      // form: this.$form.createForm(this),
       showFundProfileIDs: [],
       lineStartYPos: [], // 连线起始坐标
       isFundProfileIDChecked: new Map(),
       lastScrollTop: 0,
+      fundPlaceHolder: "",
+      managerPlaceHolder: "",
+      isFundDisable: false,
+      isManagerDisable: false,
     };
   },
   watch: {
@@ -118,13 +132,54 @@ export default {
       if (val === true) {
         this.showFundProfileIDs = this.lineStartYPos = [];
         this.isFundProfileIDChecked = new Map();
+        this.$emit(
+          "showFundIDChange",
+          this.showFundProfileIDs,
+          this.lineStartYPos
+        );
       }
     },
   },
   mounted: function() {},
   methods: {
+    rankNumber(index) {
+      if (index < this.searchFundsID.length) {
+        return "S";
+      } else {
+        return index + 1 - this.searchFundsID.length;
+      }
+    },
+    handleFundCodeChange(e) {
+      // console.log(e.target.value);
+      this.queryParam.fundCode = e.target.value;
+      if (e.target.value !== "") {
+        this.isManagerDisable = true;
+        this.managerPlaceHolder = "Cannot search both.";
+      } else {
+        this.isManagerDisable = false;
+        this.managerPlaceHolder = "";
+      }
+    },
+    handleManagerCodeChange(e) {
+      // console.log(e.target.value);
+      this.queryParam.managerCode = e.target.value;
+      if (e.target.value !== "") {
+        this.isFundDisable = true;
+        this.fundPlaceHolder = "Cannot search both.";
+      } else {
+        this.isFundDisable = false;
+        this.fundPlaceHolder = "";
+      }
+    },
     handleSubmit() {
-      console.log(this.queryParam);
+      // console.log(this.queryParam);
+      if (this.queryParam.fundCode !== "") {
+        this.$emit("searchFundCode", this.queryParam.fundCode);
+      } else if (this.queryParam.managerCode !== "") {
+        this.$emit("searchManagerCode", this.queryParam.managerCode);
+      } else {
+        this.$message.warn("At least enter one field to search!");
+      }
     },
     handleCheckbox(e) {
       // 设置Map的目的是为了保证右边展示的顺序与左边rank的顺序始终一致
