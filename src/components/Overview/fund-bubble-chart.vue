@@ -49,7 +49,7 @@ export default {
     };
   },
   mounted: function () {
-    console.log(this.quarterFundData);
+    // console.log(this.quarterFundData);
     this.graphInit();
     this.renderInit();
     this.renderUpdate();

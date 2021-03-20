@@ -28,6 +28,7 @@
       <a-row>
         <FundRankingLayout
           :rankFundsID="rankFundsID"
+          :searchFundsID="searchFundsID"
           :rankFundsData="rankFundsData"
           :start_date="startDate"
           :end_date="endDate"
@@ -35,6 +36,8 @@
           ref="fundRankingLayout"
           @showFundIDChange="handleFundProfileIDChange"
           @lineStartYPosChange="handleLineStartYPosChange"
+          @searchFundCode="handleSearchFundCode"
+          @searchManagerCode="handleSearchManagerCode"
         />
       </a-row>
     </a-col>
@@ -124,7 +127,7 @@ export default {
     FundRankingLayout,
   },
   watch: {
-    selectIndex: function (val) {
+    selectIndex: function(val) {
       if (val === -1) return;
       this.isTotalChange = false;
       this.showFundsLikeScore = this.historyFundsLikeScore[val];
@@ -158,6 +161,7 @@ export default {
       incomingWeight: null, //基金画像调整后传入的权重存放在这
       isRequestRanking: true,
       rankFundsID: null, // 给FundRanking
+      searchFundsID: null, // 搜索得到的基金ID
       rankFundsData: null,
       showFundsID: [], // 展示的FundProfile
       showFundsLikeScore: {},
@@ -197,6 +201,7 @@ export default {
           this.isTotalChange = true;
           this.allFundsID = data.ranking.map((d) => d[0]);
           this.allFundsData = data.ranking.map((d) => d[1]);
+          this.searchFundsID = [];
           this.rankFundsID = this.allFundsID.slice(0, 20); // 默认展示前20个
           this.rankFundsData = {};
           this.allFundsID.forEach((d, i) => {
@@ -308,6 +313,56 @@ export default {
           this.incomingWeight = data;
         }
       );
+    },
+    handleSearchFundCode(val) {
+      this.isRequestRanking = true;
+      let index = this.allFundsID.indexOf(val);
+      let rankIndex = this.rankFundsID.indexOf(val);
+      let searchIndex = this.searchFundsID.indexOf(val);
+      if (index === -1) {
+        this.$message.warn("Nothing found in current Ranking.");
+      } else if (searchIndex !== -1) {
+        this.$message.warn(
+          `Fund ${val} is already in current Ranking (Rank denoted by S).`
+        );
+      } else if (rankIndex !== -1) {
+        this.$message.warn(
+          `Fund ${val} is already in Rank ${rankIndex +
+            1 -
+            this.searchFundsID.length}.`
+        );
+      } else {
+        this.searchFundsID.push(this.allFundsID[index]);
+        this.rankFundsID.unshift(this.allFundsID[index]);
+        this.rankFundsData[this.allFundsID[index]] = this.allFundsData[index];
+        this.$message.success(`Fund ${val} has been added to current Ranking.`);
+      }
+      // 不知为何，不设延迟的话FundRankingLayout里面无法watch到isRequestRanking的变化
+      setTimeout(() => {
+        this.isRequestRanking = false;
+      }, 20);
+    },
+    handleSearchManagerCode(val) {
+      this.isRequestRanking = true;
+      if (!(val in this.managerToFund)) {
+        this.$message.warn("Nothing found in current Ranking.");
+      } else {
+        let thisManagerFundsID = this.managerToFund[val];
+        for (let i = 0; i < thisManagerFundsID.length; i++) {
+          let index = this.allFundsID.indexOf(thisManagerFundsID[i]);
+          let rankIndex = this.rankFundsID.indexOf(thisManagerFundsID[i]);
+          let searchIndex = this.searchFundsID.indexOf(thisManagerFundsID[i]);
+          if (index !== -1 && rankIndex === -1 && searchIndex === -1) {
+            this.searchFundsID.push(thisManagerFundsID[i]);
+            this.rankFundsID.unshift(thisManagerFundsID[i]);
+            this.rankFundsData[thisManagerFundsID[i]] = this.allFundsData[index];
+          }
+        }
+        this.$message.success(`Funds related to Manager ${val} has been added to current Ranking.`);
+      }
+      setTimeout(() => {
+        this.isRequestRanking = false;
+      }, 20);
     },
   },
 };
