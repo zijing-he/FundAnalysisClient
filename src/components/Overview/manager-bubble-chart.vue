@@ -37,6 +37,7 @@ export default {
     },
   },
   mounted: function () {
+    // console.log("基金经理信息：", this.data);
     this.renderInit();
     this.renderUpdate();
   },
@@ -68,6 +69,7 @@ export default {
         .range([3, 13]);
     },
   },
+  emits: ["showManager"],
   methods: {
     renderInit() {
       this.svg = d3
@@ -119,10 +121,24 @@ export default {
       let hideTooltip = (event) => {
         tooltip.style("visibility", "hidden");
       };
+      let managerData = this.data;
+      let showManagerFn = (d) => {
+        //function拿不到外面的this，就自己包装一下
+        this.$emit("showManager", d);
+      };
 
-      // let clickTooltip = (event, d) => {
-      //   this.$emit("showManager", d);
-      // };
+      let clickTooltip = function (event, d) {
+        if (!managerData[d]["isShow"]) {
+          managerData[d]["isShow"] = true;
+          d3.select(this).style("fill", (d) => managerData[d].color);
+          showManagerFn(d);
+        } else {
+          //再点击关闭
+          managerData[d]["isShow"] = false;
+          d3.select(this).style("fill", "#D8D8D8");
+          showManagerFn(undefined);
+        }
+      };
 
       this.svg.selectAll("circle").remove();
       this.svg
@@ -135,14 +151,14 @@ export default {
         .attr("cx", (d) => this.xScale(this.data[d].loc[0]))
         .attr("cy", (d) => this.yScale(this.data[d].loc[1]))
         .attr("r", (d) => this.sizeScale(this.data[d].size))
-        .style("fill", (d) => this.data[d].color)
+        // .style("fill", (d) => this.data[d].color)
+        .style("fill", "#D8D8D8")
         .style("stroke", "white")
         .style("stroke-width", "0.5px")
-        .style(":hover", "stroke: black")
         .on("mouseover", showTooltip)
         .on("mousemove", moveTooltip)
         .on("mouseleave", hideTooltip)
-        // .on("click", clickTooltip);
+        .on("click", clickTooltip);
     },
   },
 };
@@ -152,19 +168,19 @@ export default {
 #manager_bubble_chart_container {
   border-right: 1px dashed #979797;
   height: 190px;
-  width:247px;
+  width: 247px;
   margin-bottom: 10px;
- text-align:center;
+  text-align: center;
 }
 #manager_bubble_chart {
   height: 165px;
   width: 165px;
-  margin:auto;
+  margin: auto;
 }
 #manager_relation_text {
   font-family: "PingFangSC-Medium";
   font-size: 15px;
-  width:100%;
+  width: 100%;
   /* margin:auto; */
   /* font-weight: 600; */
   /* line-height: 32px; */

@@ -52,6 +52,7 @@
           :totalWidth="totalWidth"
           :scrollLeft="scrollLeft"
           :marginLeft="marginLeft"
+          v-on:updateScroll="handleUpdateScroll"
         />
       </a-row>
       <a-row class="funds_title">
@@ -123,7 +124,7 @@ export default {
     FundRankingLayout,
   },
   watch: {
-    selectIndex: function(val) {
+    selectIndex: function (val) {
       if (val === -1) return;
       this.isTotalChange = false;
       this.showFundsLikeScore = this.historyFundsLikeScore[val];
@@ -250,19 +251,16 @@ export default {
       // }
     },
     handleUpdateWidth(width) {
-      // console.log(width);
-      console.log("得到的width",width)
       this.totalWidth = width;
     },
     handleScrollLeft(value) {
-      // console.log(value);
-      console.log("得到的ScrollLeft:",value);
       this.scrollLeft = value;
     },
     handleMarginLeft(value) {
-      // console.log(value);
-      console.log("得到的margin-left:",value);
       this.marginLeft = value;
+    },
+    handleUpdateScroll(value) {
+      this.scrollLeft = value;
     },
     handleFundProfileIDChange(showFundsID, lineStartYPos) {
       this.isTotalChange = false;

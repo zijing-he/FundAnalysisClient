@@ -22,16 +22,21 @@
         style="margin: 73px 0 73px 770px"
       />
       <div class="fund_manager_container" v-if="!isRequesting">
-        <managerBubbleChart :fundManagers="managers" />
+        <managerBubbleChart
+          :fundManagers="managers"
+          v-on:showManager="handleShowManager"
+        />
         <div
           ref="fund_bubble_container"
           class="fund_bubble_chart_outer_container"
+          @scroll="handleScroll()"
           :style="autoWidth"
           v-if="!isRequesting"
         >
           <fundBubbleChart
             :quarterFundData="val"
             :fundManagers="managers"
+            :showMangerId="mangerId"
             :managerGruop="managerFunds[key]"
             :date="key"
             :key="key"
@@ -85,10 +90,10 @@ export default {
       console.log("funds是：", this.funds);
     },
     scrollLeft: function (value) {
-      console.log("到fund_bubble_container,", value);
       this.$refs.fund_bubble_container.scrollLeft = value;
     },
   },
+  emits: ["updateScroll"],
   computed: {
     autoWidth() {
       const style = {};
@@ -97,9 +102,13 @@ export default {
     },
   },
   methods: {
-    // handleShowManager(mangerId) {
-    //   this.mangerId = mangerId;
-    // },
+    handleShowManager(mangerId) {
+      this.mangerId = mangerId;
+    },
+    handleScroll() {
+      // console.log("滑动轴数值：", this.$refs.fund_bubble_container.scrollLeft);
+      this.$emit("updateScroll", this.$refs.fund_bubble_container.scrollLeft);
+    },
   },
   mounted() {},
 };

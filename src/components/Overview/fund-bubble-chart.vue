@@ -1,7 +1,11 @@
 <template>
-  <div  ref="fund_bubble_chart_container" class="fund_bubble_chart_inner_container" :style="autoLeft">
+  <div
+    ref="fund_bubble_chart_container"
+    class="fund_bubble_chart_inner_container"
+    :style="autoLeft"
+  >
     <div class="text">{{ date }}</div>
-    <div  id="fund_bubble_chart_item" class="fund_bubble_chart_item" ></div>
+    <div id="fund_bubble_chart_item" class="fund_bubble_chart_item"></div>
   </div>
 </template>
 
@@ -17,6 +21,7 @@ export default {
     managerGruop: Object,
     marginLeft: Number,
     scrollLeft: Number,
+    showMangerId: String,
   },
   components: {},
   watch: {
@@ -26,7 +31,9 @@ export default {
     mangerId: function () {
       // this.renderUpdate();
     },
-   
+    showMangerId: function () {
+      this.renderUpdate();
+    },
   },
   data() {
     return {
@@ -42,11 +49,6 @@ export default {
     };
   },
   mounted: function () {
-    // console.log(this.date);
-    // console.log(this.quarterFundData);
-    // console.log(this.fundManagers);
-    // console.log(this.managerGruop);
-    // console.log("这个的left:", this.marginLeft);
     this.graphInit();
     this.renderInit();
     this.renderUpdate();
@@ -54,7 +56,7 @@ export default {
   computed: {
     autoLeft() {
       const style = {};
-      style["margin-left"] = this.marginLeft + "px";  //动态左边距
+      style["margin-left"] = this.marginLeft + "px"; //动态左边距
       return style;
     },
     innerWidth() {
@@ -81,9 +83,7 @@ export default {
   methods: {
     graphInit() {
       //创建图和顶点：
-
       this.G = new jsnx.Graph();
-      // let managerGruop = {};
 
       for (let id in this.quarterFundData) {
         this.G.addNode(id, {
@@ -91,12 +91,6 @@ export default {
           x: this.quarterFundData[id].loc[0],
           y: this.quarterFundData[id].loc[1],
         });
-        // this.quarterFundData[id].manager_ids.forEach((d) => {
-        //   if (!Object.prototype.hasOwnProperty.call(managerGruop, `${d}`)) {
-        //     managerGruop[d] = [];
-        //   }
-        //   managerGruop[d].push(id);
-        // });
       }
 
       for (let key in this.managerGruop) {
@@ -122,9 +116,6 @@ export default {
           });
         }
       }
-      // console.log(this.G.nodes(true));
-      // console.log(this.G.edges(true));
-      // console.log(this.G);
     },
 
     renderInit() {
@@ -141,51 +132,67 @@ export default {
         .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
     },
     renderUpdate() {
-      this.data = this.quarterFundData;
       this.data_values = Object.values(this.quarterFundData);
       // this.fund_id = Object.keys(this.quarterFundData);
       // this.data_values.forEach((d) => {
       //   this.managers.push(d.manager_id[0]);
       // });
       // this.managersKey = Object.keys(this.fundManagers);
-      this.svg.selectAll("circle").remove();
+      this.svg.selectAll("g").remove();
 
       let node = this.svg
+        .append("g")
         .selectAll("circle")
         .data(this.G.nodes(true)) // this.G.nodes(true)
         .enter()
         .append("circle")
         .attr("class", (d) => `funds_manager_${d[1].managerId[0]}`) //展示时注意：可能一个基金有多个基金经理
-        .attr("r", 10)
+        .attr("r", 6)
         .style("fill", (d) => {
-          if (this.fundManagers[d[1].managerId[0]]) {
-            return this.fundManagers[d[1].managerId[0]].color;
-          } else {
-            return "#aaa";
+          // console.log("看看点的基金经理：", d[1].managerId);
+          //点只展示目前点击的基金经理的颜色
+          for (let id of d[1].managerId) {
+            // console.log(id === this.showMangerId);
+            if (id === this.showMangerId) {
+              return this.fundManagers[this.showMangerId].color;
+            }
           }
-        })
-        .style("opacity", "0.4")
-        .attr("cx", (d) => {
-          // console.log(d);
 
-          return this.xScale(d[1].x);
+          return "#D8D8D8";
         })
+        .attr("cx", (d) => this.xScale(d[1].x))
         .attr("cy", (d) => this.yScale(d[1].y));
 
       let link = this.svg
+        .append("g")
         .selectAll("line")
         .data(this.G.edges(true)) //this.G.edges(true)
         .enter()
         .append("line")
         .attr("class", (d) => `funds_manager_${d[2].managerId}`)
         .style("stroke", (d) => {
-          // console.log(d, d[2].managerId, this.fundManagers[d[2].managerId]);
-          if (this.fundManagers[d[2].managerId]) {
-            return this.fundManagers[d[2].managerId].color;
-          } else return "#aaa";
+          // console.log(
+          //   "康康边：",
+          //   d,
+          //   d[2].managerId,
+          //   this.fundManagers[d[2].managerId]
+          // );
+
+          if (d[2].managerId === this.showMangerId) {
+            return this.fundManagers[this.showMangerId].color;
+          } else {
+            return "#D8D8D8";
+          }
         })
-        .style("stroke-width", "16")
-        .style("opacity", "0.4")
+        .style("stroke-width", "2")
+        .style("visibility", (d) => {
+          if (d[2].managerId === this.showMangerId) {
+            return "visible";
+          } else {
+            return "hidden";
+          }
+        })
+        // .style("opacity", "0.4")
         .attr("x1", (d) => {
           // console.log(d);
           return this.xScale(d[2].source.x);

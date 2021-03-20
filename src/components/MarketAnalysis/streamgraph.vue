@@ -28,8 +28,7 @@
                 <use v-if="item === '电子'" xlink:href="#icondianzi"></use> -->
                 <use :xlink:href="sectorItem[item]"></use>
               </svg>
-              <!-- <text :style="activationSelect(item)">██ </text> -->
-              <text>{{ item }}</text>
+              <text>{{ sectorDictionary[item].en_name }}</text>
             </span>
           </a-select-option>
         </a-select>
@@ -47,7 +46,7 @@
 import * as d3 from "d3";
 import dataJSON from "@/data/StreamGraph/market_date_sector.json";
 import sectorJSON from "@/data/StreamGraph/market_sector_date.json";
-import sectorDict from "@/data/sector_dict.json";
+import sectorDict from "@/data/new_sector_dict.json";
 export default {
   name: "MarketAnalysisStramGraph",
   props: {
@@ -98,6 +97,7 @@ export default {
         钢铁: "#icongangtie",
         未知: "#iconweizhi",
       },
+      sectorDictionary:sectorDict,
     };
   },
   watch: {
@@ -116,22 +116,11 @@ export default {
   },
   emits: ["updateBrushStream", "getSector"],
   computed: {
-    iconScale() {
-      return d3
-        .scaleOrdinal()
-        .domain(this.sectors)
-        .range(["iconyiyao", "icondianzi", "iconshipinyinliao", "iconhuagong"]);
-    },
-    colorScale() {
-      return d3
-        .scaleOrdinal()
-        .domain(this.sectors)
-        .range(["#D6AA9F", "#B7E6C7", "#B2C0E0"]);
-    },
+    
     //根据内容不同改变颜色
     activationSelect() {
       return (item) => {
-        return { color: this.colorScale(item) };
+        return { color: sectorDict[item].color };
       };
     },
     innerWidth() {
@@ -362,8 +351,8 @@ export default {
         .attr("d", (d) => this.linePath(Object.values(this.sector_data[d])))
         .attr("fill", "none")
         .attr("stroke-width", "3px")
-        // .attr("stroke", (d) => sectorDict[d].color)
-        .attr("stroke", (d) => this.colorScale(d));
+        .attr("stroke", (d) => sectorDict[d].color)
+        // .attr("stroke", (d) => this.colorScale(d));
       // .on("mouseover", handleMouseover)
       // .on("mouseout", handleMouseout);
 

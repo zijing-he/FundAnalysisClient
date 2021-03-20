@@ -34,7 +34,7 @@ export default {
       date: Object.keys(market_nav_date),
       marketNav: Object.values(market_nav_date),
       marketShares: Object.values(market_number_date),
-      keys: ["Market avgerage fund shares", "Market average fund nav"],
+      keys: ["Fund Market Total Asset", "Market average fund nav"],
     };
   },
   watch: {
