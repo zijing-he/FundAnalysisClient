@@ -312,11 +312,16 @@ export default {
       }
     },
     saveCurFundsLikeScore() {
+      if (this.fundsID.length < 2) return 1;
+      let isAllZero = true;
       for (let i = 0; i < this.fundsID.length; i++) {
+        if (this.$refs[this.fundsID[i]].thisFundLikeScore !== 0)
+          isAllZero = false;
         this.fundsLikeScore_n[this.fundsID[i]] = this.$refs[
           this.fundsID[i]
         ].thisFundLikeScore;
       }
+      if (isAllZero) return 2;  // 不允许一个分都不打
       // 检测此次比较是否已存入history，也就是是否保存后重新打分，这种情况视为更新之前的记录
       let isExist = false,
         index = -1;
@@ -333,6 +338,7 @@ export default {
       }
       if (!isExist) this.historyFundsLikeScore.push(this.fundsLikeScore_n);
       else this.historyFundsLikeScore[index] = this.fundsLikeScore_n;
+      return 0;
     },
     calcLineEndYPos() {
       this.lineEndYPos = [];

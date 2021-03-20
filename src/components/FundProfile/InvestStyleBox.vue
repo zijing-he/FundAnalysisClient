@@ -363,6 +363,22 @@ export default {
                   Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`))
                 )
             );
+          // 使用mask会导致边框变虚线，用实线描一遍
+          if (i % 2 === 0 && eval(`this.${this.initTopBars[i]}Data.norm`) < 0) {
+            let dom = d3.select(`#${this.initTopBars[i]}-${this.boxId}`);
+            let x = parseFloat(dom.attr("x")),
+              y = parseFloat(dom.attr("y")),
+              width = parseFloat(dom.attr("width")),
+              height = parseFloat(dom.attr("height"));
+            gRectsTop
+              .append("path")
+              .attr("fill", "none")
+              .attr("stroke", "black")
+              .attr(
+                "d",
+                `M ${x} ${y + height} v ${-height} h ${width} v ${height} Z`
+              );
+          }
           // 最新设计不画虚线了
           // 根据return和hs300的差值画虚线
           // if (i > 0 && i < this.initTopBars.length - 1) {
@@ -438,6 +454,21 @@ export default {
                   Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`))
                 )
             );
+          if (i % 2 === 0 && eval(`this.${this.initTopBars[i]}Data.norm`) < 0) {
+            let dom = d3.select(`#${this.initTopBars[i]}-${this.boxId}`);
+            let x = parseFloat(dom.attr("x")),
+              y = parseFloat(dom.attr("y")),
+              width = parseFloat(dom.attr("width")),
+              height = parseFloat(dom.attr("height"));
+            gRectsTop
+              .append("path")
+              .attr("fill", "none")
+              .attr("stroke", "black")
+              .attr(
+                "d",
+                `M ${x} ${y + height} v ${-height} h ${width} v ${height} Z`
+              );
+          }
           // 根据return和hs300的差值画虚线
           // if (i > 0 && i < this.initTopBars.length - 1) {
           //   if (
@@ -512,6 +543,21 @@ export default {
                   Math.abs(eval(`this.${this.initTopBars[i]}Data.norm`))
                 )
             );
+          if (i % 2 === 0 && eval(`this.${this.initTopBars[i]}Data.norm`) < 0) {
+            let dom = d3.select(`#${this.initTopBars[i]}-${this.boxId}`);
+            let x = parseFloat(dom.attr("x")),
+              y = parseFloat(dom.attr("y")),
+              width = parseFloat(dom.attr("width")),
+              height = parseFloat(dom.attr("height"));
+            gRectsTop
+              .append("path")
+              .attr("fill", "none")
+              .attr("stroke", "black")
+              .attr(
+                "d",
+                `M ${x} ${y + height} v ${-height} h ${width} v ${height} Z`
+              );
+          }
           // 根据return和hs300的差值画虚线
           // if (i > 0 && i < this.initTopBars.length - 1) {
           //   if (
@@ -607,6 +653,18 @@ export default {
             ) - this.yScale(0)
           )
           .attr("height", (barAttrs.three.width * this.boxWidth) / 200);
+        if (eval(`this.${this.initRightBars[i]}Data.norm`) < 0) {
+          let dom = d3.select(`#${this.initRightBars[i]}-${this.boxId}`);
+          let x = parseFloat(dom.attr("x")),
+            y = parseFloat(dom.attr("y")),
+            width = parseFloat(dom.attr("width")),
+            height = parseFloat(dom.attr("height"));
+          gRectsRight
+            .append("path")
+            .attr("fill", "none")
+            .attr("stroke", "black")
+            .attr("d", `M 0 ${y} h ${width} v ${height} h ${-width} Z`);
+        }
       }
 
       // bottom
@@ -657,6 +715,18 @@ export default {
               Math.abs(eval(`this.${this.initBottomBars[i]}Data.norm`))
             ) - this.yScale(0)
           );
+        if (eval(`this.${this.initBottomBars[i]}Data.norm`) < 0) {
+          let dom = d3.select(`#${this.initBottomBars[i]}-${this.boxId}`);
+          let x = parseFloat(dom.attr("x")),
+            y = parseFloat(dom.attr("y")),
+            width = parseFloat(dom.attr("width")),
+            height = parseFloat(dom.attr("height"));
+          gRectsBottom
+            .append("path")
+            .attr("fill", "none")
+            .attr("stroke", "black")
+            .attr("d", `M ${x} 0 h ${width} v ${height} h ${-width} Z`);
+        }
       }
 
       // left
@@ -714,6 +784,18 @@ export default {
               )
           )
           .attr("height", (barAttrs.three.width * this.boxWidth) / 200);
+        if (eval(`this.${this.initLeftBars[i]}Data.norm`) < 0) {
+          let dom = d3.select(`#${this.initLeftBars[i]}-${this.boxId}`);
+          let x = parseFloat(dom.attr("x")),
+            y = parseFloat(dom.attr("y")),
+            width = parseFloat(dom.attr("width")),
+            height = parseFloat(dom.attr("height"));
+          gRectsLeft
+            .append("path")
+            .attr("fill", "none")
+            .attr("stroke", "black")
+            .attr("d", `M ${x} ${y} h ${width} v ${height} h ${-width} Z`);
+        }
       }
 
       // 添加tooltip

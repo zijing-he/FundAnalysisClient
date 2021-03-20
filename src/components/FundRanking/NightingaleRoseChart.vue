@@ -85,9 +85,6 @@ export default {
       this.svg.selectAll("g").remove();
 
       // const arcs = this.pie(this.datum);
-      const gChart = this.svg
-        .append("g")
-        .attr("transform", `translate(${this.width / 2}, ${this.height / 2})`);
       // 条纹
       const defs = this.svg.append("defs");
       defs
@@ -105,12 +102,14 @@ export default {
       defs
         .append("mask")
         .attr("id", `mask_stripe_${this.fundId}`)
-        .append("rect")
-        .attr("x", 0)
-        .attr("y", 0)
-        .attr("width", "100%")
-        .attr("height", "100%")
+        .append("circle")
+        .attr("cx", 0)
+        .attr("cy", 0)
+        .attr("r", "100%")
         .attr("fill", `url(#pattern_stripe_${this.fundId})`);
+      const gChart = this.svg
+        .append("g")
+        .attr("transform", `translate(${this.width / 2}, ${this.height / 2})`);
       const that = this;
       for (let i = 0; i < dataGroup.length; i++) {
         let curGroup = dataGroup[i];
@@ -134,7 +133,7 @@ export default {
               if (!curRadius) curRadius = 0;
               const interpolate = d3.interpolate(
                 curRadius,
-                that.scaleRadius(that.fundData[curGroup[j]].norm)
+                that.scaleRadius(Math.abs(that.fundData[curGroup[j]].norm))
               );
               this._current = interpolate(1);
               return function(t) {
@@ -142,14 +141,29 @@ export default {
                   .arc()
                   .innerRadius(0)
                   .outerRadius(interpolate(t))
-                  .startAngle((Math.PI * 2) / 3 * i + j * eachAngle)
-                  .endAngle((Math.PI * 2) / 3 * i + (j + 1) * eachAngle);
+                  .startAngle(((Math.PI * 2) / 3) * i + j * eachAngle)
+                  .endAngle(((Math.PI * 2) / 3) * i + (j + 1) * eachAngle);
                 return arc();
               };
             });
           d3.select(`#path_${this.fundId}_${curGroup[j]}`)
             .append("title")
-            .text(`${curGroup[j]} ${this.fundData[curGroup[j]].value.toFixed(2)}`);
+            .text(
+              `${curGroup[j]} ${this.fundData[curGroup[j]].value.toFixed(2)}`
+            );
+          // 使用mask会导致边框为虚线，再描一遍path
+          setTimeout(() => {
+            if (this.fundData[curGroup[j]].norm < 0) {
+              gChart
+                .append("path")
+                .attr("stroke", "black")
+                .attr("fill", "none")
+                .attr(
+                  "d",
+                  d3.select(`#path_${this.fundId}_${curGroup[j]}`).attr("d")
+                );
+            }
+          }, 300);
         }
       }
       // gChart
