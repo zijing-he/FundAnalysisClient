@@ -9,6 +9,11 @@ npm install
 ```
 npm run serve
 ```
+### 如果遇到：1 error and 0 warnings potentially fixable with the `--fix` option.的错误，先运行后，再npm run serve
+```
+npm run lint -- --fix
+```
+
 
 ### Compiles and minifies for production
 ```

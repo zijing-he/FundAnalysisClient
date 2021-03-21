@@ -116,7 +116,12 @@ export default {
     //基金画像更新权重
     weights: function (value) {
       if (value) {
-        this.weight = value;
+        // this.weight = value;
+        // console.log(this.weight); 
+        for(let key in value){
+          this.weight[key] = value[key];
+        }
+        // console.log(this.weight);
         this.handleWeightToData();
       }
     },

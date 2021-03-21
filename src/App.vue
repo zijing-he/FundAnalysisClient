@@ -274,6 +274,7 @@ export default {
         this.getFundManagers();
       }
       else {
+        // this.getFundManagers();
         this.isfundsID = false;
       }
       
@@ -320,6 +321,7 @@ export default {
             data[key] = data[key].toFixed(4);
           }
           this.incomingWeight = data;
+          console.log("incomingWeight:",data);
           this.$message.success(
             "Weights updated! Please click the Update button."
           );

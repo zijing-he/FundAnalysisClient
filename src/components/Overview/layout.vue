@@ -33,7 +33,7 @@
           :style="autoWidth"
           v-if="!isRequesting"
         >
-          <fundBubbleChart
+          <fundPieChart
             :quarterFundData="val"
             :fundManagers="managers"
             :showManagerId="mangerId"
@@ -44,7 +44,19 @@
             :marginLeft="marginLeftArray[index]"
             v-for="(val, key, index) in funds"
           >
-          </fundBubbleChart>
+          </fundPieChart>
+          <!-- <fundBubbleChart
+            :quarterFundData="val"
+            :fundManagers="managers"
+            :showManagerId="mangerId"
+            :showManagerIdLength="mangerIdLength"
+            :managerGruop="managerFunds[key]"
+            :date="key"
+            :key="key"
+            :marginLeft="marginLeftArray[index]"
+            v-for="(val, key, index) in funds"
+          >
+          </fundBubbleChart> -->
         </div>
       </div>
     </a-row>
@@ -52,7 +64,8 @@
 </template>
 
 <script>
-import fundBubbleChart from "@/components/Overview/fund-bubble-chart.vue";
+// import fundBubbleChart from "@/components/Overview/fund-bubble-chart.vue";
+import fundPieChart from "@/components/Overview/fund-pie-chart.vue";
 import managerBubbleChart from "@/components/Overview/manager-bubble-chart";
 
 export default {
@@ -65,29 +78,29 @@ export default {
   },
   data() {
     return {
-      componentName: fundBubbleChart,
       managers: null,
       funds: null,
       mangerId: null,
       managerFunds: undefined,
       isRequesting: true,
       marginLeftArray: null,
-      mangerIdLength:0,
+      mangerIdLength: 0,
     };
   },
   components: {
-    fundBubbleChart,
+    // fundBubbleChart,
+    fundPieChart,
     managerBubbleChart,
   },
   watch: {
     fundsData: function () {
-      // console.log("传输到layout",this.fundsData);
-      this.mangerId = [];  //每次要清空
+      console.log("fundsData:",this.fundsData);
+      this.mangerId = []; //每次要清空
       this.mangerIdLength = 0;
       this.isRequesting = true;
-      this.managers = this.fundsData.managers;
-      this.funds = this.fundsData.funds;
-      this.managerFunds = this.fundsData.manager_funds;
+      this.managers = this.fundsData.managers;  //经理的位置与颜色
+      this.funds = this.fundsData.funds;  //多个季度基金的位置
+      this.managerFunds = this.fundsData.manager_funds; //每个经理手下的基金
       this.marginLeftArray = this.marginLeft;
       this.isRequesting = false;
     },
@@ -104,7 +117,7 @@ export default {
     },
   },
   methods: {
-    handleShowManager(mangerId,arrLength) {
+    handleShowManager(mangerId, arrLength) {
       // console.log("有变化：",mangerId,arrLength);
       this.mangerId = mangerId;
       this.mangerIdLength = arrLength;

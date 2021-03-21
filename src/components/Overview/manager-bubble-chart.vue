@@ -83,6 +83,7 @@ export default {
         .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
     },
     renderUpdate() {
+       this.showManagerArray = [];
       this.managerId = Object.keys(this.data);
       let tooltip = d3
         .select("#manager_bubble_chart")
