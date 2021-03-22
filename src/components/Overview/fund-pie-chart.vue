@@ -161,14 +161,41 @@ export default {
         .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
     },
     renderUpdate() {
-      // console.log("检查一下",this.showManagerId,this.showManagerIdLength)
       this.svg.selectAll("g").remove();
       this.data_values = Object.values(this.quarterFundData);
-      // console.log(
-      //   "检查基金经理：",
-      //   this.showManagerId,
-      //   this.showManagerIdLength
-      // );
+      //tooltip
+      let tooltip = d3
+        .select(`#fund_pie_chart_item_${this.date}`)
+        .append("div")
+        .style("position", "absolute")
+        .attr("class", "tooltip")
+        // .style("visibility", "hidden")
+        .style("width", "150px")
+        .style("height", "50px")
+        .style("background-color", "black")
+        .style("border-radius", "5px")
+        .style("padding", "15px")
+        .style("color", "white");
+      let showTooltip = (event, d) => {
+        tooltip
+         .style("width", "150px")
+        .style("height", "50px")
+          .style("visibility", "visible")
+          .html("fundID: " + d.id)
+          .style("left", event.layerX + 10 + "px")
+          .style("top", event.layerY - 30 + "px");
+      };
+
+      let moveTooltip = (event) => {
+        tooltip
+          .style("left", event.layerX + 10 + "px")
+          .style("top", event.layerY - 30 + "px");
+      };
+
+      let hideTooltip = (event) => {
+        tooltip.style("visibility", "hidden");
+      };
+
       //pieChart
       let pie = d3.pie().value((d) => d);
       let radius = 6;
@@ -191,12 +218,14 @@ export default {
 
           if (res.length === 1 && res[0].data.length === 0) {
             //没有被选中，画灰色
+            res[0].id = d[0];
             res[0].endAngle = 6.283185307179586;
             res[0].value = 1;
             res[0].color = ["#D8D8D8"];
             d[1].color.push("#D8D8D8");
           } else if (res.length >= 1) {
             res.forEach((dd) => {
+              dd.id = d[0];
               dd.color = JSON.parse(JSON.stringify(d[1].color));
             });
           }
@@ -205,7 +234,10 @@ export default {
         })
         .enter()
         .append("g")
-        .attr("class", "arc");
+        .attr("class", "arc")
+        .on("mouseover", showTooltip)
+        .on("mousemove", moveTooltip)
+        .on("mouseleave", hideTooltip);
 
       pies
         .append("path")
@@ -252,6 +284,26 @@ export default {
 
       //   .attr("cx", (d) => this.xScale(d[1].x))
       //   .attr("cy", (d) => this.yScale(d[1].y));
+      let showLineTooltip = (event, d) => {
+        console.log(d);
+        tooltip
+          .style("visibility", "visible")
+          .style("width", "150px")
+        .style("height", "70px")
+          .html("fundManagerID: " + d[2].managerId)
+          .style("left", event.layerX + 10 + "px")
+          .style("top", event.layerY - 30 + "px");
+      };
+
+      let moveLineTooltip = (event) => {
+        tooltip
+          .style("left", event.layerX + 10 + "px")
+          .style("top", event.layerY - 30 + "px");
+      };
+
+      let hideLineTooltip = (event) => {
+        tooltip.style("visibility", "hidden");
+      };
 
       //画边
       let link = this.svg
@@ -300,7 +352,10 @@ export default {
         })
         .attr("y1", (d) => this.yScale(d[2].source.y))
         .attr("x2", (d) => this.xScale(d[2].target.x))
-        .attr("y2", (d) => this.yScale(d[2].target.y));
+        .attr("y2", (d) => this.yScale(d[2].target.y))
+        .on("mouseover", showLineTooltip)
+        .on("mousemove", moveLineTooltip)
+        .on("mouseleave", hideLineTooltip);
     },
   },
 };
