@@ -156,7 +156,7 @@ export default {
       fundData: null,
       svg: null,
       margin: { top: 10, right: 100, bottom: 100, left: 20 },
-      width: 900,
+      width: 1395,
       height: 213,
       isSyncTop: false,
       isSyncBottom: false,
