@@ -122,13 +122,12 @@ export default {
       );
       if (this.svg !== null) this.drawConnectLines();
     },
+    isTotalChange: function(val) {
+      if (val) this.historyFundsLikeScore = [];
+    },
   },
   data() {
     return {
-      // fundData: undefined,
-      // viewFundsID: [],
-      // viewFundProfilesID: [],
-      // donutChartData: [],
       isRequesting: true,
       isFirst: true,
       eachHeight: 213,
@@ -138,151 +137,12 @@ export default {
       svg: null, // 用于绘制rank与profile之间的连接线
       lineStartYPos_n: [],
       lineEndYPos: [],
-      // 无限下滑相关参数
-      // size: 4, // 单页个数
-      // page: 0, // 当前页码
-      // totalPage: 10, // 后台总页数
-      // lastScrollTop: 0, // 上次滚动条距顶部距离
-      // initScrollTop: 0,
-      // lastPaddingTop: 0,
     };
   },
   components: {
     FundProfile,
   },
   methods: {
-    // handleTotalScroll() {
-    //   const scrollTop = this.$refs["container"].scrollTop;
-    //   const windowHeight = this.$refs["container"].clientHeight;
-    //   const scrollHeight = this.$refs["container"].scrollHeight;
-    //   if (scrollTop + windowHeight >= scrollHeight - windowHeight) {
-    //     this.page++;
-    //     this.updateViewFunds();
-    //   }
-    //   if (scrollTop !== 0)
-    //     this.initScrollTop = this.$refs["container"].scrollTop;
-    // },
-    // updateViewFunds() {
-    //   this.viewFundsID.push(
-    //     ...this.fundsID.slice(
-    //       this.page * this.size,
-    //       (this.page + 1) * this.size
-    //     )
-    //   );
-    //   this.getViewFunds();
-    // },
-    // handleTotalScroll() {
-    //   // 处理无限下滑
-    //   const scrollTop = this.$refs["container"].scrollTop;
-    //   const windowHeight = this.$refs["container"].clientHeight;
-    //   const scrollHeight = this.$refs["container"].scrollHeight;
-    //   if (this.lastScrollTop > scrollTop) {
-    //     // 上滑
-    //     // 若滚动条距顶部小于等于空白区，更新顶部（预留windowHeight作为反应时间）
-    //     if (
-    //       this.page > 2 &&
-    //       (this.page - 2) * this.size * this.eachHeight >= scrollTop
-    //     ) {
-    //       this.updateViewFundsID("up");
-    //     }
-    //   } else {
-    //     // 下滑
-    //     // 同样预留windowHeight作为反应时间
-    //     if (
-    //       this.page < this.totalPage &&
-    //       scrollTop + windowHeight >= scrollHeight
-    //     ) {
-    //       this.updateViewFundsID("down");
-    //     }
-    //   }
-    //   this.lastScrollTop = scrollTop;
-    // },
-    // updateViewFundsID(dir) {
-    //   console.log(dir);
-    //   if (dir === "up") {
-    //     this.viewFundsID.unshift(
-    //       ...this.fundsID.slice(
-    //         (this.page - 3) * this.size,
-    //         (this.page - 2) * this.size
-    //       )
-    //     );
-    //     d3.select("#container").style(
-    //       "padding-top",
-    //       this.eachHeight * (this.page - 3) * this.size + "px"
-    //     );
-    //     this.viewFundsID.splice(
-    //       this.viewFundsID.length - this.size,
-    //       this.viewFundsID.length
-    //     );
-    //     this.page--;
-    //   } else {
-    //     this.viewFundsID.push(
-    //       ...this.fundsID.slice(
-    //         this.page * this.size,
-    //         (this.page + 1) * this.size
-    //       )
-    //     );
-    //     if (this.page > 1) {
-    //       this.viewFundsID.splice(0, this.size);
-    //       d3.select("#container").style(
-    //         "padding-top",
-    //         this.eachHeight * (this.page - 1) * this.size + "px"
-    //       );
-    //     }
-    //     this.page++;
-    //   }
-    //   console.log(this.viewFundsID);
-    //   this.lastPaddingTop = parseFloat(
-    //     d3.select("#container").style("padding-top")
-    //   );
-    //   console.log(this.lastPaddingTop);
-    //   this.initScrollTop =
-    //     this.$refs["container"].scrollTop + this.lastPaddingTop;
-    //   this.getViewFunds();
-    // },
-    // getViewFunds() {
-    //   this.isRequesting = true;
-    //   DataService.post(
-    //     "get_view_funds",
-    //     {
-    //       f_ids: this.viewFundsID,
-    //       start_date: this.start_date,
-    //       end_date: this.end_date,
-    //     },
-    //     (data) => {
-    //       console.log("get_view_funds", data);
-    //       // this.fundData = data;
-    //       this.donutChartData = [];
-    //       for (let i = 0; i < this.viewFundsID.length; i++) {
-    //         const totalData = data["total"][this.viewFundsID[i]];
-    //         let thisDonutChartData = [];
-    //         let sum = 0;
-    //         for (let key in totalData) {
-    //           thisDonutChartData.push({
-    //             name: key,
-    //             value: totalData[key],
-    //           });
-    //           sum += totalData[key];
-    //         }
-    //         thisDonutChartData.push({
-    //           name: "empty",
-    //           value: { norm: 13 - sum, value: 13 - sum },
-    //         });
-    //         this.donutChartData.push(thisDonutChartData);
-    //       }
-    //       console.log(this.donutChartData);
-    //       this.isRequesting = false;
-    //       this.$nextTick(function() {
-    //         // d3.select("#container").style(
-    //         //   "padding-top",
-    //         //   this.lastPaddingTop + "px"
-    //         // );
-    //         console.log(this.initScrollTop);
-    //         this.$refs["container"].scrollTop = this.initScrollTop;
-    //       });
-    //     }
-    //   );
-    // },
     handleProfileScroll() {
       this.lineStartYPos_n = this.lineStartYPos.map(
         (d) => d + document.getElementById("container").scrollTop
@@ -321,7 +181,7 @@ export default {
           this.fundsID[i]
         ].thisFundLikeScore;
       }
-      if (isAllZero) return 2;  // 不允许一个分都不打
+      if (isAllZero) return 2; // 不允许一个分都不打
       // 检测此次比较是否已存入history，也就是是否保存后重新打分，这种情况视为更新之前的记录
       let isExist = false,
         index = -1;
@@ -336,9 +196,13 @@ export default {
           break;
         }
       }
-      if (!isExist) this.historyFundsLikeScore.push(this.fundsLikeScore_n);
-      else this.historyFundsLikeScore[index] = this.fundsLikeScore_n;
-      return 0;
+      if (!isExist) {
+        this.historyFundsLikeScore.push(this.fundsLikeScore_n);
+        return 0; // 新纪录
+      } else {
+        this.historyFundsLikeScore[index] = this.fundsLikeScore_n;
+        return 3; // 更新已有记录
+      }
     },
     calcLineEndYPos() {
       this.lineEndYPos = [];
