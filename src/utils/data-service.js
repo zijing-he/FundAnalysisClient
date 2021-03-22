@@ -1,8 +1,8 @@
 import axios from 'axios'
 
 let DataService = {
-  DATA_SERVER_URL: 'http://10.76.0.165:8888',
-  // DATA_SERVER_URL: "http://kuoluo1995.natapp1.cc",
+  // DATA_SERVER_URL: 'http://10.76.0.165:8888',
+  DATA_SERVER_URL: "http://kuoluo1995.natapp1.cc",
 
   // HTTP GET request
   get(callback) {
