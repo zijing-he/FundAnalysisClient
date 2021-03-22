@@ -83,7 +83,7 @@ export default {
         .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
     },
     renderUpdate() {
-       this.showManagerArray = [];
+      this.showManagerArray = [];
       this.managerId = Object.keys(this.data);
       let tooltip = d3
         .select("#manager_bubble_chart")
@@ -110,14 +110,14 @@ export default {
               "<br /> 任职天数：" +
               this.data[d].days
           )
-          .style("left", event.pageX - 850 + "px")
-          .style("top", event.pageY - 100 + "px");
+          .style("left", event.layerX + 70 + "px")
+          .style("top", event.layerY - 10 + "px");
       };
 
       let moveTooltip = (event) => {
         tooltip
-          .style("left", event.pageX - 850 + "px")
-          .style("top", event.pageY - 100 + "px");
+          .style("left", event.layerX + 70 + "px")
+          .style("top", event.layerY - 10 + "px");
       };
 
       let hideTooltip = (event) => {
@@ -138,7 +138,11 @@ export default {
         }
         // console.log(this.showManagerArray);
         // this.$emit("showManager", d);
-        this.$emit("showManager", this.showManagerArray,this.showManagerArray.length);
+        this.$emit(
+          "showManager",
+          this.showManagerArray,
+          this.showManagerArray.length
+        );
       };
 
       let clickTooltip = function (event, d) {

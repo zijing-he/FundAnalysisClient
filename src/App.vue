@@ -411,6 +411,7 @@ export default {
 #update_button_container #update_button {
   width: 89%;
   margin: auto;
+  margin-top:30px;
   border-radius: 6px;
 }
 #update_button_container #update_button text {

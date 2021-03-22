@@ -7,6 +7,7 @@
         <a-select
           v-model:value="selectedIndustries"
           mode="multiple"
+          :maxTagCount="2"
           showArrow
           style="
             width: 91%;
