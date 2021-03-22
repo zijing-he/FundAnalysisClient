@@ -373,7 +373,7 @@ export default {
             traverseEndX = this.investStyleBoxWidth;
             traverseEndY =
               traverseEndY - (20 * this.investStyleBoxWidth) / 200 - 5;
-          } else if (["alpha", "beta"].indexOf(type) !== -1) {
+          } else if (["information_ratio", "alpha"].indexOf(type) !== -1) {
             // right
             traverseStartX =
               (60 * this.investStyleBoxWidth) / 200 -
@@ -440,7 +440,7 @@ export default {
           thatY1 = thisY1 - (20 * this.investStyleBoxWidth) / 200 - 5;
           thatX2 = this.investStyleBoxWidth;
           thatY2 = thisY2 - (20 * this.investStyleBoxWidth) / 200 - 5;
-        } else if (["alpha", "beta"].indexOf(type) !== -1) {
+        } else if (["information", "alpha"].indexOf(type) !== -1) {
           // right
           thatX1 =
             (60 * this.investStyleBoxWidth) / 200 -
@@ -506,7 +506,7 @@ export default {
         // top
         lastX = 0;
         lastY = lastTmpY - (20 * this.investStyleBoxWidth) / 200 - 5;
-      } else if (["alpha", "beta"].indexOf(type) !== -1) {
+      } else if (["information", "alpha"].indexOf(type) !== -1) {
         // right
         lastX =
           (60 * this.investStyleBoxWidth) / 200 -
