@@ -170,7 +170,7 @@ export default {
       showFundsLikeScore: {},
       lineStartYPos: [], // 连线起始y坐标
       // 3个给气泡图的变量
-      totalWidth: 900,
+      totalWidth: 1395,
       scrollLeft: 0,
       marginLeft: [],
       historyFundsLikeScore: [],
@@ -211,6 +211,9 @@ export default {
             this.rankFundsData[d] = this.allFundsData[i];
           });
           this.managerToFund = data.manager2fund;
+          // 重置历史记录
+          this.historyFundsLikeScore = [];
+          this.selectIndex = -1;
           this.isRequestRanking = false;
         }
       );
