@@ -227,7 +227,7 @@ export default {
         "get_manager_fund_local",
         {
           weights: this.userWeight,
-          num_top: 2,
+          num_top: 10,
           f_ids: this.fundsID,
           start_date: this.startDate,
           end_date: this.endDate,

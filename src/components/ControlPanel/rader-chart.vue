@@ -41,7 +41,7 @@ export default {
     },
   },
   mounted: function () {
-    // console.log(this.data);
+    console.log(this.data);
     this.svg = d3
       .select("#market_raderchart")
       .append("svg")
@@ -205,9 +205,11 @@ export default {
         .attr("transform", "translate(35,-10)");
       axis.select("#text_instl_weight").attr("transform", "translate(50,-35)");
       axis.select("#text_risk").attr("transform", "translate(-20,-5)");
-      
-      axis.select("#text_max_drop_down").attr("transform", "translate(-15,-12)");
-    
+
+      axis
+        .select("#text_max_drop_down")
+        .attr("transform", "translate(-15,-12)");
+
       axis.select("#text_size").attr("transform", "translate(20,-28)");
       axis
         .select("#text_three_year_return")
@@ -245,7 +247,7 @@ export default {
             (1 - this.factor * Math.cos((i * this.radians) / this.total)),
         ]);
       });
-
+      console.log("maxDataValue:", maxDataValues);
       let str = "";
       for (let i = 0; i < this.dataValues.length; i++) {
         str = str + this.dataValues[i][0] + "," + this.dataValues[i][1] + " ";
@@ -277,11 +279,17 @@ export default {
         //   .style("display", "block")
         //   .style("text-align", "center");
       };
+      let tempData = this.data;
+      let width = this.width; //this.width更新，这儿也要更新
+      let height = this.height;
+      let maxValue = this.maxValue;
+      let factor = this.factor;
+      let radians = this.radians;
+      let total = this.total;
       let move = function (event, d) {
-        let width = 260; //this.width更新，这儿也要更新
-        let height = 260;
         const e = nodesGroup.nodes();
         const i = e.indexOf(this); //获取index
+        // console.log("d.axis ", d.axis, d.value);
         let dragTarget = d3.select(this);
 
         let oldX = parseFloat(dragTarget.attr("cx")) - width / 2;
@@ -294,28 +302,105 @@ export default {
           newValue = 0;
         let maxX = maxDataValues[i][0] - width / 2;
         let maxY = height / 2 - maxDataValues[i][1];
+        let QR1 = parseFloat(tempData[0].value);
+        let YR1 = parseFloat(tempData[1].value);
+        let YR3 = parseFloat(tempData[2].value);
 
         if (oldX === 0) {
           newY = oldY - event.dy;
           if (Math.abs(newY) > Math.abs(maxY)) {
+            //应该只在这里加
             newY = maxY;
           }
-          newValue = ((newY / oldY) * d.value).toFixed(2);
+          //特判:直接计算坐标，从坐标上克制
+          if (d.axis === "one_quarter_return") {
+            let new_maxY =
+              height / 2 -
+              (height / 2) *
+                (1 -
+                  (parseFloat(Math.max(7 - YR1 - YR3, 0)) / maxValue) *
+                    factor *
+                    Math.cos((i * radians) / total));
+            let zero_Y =
+              height / 2 -
+              (height / 2) *
+                (1 -
+                  (parseFloat(Math.max(2, 0)) / maxValue) *
+                    factor *
+                    Math.cos((i * radians) / total));
+            if (Math.abs(newY) > Math.abs(new_maxY)) {
+              //Y坐标不超过new_maxY
+              newY = new_maxY;
+            }
+            if (Math.abs(newY) < Math.abs(zero_Y)) {
+              newY = zero_Y;
+            }
+          }
+
+          newValue = ((newY / oldY) * d.value);
         } else {
           let slope = oldY / oldX;
 
           newX = event.dx + parseFloat(dragTarget.attr("cx")) - width / 2;
+          let new_maxX = maxX;
+          let zero_X =
+            (width / 2) *
+              (1 -
+                (parseFloat(Math.max(2, 0)) / maxValue) *
+                  factor *
+                  Math.sin((i * radians) / total)) -
+            width / 2;
 
-          if (Math.abs(newX) > Math.abs(maxX)) {
-            newX = maxX;
+          // if (d.axis === "one_quarter_return") {
+          //   new_maxX =
+          //     (width / 2) *
+          //       (1 -
+          //         (parseFloat(Math.max(7 - YR1 - YR3, 0)) / maxValue) *
+          //           factor *
+          //           Math.sin((i * radians) / total)) -
+          //     width / 2;
+          // }
+          // else
+          if (d.axis === "one_year_return") {
+            new_maxX =
+              (width / 2) *
+                (1 -
+                  (parseFloat(Math.max(7 - QR1 - YR3, 0)) / maxValue) *
+                    factor *
+                    Math.sin((i * radians) / total)) -
+              width / 2;
+            if (Math.abs(newX) < Math.abs(zero_X)) {
+              newX = zero_X;
+            }
+          } else if (d.axis === "three_year_return") {
+            new_maxX =
+              (width / 2) *
+                (1 -
+                  (parseFloat(Math.max(7 - YR1 - QR1, 0)) / maxValue) *
+                    factor *
+                    Math.sin((i * radians) / total)) -
+              width / 2;
+            if (Math.abs(newX) < Math.abs(zero_X)) {
+              newX = zero_X;
+            }
           }
+
+          if (Math.abs(newX) > Math.abs(new_maxX)) {
+            newX = new_maxX;
+          }
+
+          // if (Math.abs(newX) > Math.abs(maxX)) {
+          //   newX = maxX;
+          // }
+
           newY = newX * slope;
 
           let ratio = newX / oldX;
-          newValue = (ratio * d.value).toFixed(2);
+          newValue = (ratio * d.value);
         }
         //Bound the drag behavior to the max and min of the axis, not by pixels but by value calc (easier)
         if (newValue >= 1 && newValue <= 3) {
+       
           dragTarget.attr("cx", newX + width / 2).attr("cy", height / 2 - newY);
 
           d.value = newValue;
