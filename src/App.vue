@@ -331,8 +331,16 @@ export default {
           this.incomingWeight = data;
           console.log("incomingWeight:", data);
           this.$message.success(
-            "Weights updated! Please click the Update button."
+            "Weight updated! Please click the Update button."
           );
+          // 重置各种参数
+          this.rankFundsID = this.searchFundsID = [];
+          this.rankFundsData = {};
+          this.showFundsID = [];
+          this.showFundsLikeScore = {};
+          // 重置历史记录
+          this.historyFundsLikeScore = [];
+          this.selectIndex = -1;
         }
       );
     },
