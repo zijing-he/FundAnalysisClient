@@ -52,7 +52,7 @@
       <a-row>
         <div v-if="!isfundsID" id="fakeOverViewLayout"></div>
         <OverViewLayout
-         v-if="isfundsID"
+          v-if="isfundsID"
           :fundsData="fundsData"
           :totalWidth="totalWidth"
           :scrollLeft="scrollLeft"
@@ -133,7 +133,14 @@ export default {
       if (val === -1) return;
       this.isTotalChange = false;
       this.showFundsLikeScore = this.historyFundsLikeScore[val];
-      this.showFundsID = Object.keys(this.historyFundsLikeScore[val]);
+      // this.showFundsID = Object.keys(this.historyFundsLikeScore[val]);
+      // js对象不保留顺序，只能遍历以确保展示顺序
+      let tmpShowFundsID = [];
+      for (let i = 0; i < this.rankFundsID.length; i++) {
+        if (this.rankFundsID[i] in this.historyFundsLikeScore[val])
+          tmpShowFundsID.push(this.rankFundsID[i]);
+      }
+      this.showFundsID = tmpShowFundsID;
       // 更新rank里面的选中情况
       this.$refs["fundRankingLayout"].handleChangeHistoryIndex(
         this.showFundsID
@@ -144,7 +151,7 @@ export default {
     return {
       fundsData: null,
       fundsID: null, // 给散点图的
-      isfundsID:false, //决定显不显示散点图
+      isfundsID: false, //决定显不显示散点图
       startDate: "20110331", // 默认起始值
       endDate: "20191231",
       //初始化权重
@@ -201,7 +208,6 @@ export default {
         },
         (data) => {
           // console.log(data);
-          this.isTotalChange = true;
           this.allFundsID = data.ranking.map((d) => d[0]);
           this.allFundsData = data.ranking.map((d) => d[1]);
           this.searchFundsID = [];
@@ -214,6 +220,7 @@ export default {
           // 重置历史记录
           this.historyFundsLikeScore = [];
           this.selectIndex = -1;
+          this.isTotalChange = true;
           this.isRequestRanking = false;
         }
       );
@@ -272,15 +279,13 @@ export default {
       this.selectIndex = -1;
       // 刷新散点图
       this.fundsID = showFundsID;
-      if(this.fundsID.length > 0) {
+      if (this.fundsID.length > 0) {
         this.isfundsID = true;
         this.getFundManagers();
-      }
-      else {
+      } else {
         // this.getFundManagers();
         this.isfundsID = false;
       }
-      
     },
     handleLineStartYPosChange(val) {
       this.lineStartYPos = val;
@@ -297,7 +302,7 @@ export default {
       this.historyFundsLikeScore = this.$refs[
         "fundProfileLayout"
       ].historyFundsLikeScore;
-      this.selectIndex = this.historyFundsLikeScore.length - 1;
+      if (res === 0) this.selectIndex = this.historyFundsLikeScore.length - 1;
       this.$message.success("Saving successful!");
     },
     handleUpdateWeight() {
@@ -324,7 +329,7 @@ export default {
             data[key] = data[key].toFixed(4);
           }
           this.incomingWeight = data;
-          console.log("incomingWeight:",data);
+          console.log("incomingWeight:", data);
           this.$message.success(
             "Weights updated! Please click the Update button."
           );
@@ -364,6 +369,8 @@ export default {
       if (!(val in this.managerToFund)) {
         this.$message.warn("Nothing found in current Ranking.");
       } else {
+        let addCnt = 0,
+          existCnt = 0;
         let thisManagerFundsID = this.managerToFund[val];
         for (let i = 0; i < thisManagerFundsID.length; i++) {
           let index = this.allFundsID.indexOf(thisManagerFundsID[i]);
@@ -375,11 +382,28 @@ export default {
             this.rankFundsData[thisManagerFundsID[i]] = this.allFundsData[
               index
             ];
+            addCnt++;
+            this.$message.success(
+              `Fund ${thisManagerFundsID[i]} has been added to current Ranking.`
+            );
+          } else if (index !== -1 && (rankIndex !== -1 || searchIndex !== -1)) {
+            if (rankIndex !== -1) {
+              this.$message.warn(
+                `Fund ${thisManagerFundsID[i]} is already in Rank ${rankIndex +
+                  1 -
+                  this.searchFundsID.length}.`
+              );
+            } else if (searchIndex !== -1) {
+              this.$message.warn(
+                `Fund ${thisManagerFundsID[i]} is already in current Ranking (Rank denoted by S).`
+              );
+            }
+            existCnt++;
           }
+          this.$message.success(
+            `Funds related to Manager ${val} has all been added to current Ranking (${addCnt} added, ${existCnt} exist).`
+          );
         }
-        this.$message.success(
-          `Funds related to Manager ${val} has been added to current Ranking.`
-        );
       }
       setTimeout(() => {
         this.isRequestRanking = false;
@@ -414,7 +438,7 @@ export default {
 #update_button_container #update_button {
   width: 89%;
   margin: auto;
-  margin-top:30px;
+  margin-top: 30px;
   border-radius: 6px;
 }
 #update_button_container #update_button text {
@@ -487,9 +511,9 @@ export default {
   background: #011f41;
   box-shadow: 1px -3px 4px 0 rgba(36, 15, 57, 0.1);
 }
-#fakeOverViewLayout{
-  width:1647px;
-  height:200px;
-  margin:44px 36px 0 30px;
+#fakeOverViewLayout {
+  width: 1647px;
+  height: 200px;
+  margin: 44px 36px 0 30px;
 }
 </style>

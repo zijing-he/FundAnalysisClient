@@ -275,12 +275,12 @@ export default {
       if (!isFatherCall) this.$emit("turn", false, this.fundId);
     },
     likeFund() {
-      this.thisFundLikeScore = 1;
-      // console.log(`${this.fundId}: ${this.thisFundLikeScore}`);
+      if (this.thisFundLikeScore === 1) this.thisFundLikeScore = 0;
+      else this.thisFundLikeScore = 1;
     },
     dislikeFund() {
-      this.thisFundLikeScore = -1;
-      // console.log(`${this.fundId}: ${this.thisFundLikeScore}`);
+      if (this.thisFundLikeScore === -1) this.thisFundLikeScore = 0;
+      else this.thisFundLikeScore = -1;
     },
     clickBar(type) {
       this.svg.select(`#dashline_${this.fundId}`).remove();

@@ -37,7 +37,7 @@
       </a-form>
     </div>
     <a-divider />
-    <a-spin v-if="isRequestRanking" size="large" tip="Loading..." />
+    <!-- <a-spin v-if="isRequestRanking" size="large" tip="Loading..." /> -->
     <div
       class="ranking"
       ref="ranking"
