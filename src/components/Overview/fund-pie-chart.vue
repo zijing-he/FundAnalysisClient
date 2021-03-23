@@ -115,8 +115,9 @@ export default {
           managerId: this.quarterFundData[id].manager_ids,
           x: this.quarterFundData[id].loc[0],
           y: this.quarterFundData[id].loc[1],
-          new: this.quarterFundData[id]["new"],
-          delete: this.quarterFundData[id]["delete"],
+          // new: this.quarterFundData[id]["new"],
+          // delete: this.quarterFundData[id]["delete"],
+          other: this.quarterFundData[id]["other"],
           data: JSON.parse(JSON.stringify(strData)), //d3.pie()算弧长的参考值：目前点击了几个基金经理
           color: JSON.parse(JSON.stringify(colorArray)), //存放点击了的基金经理的id
         });
@@ -178,8 +179,8 @@ export default {
         .style("color", "white");
       let showTooltip = (event, d) => {
         tooltip
-         .style("width", "150px")
-        .style("height", "50px")
+          .style("width", "150px")
+          .style("height", "50px")
           .style("visibility", "visible")
           .html("fundID: " + d.id)
           .style("left", event.layerX + 10 + "px")
@@ -215,7 +216,7 @@ export default {
         .selectAll(".pies")
         .data((d) => {
           let res = pie(d[1].data.split("-"));
-
+          // console.log(" d[1].other:",d[1].other)
           if (res.length === 1 && res[0].data.length === 0) {
             //没有被选中，画灰色
             res[0].id = d[0];
@@ -223,10 +224,12 @@ export default {
             res[0].value = 1;
             res[0].color = ["#D8D8D8"];
             d[1].color.push("#D8D8D8");
+            res[0].other = d[1].other;
           } else if (res.length >= 1) {
             res.forEach((dd) => {
               dd.id = d[0];
               dd.color = JSON.parse(JSON.stringify(d[1].color));
+              dd.other = d[1].other;
             });
           }
           // console.log("d:", d, res);
@@ -243,9 +246,12 @@ export default {
         .append("path")
         .attr("d", arc)
         .attr("fill", (d, i) => {
-          // console.log('d,i:',d,i);
+          // console.log("d,i:", d, i);
           return d.color[i];
-        });
+        })
+        .style("stroke", (d) => (d.other === true ? "black" : "none"))
+        // d.new == true : "特殊操作" ? "默认"
+        .style("stroke-dasharray", (d) => (d.other === true ? "2 2" : "0"));
 
       //画圆
       // this.svg
@@ -285,11 +291,11 @@ export default {
       //   .attr("cx", (d) => this.xScale(d[1].x))
       //   .attr("cy", (d) => this.yScale(d[1].y));
       let showLineTooltip = (event, d) => {
-        console.log(d);
+        // console.log(d);
         tooltip
           .style("visibility", "visible")
           .style("width", "150px")
-        .style("height", "70px")
+          .style("height", "70px")
           .html("fundManagerID: " + d[2].managerId)
           .style("left", event.layerX + 10 + "px")
           .style("top", event.layerY - 30 + "px");

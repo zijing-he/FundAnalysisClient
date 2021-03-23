@@ -38,7 +38,7 @@ export default {
     },
   },
   mounted: function () {
-    // console.log("基金经理信息：", this.data);
+    console.log("基金经理信息：", this.data);
     this.renderInit();
     this.renderUpdate();
   },
@@ -158,15 +158,14 @@ export default {
           showManagerFn(d, true);
         }
       };
-
       this.svg.selectAll("circle").remove();
       this.svg
         .append("g")
         .selectAll("dot")
-        .data(this.managerId)
+        .data(this.managerId.filter((d) => this.data[d].other === false))
         .enter()
         .append("circle")
-        .attr("class", "manager_bubbles")
+        .attr("class", "manager_bubbles_circle")
         .attr("cx", (d) => this.xScale(this.data[d].loc[0]))
         .attr("cy", (d) => this.yScale(this.data[d].loc[1]))
         .attr("r", (d) => this.sizeScale(this.data[d].size))
@@ -178,6 +177,28 @@ export default {
         .on("mousemove", moveTooltip)
         .on("mouseleave", hideTooltip)
         .on("click", clickTooltip);
+
+        this.svg.selectAll("rect").remove();
+      this.svg
+        .append("g")
+        .selectAll("dot")
+        .data(this.managerId.filter((d) => this.data[d].other === true))
+        .enter()
+        .append("rect")
+        .attr("class", "manager_bubbles_rect")
+        .attr("x", (d) => this.xScale(this.data[d].loc[0]))
+        .attr("y", (d) => this.yScale(this.data[d].loc[1]))
+        .attr("width", (d) => this.sizeScale(this.data[d].size)*2)
+        .attr("height", (d) => this.sizeScale(this.data[d].size)*2)
+        .style("fill", "#D8D8D8")
+        .style("stroke", "white")
+        .style("stroke-width", "0.5px")
+        .on("mouseover", showTooltip)
+        .on("mousemove", moveTooltip)
+        .on("mouseleave", hideTooltip)
+        .on("click", clickTooltip);
+
+
     },
   },
 };
