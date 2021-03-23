@@ -283,6 +283,7 @@ export default {
       else this.thisFundLikeScore = -1;
     },
     clickBar(type) {
+      if (["stock", "bond", "cash", "other"].indexOf(type) !== -1) return;
       this.svg.select(`#dashline_${this.fundId}`).remove();
       // 这里如果用this.svg.append，有可能会加到别的FundProfile里面，具体原因未知
       const gDashline = d3
@@ -383,9 +384,7 @@ export default {
               (60 * this.investStyleBoxWidth) / 200 -
               (traverseEndY - (20 * this.investStyleBoxWidth) / 200 - 5);
             traverseEndY = this.investStyleBoxWidth;
-          } else if (
-            ["size", "stock", "bond", "cash", "other"].indexOf(type) !== -1
-          ) {
+          } else if (type === "size") {
             // bottom
             traverseStartX = this.investStyleBoxWidth;
             traverseStartY =
@@ -450,9 +449,7 @@ export default {
             (60 * this.investStyleBoxWidth) / 200 -
             (thisY2 - (20 * this.investStyleBoxWidth) / 200 - 5);
           thatY2 = this.investStyleBoxWidth;
-        } else if (
-          ["size", "stock", "bond", "cash", "other"].indexOf(type) !== -1
-        ) {
+        } else if (type === "size") {
           // bottom
           thatX1 = this.investStyleBoxWidth;
           thatY1 =
@@ -512,9 +509,7 @@ export default {
           (60 * this.investStyleBoxWidth) / 200 -
           (lastTmpY - (20 * this.investStyleBoxWidth) / 200 - 5);
         lastY = 0;
-      } else if (
-        ["size", "stock", "bond", "cash", "other"].indexOf(type) !== -1
-      ) {
+      } else if (type === "size") {
         // bottom
         lastX = this.investStyleBoxWidth;
         lastY =

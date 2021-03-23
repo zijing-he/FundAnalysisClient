@@ -34,6 +34,7 @@ const colorMap = {
   three_year_hs300_return: "#d8d8d8",
   risk: "#d8d8d8",
   size: "#d8d8d8",
+  max_drop_down: "#d8d8d8",
 };
 
 // 柱状图的起始x和宽度，根据每条边有多少根柱子而定 (以边长为80确定，后根据实际边长调整)
@@ -115,7 +116,7 @@ export default {
       bottomSvg: null,
       initRightBars: ["information_ratio", "alpha"],
       initBottomBars: ["size", "stock", "bond", "cash", "other"],
-      initLeftBars: ["risk", "sharp_ratio", "beta"],
+      initLeftBars: ["risk", "max_drop_down", "sharp_ratio", "beta"],
       barTopMargin: 5,
       curDegree: 0,
       lastTopBars: [],
@@ -146,7 +147,7 @@ export default {
         .round(true);
     },
     yScale() {
-      return d3.scaleLinear().domain([0, 1.1]);
+      return d3.scaleLinear();
     },
     initTopBars() {
       // quarter, year, 3-year 有些可能为空，确定下具体有几个
@@ -285,7 +286,9 @@ export default {
       // bars
       let that = this;
       // top
-      this.yScale.range([(60 * this.boxWidth) / 200, this.barTopMargin]);
+      this.yScale
+        .range([(60 * this.boxWidth) / 200, this.barTopMargin])
+        .domain([0, 1.1]);
       // 条纹，下同
       const topDefs = this.topSvg.append("defs");
       topDefs
@@ -610,7 +613,9 @@ export default {
       }
 
       // right
-      this.yScale.range([0, ((60 - this.barTopMargin) * this.boxWidth) / 200]);
+      this.yScale
+        .range([0, ((60 - this.barTopMargin) * this.boxWidth) / 200])
+        .domain([0, 1.1]);
       const rightDefs = this.rightSvg.append("defs");
       rightDefs
         .append("pattern")
@@ -672,7 +677,9 @@ export default {
       }
 
       // bottom
-      this.yScale.range([0, ((60 - this.barTopMargin) * this.boxWidth) / 200]);
+      this.yScale
+        .range([0, ((60 - this.barTopMargin) * this.boxWidth) / 200])
+        .domain([0, 1.1]);
       const bottomDefs = this.bottomSvg.append("defs");
       bottomDefs
         .append("pattern")
@@ -698,46 +705,112 @@ export default {
       const gRectsBottom = this.bottomSvg
         .append("g")
         .attr("transform", `translate(${(60 * this.boxWidth) / 200}, 0)`);
-      for (let i = 0; i < this.initBottomBars.length; i++) {
+      // for (let i = 0; i < this.initBottomBars.length; i++) {
+      //   gRectsBottom
+      //     .append("rect")
+      //     .attr("id", `${this.initBottomBars[i]}-${this.boxId}`)
+      //     .attr("fill", eval(`colorMap.${this.initBottomBars[i]}`))
+      //     .attr("stroke", "black")
+      //     .attr(
+      //       "mask",
+      //       eval(`this.${this.initBottomBars[i]}Data.norm`) < 0
+      //         ? `url(#bottom_mask_stripe_${this.boxId})`
+      //         : "none"
+      //     )
+      //     .attr("x", (barAttrs.five.startX[i] * this.boxWidth) / 200)
+      //     .attr("y", 0)
+      //     .attr("width", (barAttrs.five.width * this.boxWidth) / 200)
+      //     .attr(
+      //       "height",
+      //       this.yScale(
+      //         Math.abs(eval(`this.${this.initBottomBars[i]}Data.norm`))
+      //       ) - this.yScale(0)
+      //     );
+      //   if (eval(`this.${this.initBottomBars[i]}Data.norm`) < 0) {
+      //     let dom = d3.select(`#${this.initBottomBars[i]}-${this.boxId}`);
+      //     let x = parseFloat(dom.attr("x")),
+      //       y = parseFloat(dom.attr("y")),
+      //       width = parseFloat(dom.attr("width")),
+      //       height = parseFloat(dom.attr("height"));
+      //     gRectsBottom
+      //       .append("path")
+      //       .attr("fill", "none")
+      //       .attr("stroke", "black")
+      //       .attr("d", `M ${x} 0 h ${width} v ${height} h ${-width} Z`);
+      //   }
+      // }
+      gRectsBottom
+        .append("rect")
+        .attr("id", `size-${this.boxId}`)
+        .attr("fill", colorMap.size)
+        .attr("stroke", "black")
+        .attr(
+          "mask",
+          this.sizeData.norm < 0
+            ? `url(#bottom_mask_stripe_${this.boxId})`
+            : "none"
+        )
+        .attr("x", (barAttrs.two.startX[0] * this.boxWidth) / 200)
+        .attr("y", 0)
+        .attr("width", (barAttrs.two.width * this.boxWidth) / 200)
+        .attr(
+          "height",
+          this.yScale(Math.abs(this.sizeData.norm)) - this.yScale(0)
+        );
+      if (this.sizeData.norm < 0) {
+        let dom = d3.select(`#size-${this.boxId}`);
+        let x = parseFloat(dom.attr("x")),
+          y = parseFloat(dom.attr("y")),
+          width = parseFloat(dom.attr("width")),
+          height = parseFloat(dom.attr("height"));
+        gRectsBottom
+          .append("path")
+          .attr("fill", "none")
+          .attr("stroke", "black")
+          .attr("d", `M ${x} 0 h ${width} v ${height} h ${-width} Z`);
+      }
+      // 资产分布改成堆叠图
+      this.yScale.domain([0, 1]);
+      let curY = 0;
+      for (let i = 1; i < this.initBottomBars.length; i++) {
         gRectsBottom
           .append("rect")
           .attr("id", `${this.initBottomBars[i]}-${this.boxId}`)
           .attr("fill", eval(`colorMap.${this.initBottomBars[i]}`))
           .attr("stroke", "black")
-          .attr(
-            "mask",
-            eval(`this.${this.initBottomBars[i]}Data.norm`) < 0
-              ? `url(#bottom_mask_stripe_${this.boxId})`
-              : "none"
-          )
-          .attr("x", (barAttrs.five.startX[i] * this.boxWidth) / 200)
-          .attr("y", 0)
-          .attr("width", (barAttrs.five.width * this.boxWidth) / 200)
+          .attr("x", (barAttrs.two.startX[1] * this.boxWidth) / 200)
+          .attr("y", curY)
+          .attr("width", (barAttrs.two.width * this.boxWidth) / 200)
           .attr(
             "height",
             this.yScale(
               Math.abs(eval(`this.${this.initBottomBars[i]}Data.norm`))
             ) - this.yScale(0)
           );
-        if (eval(`this.${this.initBottomBars[i]}Data.norm`) < 0) {
-          let dom = d3.select(`#${this.initBottomBars[i]}-${this.boxId}`);
-          let x = parseFloat(dom.attr("x")),
-            y = parseFloat(dom.attr("y")),
-            width = parseFloat(dom.attr("width")),
-            height = parseFloat(dom.attr("height"));
-          gRectsBottom
-            .append("path")
-            .attr("fill", "none")
-            .attr("stroke", "black")
-            .attr("d", `M ${x} 0 h ${width} v ${height} h ${-width} Z`);
-        }
+        curY +=
+          this.yScale(
+            Math.abs(eval(`this.${this.initBottomBars[i]}Data.norm`))
+          ) - this.yScale(0);
       }
+      // 添加1的基准线
+      gRectsBottom
+        .append("path")
+        .attr("stroke-dasharray", "2, 2")
+        .attr("stroke", "black")
+        .attr(
+          "d",
+          `m ${(barAttrs.two.startX[1] * this.boxWidth) / 200} ${this.yScale(
+            1
+          )} h ${(barAttrs.two.width * this.boxWidth) / 200}`
+        );
 
       // left
-      this.yScale.range([
-        (60 * this.boxWidth) / 200,
-        (this.barTopMargin * this.boxWidth) / 200,
-      ]);
+      this.yScale
+        .range([
+          (60 * this.boxWidth) / 200,
+          (this.barTopMargin * this.boxWidth) / 200,
+        ])
+        .domain([0, 1.1]);
       const leftDefs = this.leftSvg.append("defs");
       leftDefs
         .append("pattern")
@@ -779,7 +852,7 @@ export default {
             "x",
             this.yScale(Math.abs(eval(`this.${this.initLeftBars[i]}Data.norm`)))
           )
-          .attr("y", (barAttrs.three.startX[i] * this.boxWidth) / 200)
+          .attr("y", (barAttrs.four.startX[i] * this.boxWidth) / 200)
           .attr(
             "width",
             this.yScale(0) -
@@ -787,7 +860,7 @@ export default {
                 Math.abs(eval(`this.${this.initLeftBars[i]}Data.norm`))
               )
           )
-          .attr("height", (barAttrs.three.width * this.boxWidth) / 200);
+          .attr("height", (barAttrs.four.width * this.boxWidth) / 200);
         if (eval(`this.${this.initLeftBars[i]}Data.norm`) < 0) {
           let dom = d3.select(`#${this.initLeftBars[i]}-${this.boxId}`);
           let x = parseFloat(dom.attr("x")),
@@ -840,17 +913,19 @@ export default {
       }
 
       this.curTopBars.forEach((d) => {
-        d3.select(`#${d}-${this.boxId}`)
-          .style("cursor", "pointer")
-          .on("click", function() {
-            that.$emit(
-              "clickBar",
-              d3
-                .select(this)
-                .attr("id")
-                .split("-")[0]
-            );
-          });
+        if (["stock", "bond", "cash", "other"].indexOf(d) === -1) {
+          d3.select(`#${d}-${this.boxId}`)
+            .style("cursor", "pointer")
+            .on("click", function() {
+              that.$emit(
+                "clickBar",
+                d3
+                  .select(this)
+                  .attr("id")
+                  .split("-")[0]
+              );
+            });
+        }
       });
       this.lastTopBars = this.curTopBars;
     },
@@ -887,17 +962,19 @@ export default {
       );
       let that = this;
       this.curTopBars.forEach((d) => {
-        d3.select(`#${d}-${this.boxId}`)
-          .style("cursor", "pointer")
-          .on("click", function() {
-            that.$emit(
-              "clickBar",
-              d3
-                .select(this)
-                .attr("id")
-                .split("-")[0]
-            );
-          });
+        if (["stock", "bond", "cash", "other"].indexOf(d) === -1) {
+          d3.select(`#${d}-${this.boxId}`)
+            .style("cursor", "pointer")
+            .on("click", function() {
+              that.$emit(
+                "clickBar",
+                d3
+                  .select(this)
+                  .attr("id")
+                  .split("-")[0]
+              );
+            });
+        }
       });
       this.lastTopBars.forEach((d) => {
         d3.select(`#${d}-${this.boxId}`)
@@ -914,17 +991,19 @@ export default {
       );
       let that = this;
       this.curTopBars.forEach((d) => {
-        d3.select(`#${d}-${this.boxId}`)
-          .style("cursor", "pointer")
-          .on("click", function() {
-            that.$emit(
-              "clickBar",
-              d3
-                .select(this)
-                .attr("id")
-                .split("-")[0]
-            );
-          });
+        if (["stock", "bond", "cash", "other"].indexOf(d) === -1) {
+          d3.select(`#${d}-${this.boxId}`)
+            .style("cursor", "pointer")
+            .on("click", function() {
+              that.$emit(
+                "clickBar",
+                d3
+                  .select(this)
+                  .attr("id")
+                  .split("-")[0]
+              );
+            });
+        }
       });
       this.lastTopBars.forEach((d) => {
         d3.select(`#${d}-${this.boxId}`)
