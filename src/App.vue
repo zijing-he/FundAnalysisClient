@@ -408,10 +408,10 @@ export default {
             }
             existCnt++;
           }
-          this.$message.success(
-            `Funds related to Manager ${val} has all been added to current Ranking (${addCnt} added, ${existCnt} exist).`
-          );
         }
+        this.$message.success(
+          `Funds related to Manager ${val} has all been added to current Ranking (${addCnt} added, ${existCnt} exist).`
+        );
       }
       setTimeout(() => {
         this.isRequestRanking = false;
