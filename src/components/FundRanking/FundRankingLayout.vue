@@ -110,6 +110,7 @@ export default {
     end_date: String,
     isRequestRanking: Boolean,
     searchFundsID: Array, // 搜索得到的基金
+    searchFundsRank: Array,
   },
   data() {
     return {
@@ -144,7 +145,7 @@ export default {
   methods: {
     rankNumber(index) {
       if (index < this.searchFundsID.length) {
-        return "S";
+        return this.searchFundsRank[index];
       } else {
         return index + 1 - this.searchFundsID.length;
       }

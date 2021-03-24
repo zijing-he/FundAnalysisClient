@@ -29,6 +29,7 @@
         <FundRankingLayout
           :rankFundsID="rankFundsID"
           :searchFundsID="searchFundsID"
+          :searchFundsRank="searchFundsRank"
           :rankFundsData="rankFundsData"
           :start_date="startDate"
           :end_date="endDate"
@@ -172,6 +173,7 @@ export default {
       isRequestRanking: true,
       rankFundsID: null, // 给FundRanking
       searchFundsID: null, // 搜索得到的基金ID
+      searchFundsRank: null, // 搜索得到的基金排名
       rankFundsData: null,
       showFundsID: [], // 展示的FundProfile
       showFundsLikeScore: {},
@@ -211,6 +213,7 @@ export default {
           this.allFundsID = data.ranking.map((d) => d[0]);
           this.allFundsData = data.ranking.map((d) => d[1]);
           this.searchFundsID = [];
+          this.searchFundsRank = [];
           this.rankFundsID = this.allFundsID.slice(0, 20); // 默认展示前20个
           this.rankFundsData = {};
           this.allFundsID.forEach((d, i) => {
@@ -334,7 +337,9 @@ export default {
             "Weight updated! Please click the Update button."
           );
           // 重置各种参数
-          this.rankFundsID = this.searchFundsID = [];
+          this.rankFundsID = [];
+          this.searchFundsID = [];
+          this.searchFundsRank = [];
           this.rankFundsData = {};
           this.showFundsID = [];
           this.showFundsLikeScore = {};
@@ -353,7 +358,7 @@ export default {
         this.$message.warn("Nothing found in current Ranking.");
       } else if (searchIndex !== -1) {
         this.$message.warn(
-          `Fund ${val} is already in current Ranking (Rank denoted by S).`
+          `Fund ${val} is already in Rank ${this.searchFundsRank[searchIndex]}.`
         );
       } else if (rankIndex !== -1) {
         this.$message.warn(
@@ -362,7 +367,8 @@ export default {
             this.searchFundsID.length}.`
         );
       } else {
-        this.searchFundsID.push(this.allFundsID[index]);
+        this.searchFundsID.unshift(this.allFundsID[index]);
+        this.searchFundsRank.unshift(index + 1);
         this.rankFundsID.unshift(this.allFundsID[index]);
         this.rankFundsData[this.allFundsID[index]] = this.allFundsData[index];
         this.$message.success(`Fund ${val} has been added to current Ranking.`);
@@ -385,7 +391,8 @@ export default {
           let rankIndex = this.rankFundsID.indexOf(thisManagerFundsID[i]);
           let searchIndex = this.searchFundsID.indexOf(thisManagerFundsID[i]);
           if (index !== -1 && rankIndex === -1 && searchIndex === -1) {
-            this.searchFundsID.push(thisManagerFundsID[i]);
+            this.searchFundsID.unshift(thisManagerFundsID[i]);
+            this.searchFundsRank.unshift(index + 1);
             this.rankFundsID.unshift(thisManagerFundsID[i]);
             this.rankFundsData[thisManagerFundsID[i]] = this.allFundsData[
               index
@@ -403,7 +410,7 @@ export default {
               );
             } else if (searchIndex !== -1) {
               this.$message.warn(
-                `Fund ${thisManagerFundsID[i]} is already in current Ranking (Rank denoted by S).`
+                `Fund ${thisManagerFundsID[i]} is already in Rank ${this.searchFundsRank[searchIndex]}.`
               );
             }
             existCnt++;
