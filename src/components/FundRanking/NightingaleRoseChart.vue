@@ -28,8 +28,9 @@ const colorMap = {
 
 const dataGroup = [
   ["one_quarter_return", "one_year_return", "three_year_return"],
-  ["max_drop_down", "risk", "size", "beta"],
-  ["alpha", "sharp_ratio", "information_ratio"],
+  ["beta"],
+  ["alpha"],
+  ["size"],
 ];
 
 export default {
@@ -113,7 +114,7 @@ export default {
       const that = this;
       for (let i = 0; i < dataGroup.length; i++) {
         let curGroup = dataGroup[i];
-        let eachAngle = (Math.PI * 2) / 3 / curGroup.length;
+        let eachAngle = (Math.PI * 2) / 4 / curGroup.length;
         for (let j = 0; j < curGroup.length; j++) {
           gChart
             .append("path")
@@ -141,8 +142,8 @@ export default {
                   .arc()
                   .innerRadius(0)
                   .outerRadius(interpolate(t))
-                  .startAngle(((Math.PI * 2) / 3) * i + j * eachAngle)
-                  .endAngle(((Math.PI * 2) / 3) * i + (j + 1) * eachAngle);
+                  .startAngle(-Math.PI / 4 + ((Math.PI * 2) / 4) * i + j * eachAngle)
+                  .endAngle(-Math.PI / 4 + ((Math.PI * 2) / 4) * i + (j + 1) * eachAngle);
                 return arc();
               };
             });
