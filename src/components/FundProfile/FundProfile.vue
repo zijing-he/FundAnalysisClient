@@ -36,7 +36,14 @@
             <use xlink:href="#icondislike-line-copy"></use>
           </svg>
         </div>
-        <div style="margin-top: 4px; margin-left: 30%;">{{ fundId }}</div>
+        <select
+          style="margin: auto; border-radius: 6px; cursor: pointer; width: 110px; margin-left: 24px; font-size: 15px;"
+          v-model="selectManagerID"
+        >
+          <option :value="item" :key="item" v-for="item in managerIDs">{{
+            item
+          }}</option>
+        </select>
       </div>
       <div class="summary_box" v-if="!isLoading">
         <InvestStyleBox
@@ -155,6 +162,8 @@ export default {
     return {
       isLoading: true,
       fundData: null,
+      managerIDs: [],
+      selectManagerID: null,
       svg: null,
       margin: { top: 10, right: 100, bottom: 100, left: 20 },
       width: 1395,
@@ -166,7 +175,6 @@ export default {
       detailCarData: [],
       sizeData: [],
       investStyleBoxes: [],
-      // emptyBoxes: [], // 为同步不同FundProfile的长度
       investStyleBoxWidth: (200 * this.boxHeight) / 270,
       contentWidth: (200 * this.boxHeight) / 270,
       boxGap: 200,
@@ -194,21 +202,25 @@ export default {
     };
   },
 
-  // watch: {
-  //   // startDate: function(val) {
-  //   //   console.log("In FundProfile(startDate): ", val);
-  //   // },
-  //   // fundData: function(val) {
-  //   //   console.log("In FundProfile(fundData): ", val);
-  //   // },
-  //   fundIds: function(val) {
-  //     console.log("In FundProfile(fundIds): ", val);
-  //     for (let i = 0; i < this.investStyleBoxes.length; i++) {
-  //       this.$refs[this.investStyleBoxes[i].boxId].$forceUpdate();
-  //     }
-  //     this.$forceUpdate();
-  //   }
-  // },
+  watch: {
+    // startDate: function(val) {
+    //   console.log("In FundProfile(startDate): ", val);
+    // },
+    // fundData: function(val) {
+    //   console.log("In FundProfile(fundData): ", val);
+    // },
+    // fundIds: function(val) {
+    //   console.log("In FundProfile(fundIds): ", val);
+    //   for (let i = 0; i < this.investStyleBoxes.length; i++) {
+    //     this.$refs[this.investStyleBoxes[i].boxId].$forceUpdate();
+    //   }
+    //   this.$forceUpdate();
+    // }
+    selectManagerID: function(newVal, oldVal) {
+      // console.log(newVal, oldVal);
+      this.$emit("changeManagerID", newVal, oldVal);
+    },
+  },
 
   mounted: function() {
     this.isLoading = true;
@@ -222,6 +234,8 @@ export default {
       (data) => {
         // console.log(data);
         this.fundData = data;
+        this.managerIDs = data["total"][this.fundId]["manager_ids"];
+        this.selectManagerID = this.managerIDs[0];
         this.calcAttrs();
         this.renderInit();
         this.renderUpdate();

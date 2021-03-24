@@ -184,6 +184,7 @@ export default {
       }
     },
     handleCheckbox(e) {
+      this.$emit("clearCurManagerIDs");
       // 设置Map的目的是为了保证右边展示的顺序与左边rank的顺序始终一致
       this.isFundProfileIDChecked.set(e.target.value, e.target.checked);
       this.showFundProfileIDs = [];

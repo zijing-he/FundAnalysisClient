@@ -39,6 +39,7 @@
           @lineStartYPosChange="handleLineStartYPosChange"
           @searchFundCode="handleSearchFundCode"
           @searchManagerCode="handleSearchManagerCode"
+          @clearCurManagerIDs="handleClearManagerIDs"
         />
       </a-row>
     </a-col>
@@ -106,6 +107,7 @@
           @updateWidth="handleUpdateWidth"
           @updateScrollLeft="handleScrollLeft"
           @updateMarginLeft="handleMarginLeft"
+          @changeManagerID="handleChangeManagerID"
         />
       </a-row>
     </a-col>
@@ -132,6 +134,8 @@ export default {
   watch: {
     selectIndex: function(val) {
       if (val === -1) return;
+      // 重置基金经理ID
+      this.curManagerIDs = [];
       this.isTotalChange = false;
       this.showFundsLikeScore = this.historyFundsLikeScore[val];
       // this.showFundsID = Object.keys(this.historyFundsLikeScore[val]);
@@ -189,6 +193,7 @@ export default {
       managerToFund: {},
       allFundsID: [],
       allFundsData: [],
+      curManagerIDs: [], // 展示的基金经理ID
     };
   },
   computed: {},
@@ -200,6 +205,7 @@ export default {
     handleUpdateClick() {
       this.isRequestRanking = true;
       this.showFundsID = [];
+      this.curManagerIDs = [];
       DataService.post(
         "get_fund_ranks",
         {
@@ -270,6 +276,19 @@ export default {
     handleUpdateScroll(value) {
       this.scrollLeft = value;
       this.$refs["fundProfileLayout"].handleScroll(value);
+    },
+    handleClearManagerIDs() {
+      this.curManagerIDs = [];
+    },
+    handleChangeManagerID(newVal, oldVal) {
+      if (oldVal === null) this.curManagerIDs.push(newVal);
+      else
+        this.curManagerIDs.splice(
+          this.curManagerIDs.indexOf(oldVal),
+          1,
+          newVal
+        );
+      // console.log(this.curManagerIDs);
     },
     handleFundProfileIDChange(showFundsID, lineStartYPos) {
       this.isTotalChange = false;
@@ -343,6 +362,7 @@ export default {
           this.rankFundsData = {};
           this.showFundsID = [];
           this.showFundsLikeScore = {};
+          this.curManagerIDs = [];
           // 重置历史记录
           this.historyFundsLikeScore = [];
           this.selectIndex = -1;

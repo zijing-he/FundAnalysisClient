@@ -27,6 +27,7 @@
         @updateWidth="updateWidth"
         @updateMargin="updateMargin"
         @turn="handleTurn"
+        @changeManagerID="handleChangeManagerID"
         v-for="item in fundsID"
       >
       </FundProfile>
@@ -144,6 +145,9 @@ export default {
           if (this.fundsID[i] !== callID)
             this.$refs[this.fundsID[i]].turnCounterClockwise(true);
       }
+    },
+    handleChangeManagerID(newVal, oldVal) {
+      this.$emit("changeManagerID", newVal, oldVal);
     },
     saveCurFundsLikeScore() {
       if (this.fundsID.length < 2) return 1;
