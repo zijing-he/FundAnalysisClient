@@ -40,6 +40,7 @@
       </div>
       <div class="summary_box" v-if="!isLoading">
         <InvestStyleBox
+          :ref="fundId + '_summary'"
           :boxId="fundId + '_summary'"
           :userSectors="userSectors"
           :holdingData="summaryHoldingData"
@@ -260,6 +261,8 @@ export default {
   methods: {
     turnClockwise(isFatherCall = false) {
       this.svg.select(`#dashline_${this.fundId}`).remove();
+      this.$refs[`${this.fundId}_summary`].removeDashline();
+      this.$refs[`${this.fundId}_summary`].turnClockwise();
       this.investStyleBoxes.forEach((d) => {
         this.$refs[d.boxId].removeDashline();
         this.$refs[d.boxId].turnClockwise();
@@ -268,6 +271,8 @@ export default {
     },
     turnCounterClockwise(isFatherCall = false) {
       this.svg.select(`#dashline_${this.fundId}`).remove();
+      this.$refs[`${this.fundId}_summary`].removeDashline();
+      this.$refs[`${this.fundId}_summary`].turnCounterClockwise();
       this.investStyleBoxes.forEach((d) => {
         this.$refs[d.boxId].removeDashline();
         this.$refs[d.boxId].turnCounterClockwise();
@@ -332,6 +337,47 @@ export default {
           (60 * this.investStyleBoxWidth) / 200 +
           endPoint[0];
         const endY = 5 + (20 * this.investStyleBoxWidth) / 200 + endPoint[1];
+        thisK = (endY - startY) / (endX - startX);
+        thisB = startY - startX * thisK;
+        // 不可见的线，为了tooltip的感应范围能大一些
+        // 匿名函数内部可能是异步的，保存下变量
+        let curIndex = selectedBoxIndices[i];
+        let showSlope = thisK;
+        let that = this;
+        gDashline
+          .append("path")
+          .attr("stroke-width", 8)
+          .attr("stroke", "white")
+          .attr("d", `M ${startX} ${startY} L ${endX} ${endY}`)
+          .on("mouseover", function() {
+            d3.select(`#tooltip_path_${that.fundId}`).style("display", "block");
+          })
+          .on("mousemove", function(e) {
+            let offsetX = e.offsetX - 42.5;
+            if (
+              curIndex < that.investStyleBoxes.length - 1 &&
+              e.offsetX + 42.5 >
+                that.xScale(
+                  new Date(that.investStyleBoxes[curIndex + 1].boxText)
+                ) -
+                  that.investStyleBoxWidth / 2
+            )
+              offsetX -= 45;
+            if (
+              e.offsetX - 42.5 <
+              that.xScale(new Date(that.investStyleBoxes[curIndex].boxText)) +
+                that.investStyleBoxWidth / 2
+            )
+              offsetX += 45;
+            d3.select(`#tooltip_path_${that.fundId}`)
+              .html(`Slope: ${-showSlope.toFixed(4)}`)
+              .style("width", "85px")
+              .style("left", offsetX + "px")
+              .style("top", e.offsetY + 15 + "px");
+          })
+          .on("mouseout", function() {
+            d3.select(`#tooltip_path_${that.fundId}`).style("display", "none");
+          });
         gDashline
           .append("path")
           .attr("stroke-dasharray", "2, 2")
@@ -339,9 +385,6 @@ export default {
           .attr("d", `M ${startX} ${startY} L ${endX} ${endY}`);
 
         // 由于遮挡，内部的虚线只能由子组件绘制
-        thisK = (endY - startY) / (endX - startX);
-        thisB = startY - startX * thisK;
-
         // 可能横跨多个组件
         for (
           let j = selectedBoxIndices[i] + 1;

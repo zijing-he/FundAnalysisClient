@@ -50,41 +50,15 @@ export default {
     userSectors: Array,
   },
   watch: {
-    // start_date: function(newVal, oldVal) {
-    //   console.log("In FundProfileLayout: ", newVal);
-    //   //限制第一次是因为id获取慢于起止点，会报错
-    //   if (!this.isFirst) {
-    //     this.getViewFunds();
-    //   }
-    //   // 重置基金喜好分数
-    //   this.fundsLikeScore_n = {};
-    //   for (let i = 0; i < newVal.length; i++)
-    //     this.fundsLikeScore_n[newVal[i]] = 0;
-    // },
     fundsID: function(newVal, oldVal) {
       // console.log(`new fundsID: ${newVal}`);
       if (newVal.length === 0) {
         if (this.svg) this.svg.select("#connectLines").remove();
         this.lineStartYPos_n = this.lineEndYPos = [];
       }
-      // this.totalPage = newVal.length / this.size;
-      // this.updateViewFunds();
-      // this.updateViewFundsID("down");
-      // 保存原分数
-      // if (oldVal !== null) {
-      //   for (let i = 0; i < oldVal.length; i++) {
-      //     this.fundsLikeScore_n[oldVal[i]] = this.$refs[
-      //       oldVal[i]
-      //     ].thisFundLikeScore;
-      //   }
-      //   this.historyFundsLikeScore.push(this.fundsLikeScore_n);
-      // }
-      // console.log(this.historyFundsLikeScore);
       if (this.isFirst) {
         this.isFirst = false;
       }
-      // this.isRequesting = true;
-      // this.getViewFunds();
       if (this.isTotalChange) {
         // 重置基金喜好分数
         this.historyFundsLikeScore = [];

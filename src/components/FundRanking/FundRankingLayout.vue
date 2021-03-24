@@ -62,13 +62,14 @@
           </a-row>
         </a-col>
         <a-col :span="7">
-          <a-row type="flex" justify="center">Compare</a-row>
+          <a-row type="flex" justify="center">ID</a-row>
           <a-row
             type="flex"
             justify="center"
             :key="item + '_checkbox'"
             v-for="item in rankFundsID"
           >
+            <label :for="item + '_checkbox'" style="margin-left: 10px;">{{ item }}</label>
             <input
               type="checkbox"
               style="height: 127px"
