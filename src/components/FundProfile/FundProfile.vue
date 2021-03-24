@@ -1,6 +1,6 @@
 <template>
-  <div class="fund_profile" id="fund_profile">
-    <div class="summary" id="summary">
+  <div class="fund_profile" :id="'fund_profile_' + fundId">
+    <div class="summary" :id="'summary_' + fundId">
       <div class="title">
         <div class="buttons-like">
           <svg
@@ -121,11 +121,11 @@
     </div>
     <div
       class="curve"
-      id="curve"
+      :id="'curve_' + fundId"
       ref="bottomElement"
       @scroll="bottomHandleScroll()"
     >
-      <div class="tooltip" id="tooltip_path"></div>
+      <div class="tooltip" :id="'tooltip_path_' + fundId"></div>
     </div>
   </div>
 </template>
@@ -733,12 +733,15 @@ export default {
       this.margin.top = this.margin.bottom = this.height / 4;
       // this.maxPathWidth = (60 * this.investStyleBoxWidth) / 200;
       // this.minPathWidth = this.maxPathWidth / 2;
-      d3.select("#fund_profile")
-        .attr("id", `fund_profile_${this.fundId}`)
-        .style("height", this.height + "px");
-      d3.select("#summary").attr("id", `summary_${this.fundId}`);
-      d3.select("#curve").attr("id", `curve_${this.fundId}`);
-      d3.select("#tooltip_path").attr("id", `tooltip_path_${this.fundId}`);
+      d3.select(`#fund_profile_${this.fundId}`).style(
+        "height",
+        this.height + "px"
+      );
+      // 不能这样设置id，因为渲染的时候有可能会选到其他的FundProfile里面，导致错位
+      // 还是直接在模板里面绑定比较好
+      // d3.select("#summary").attr("id", `summary_${this.fundId}`);
+      // d3.select("#curve").attr("id", `curve_${this.fundId}`);
+      // d3.select("#tooltip_path").attr("id", `tooltip_path_${this.fundId}`);
       this.svg = d3
         .select(`#curve_${this.fundId}`)
         .append("svg")
