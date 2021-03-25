@@ -422,15 +422,15 @@ export default {
               `Fund ${thisManagerFundsID[i]} has been added to current Ranking.`
             );
           } else if (index !== -1 && (rankIndex !== -1 || searchIndex !== -1)) {
-            if (rankIndex !== -1) {
+            if (searchIndex !== -1) {
+              this.$message.warn(
+                `Fund ${thisManagerFundsID[i]} is already in Rank ${this.searchFundsRank[searchIndex]}.`
+              );
+            } else if (rankIndex !== -1) {
               this.$message.warn(
                 `Fund ${thisManagerFundsID[i]} is already in Rank ${rankIndex +
                   1 -
                   this.searchFundsID.length}.`
-              );
-            } else if (searchIndex !== -1) {
-              this.$message.warn(
-                `Fund ${thisManagerFundsID[i]} is already in Rank ${this.searchFundsRank[searchIndex]}.`
               );
             }
             existCnt++;
