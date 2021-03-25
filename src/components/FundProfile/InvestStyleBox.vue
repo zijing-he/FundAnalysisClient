@@ -897,7 +897,7 @@ export default {
             } else {
               // left
             }
-            key = weightKey[key]["cn_name"];
+            key = weightKey[key]["en_name"];
             d3.select(`#tooltip_${that.boxId}`)
               .html(key + "<br>" + value)
               .style("left", curOffsetX + 10 + "px")

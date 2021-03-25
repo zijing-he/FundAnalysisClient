@@ -14,7 +14,7 @@
     </a-row>
 
     <a-row class="custormer_type">
-      <text id="custormer_type_text">Custormer Type</text>
+      <text id="custormer_type_text">Investing Portfolio</text>
       <!-- <a-dropdown>
         <template #overlay>
           <a-menu @click="handleMenuClick">
@@ -39,9 +39,9 @@
       </a-dropdown> -->
 
       <select id="select_container" @change="handleMenuClick">
-        <option value="1">Conservative Investor</option>
-        <option value="2">Robust Investor</option>
-        <option value="3">Radical Investor</option>
+        <option value="1">Conservative Portfolio</option>
+        <option value="2">Moderate Portfolio</option>
+        <option value="3">Aggressive Portfolio</option>
       </select>
     </a-row>
     <a-row id="divider"></a-row>

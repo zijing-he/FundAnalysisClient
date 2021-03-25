@@ -84,7 +84,7 @@ export default {
           }
           this.svg.attr(
             "height",
-            Math.max(document.getElementById("fund_profiles").scrollHeight, 971)
+            Math.max(document.getElementById("fund_profiles").scrollHeight, 965)
           );
           this.drawConnectLines();
         }
@@ -93,7 +93,7 @@ export default {
     lineStartYPos: function(val) {
       // console.log("ypos change: ", val);
       this.lineStartYPos_n = val.map(
-        (d) => d + document.getElementById("fund_profiles").scrollTop
+        (d) => d + document.getElementById("container").scrollTop
       );
       if (this.svg !== null) this.drawConnectLines();
     },
@@ -215,7 +215,7 @@ export default {
   position: relative;
   margin-top: 50px;
   width: 100%;
-  height: 971px;
+  height: 965px;
   /* border: 1px solid black; */
   overflow-y: auto;
   overflow-x: hidden;

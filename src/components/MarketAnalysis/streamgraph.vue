@@ -372,7 +372,7 @@ export default {
         .style("font-family", "PingFangSC-Regular")
         .style("letter-spacing", "-0.18px")
         .style("font-size", "17px")
-        .text("Industry average")
+        .text("Industry Average")
         .attr("text-anchor", "left")
         .style("alignment-baseline", "middle");
       this.svg

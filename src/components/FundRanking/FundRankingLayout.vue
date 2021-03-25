@@ -4,7 +4,7 @@
       <svg class="icon menuIcon" aria-hidden="true">
         <use xlink:href="#iconxitongcaidan"></use>
       </svg>
-      <text>Funds Ranking</text>
+      <text>Fund Search</text>
     </div>
     <div class="search-box">
       <a-form :label-col="{ span: 9 }" :wrapper-col="{ span: 14 }">
@@ -36,8 +36,14 @@
         </a-form-item>
       </a-form>
     </div>
-    <a-divider />
+    <!-- <a-divider /> -->
     <!-- <a-spin v-if="isRequestRanking" size="large" tip="Loading..." /> -->
+    <div class="title" style="margin-top: 42px;">
+      <svg class="icon menuIcon" aria-hidden="true">
+        <use xlink:href="#iconxitongcaidan"></use>
+      </svg>
+      <text>Fund Ranking</text>
+    </div>
     <div
       class="ranking"
       ref="ranking"
@@ -69,7 +75,9 @@
             :key="item + '_checkbox'"
             v-for="item in rankFundsID"
           >
-            <label :for="item + '_checkbox'" style="margin-left: 10px;">{{ item }}</label>
+            <label :for="item + '_checkbox'" style="margin-left: 10px;">{{
+              item
+            }}</label>
             <input
               type="checkbox"
               style="height: 127px"
@@ -184,6 +192,11 @@ export default {
       }
     },
     handleCheckbox(e) {
+      if (e.target.checked && this.showFundProfileIDs.length === 8) {
+        e.target.checked = false;
+        this.$message.warn("Can only compare no more than 8 funds at one time.");
+        return;
+      }
       this.$emit("clearCurManagerIDs");
       // 设置Map的目的是为了保证右边展示的顺序与左边rank的顺序始终一致
       this.isFundProfileIDChecked.set(e.target.value, e.target.checked);
@@ -193,7 +206,7 @@ export default {
         if (this.isFundProfileIDChecked.get(d)) {
           this.showFundProfileIDs.push(d);
           this.lineStartYPos.push(
-            i * 127 + 63.5 + 127 - 35 - this.$refs["ranking"].scrollTop
+            i * 127 + 63.5 + 127 - 5 - this.$refs["ranking"].scrollTop
           );
         }
       });
@@ -225,7 +238,7 @@ export default {
         this.rankFundsID.forEach((d, i) => {
           if (this.isFundProfileIDChecked.get(d)) {
             this.lineStartYPos.push(
-              i * 127 + 63.5 + 127 - 35 - this.$refs["ranking"].scrollTop
+              i * 127 + 63.5 + 127 - 5 - this.$refs["ranking"].scrollTop
             );
           }
         });
@@ -283,7 +296,7 @@ export default {
 }
 
 .ranking {
-  max-height: 982px;
+  max-height: 971px;
   overflow-y: auto;
   overflow-x: hidden;
   font-size: 15px;
