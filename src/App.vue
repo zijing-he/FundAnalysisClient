@@ -59,6 +59,8 @@
           :totalWidth="totalWidth"
           :scrollLeft="scrollLeft"
           :marginLeft="marginLeft"
+          :selectedManager="curManagerIDs"
+          :isRefresh="isRefresh"
           v-on:updateScroll="handleUpdateScroll"
         />
       </a-row>
@@ -132,7 +134,7 @@ export default {
     FundRankingLayout,
   },
   watch: {
-    selectIndex: function(val) {
+    selectIndex: function (val) {
       if (val === -1) return;
       // 重置基金经理ID
       this.curManagerIDs = [];
@@ -194,6 +196,7 @@ export default {
       allFundsID: [],
       allFundsData: [],
       curManagerIDs: [], // 展示的基金经理ID
+      isRefresh:0,//提醒组件，展示的基金经理ID已改变
     };
   },
   computed: {},
@@ -252,6 +255,7 @@ export default {
           end_date: this.endDate,
         },
         (data) => {
+          console.log("fundsData:", data);
           this.fundsData = data;
         }
       );
@@ -288,7 +292,8 @@ export default {
           1,
           newVal
         );
-      // console.log(this.curManagerIDs);
+         ++this.isRefresh;
+      console.log("curManagerIDs:", this.curManagerIDs,this.isRefresh);
     },
     handleFundProfileIDChange(showFundsID, lineStartYPos) {
       this.isTotalChange = false;
@@ -382,9 +387,9 @@ export default {
         );
       } else if (rankIndex !== -1) {
         this.$message.warn(
-          `Fund ${val} is already in Rank ${rankIndex +
-            1 -
-            this.searchFundsID.length}.`
+          `Fund ${val} is already in Rank ${
+            rankIndex + 1 - this.searchFundsID.length
+          }.`
         );
       } else {
         this.searchFundsID.unshift(this.allFundsID[index]);
@@ -424,9 +429,9 @@ export default {
           } else if (index !== -1 && (rankIndex !== -1 || searchIndex !== -1)) {
             if (rankIndex !== -1) {
               this.$message.warn(
-                `Fund ${thisManagerFundsID[i]} is already in Rank ${rankIndex +
-                  1 -
-                  this.searchFundsID.length}.`
+                `Fund ${thisManagerFundsID[i]} is already in Rank ${
+                  rankIndex + 1 - this.searchFundsID.length
+                }.`
               );
             } else if (searchIndex !== -1) {
               this.$message.warn(

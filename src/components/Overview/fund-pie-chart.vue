@@ -22,7 +22,8 @@ export default {
     marginLeft: Number,
     scrollLeft: Number,
     showManagerId: Array,
-    showManagerIdLength: Number,
+    showManagerIdLength: Number, //数组长度无法解决数组直接替换切换基金经理的问题
+    reFresh:Number
   },
   components: {},
   watch: {
@@ -31,7 +32,7 @@ export default {
       this.renderUpdate();
     },
 
-    showManagerIdLength: function (value) {
+    reFresh: function (value) {
       //watch无法监测数组length的长度
       // console.log("最终的变化,", this.showManagerId, value);
       this.graphInit();
@@ -253,21 +254,9 @@ export default {
         // d.new == true : "特殊操作" ? "默认"
         .style("stroke-dasharray", (d) => (d.other === true ? "2 2" : "0"));
 
+
+      //突出当前选的基金ID
       if (this.showManagerIdLength > 0) {
-        // console.log(
-        //   "重新绘制:",
-        //   this.G.nodes(true).filter((d) => {
-        //     for (let key in d[1].managerId) {
-        //       if (
-        //         d[1].managerId[key] ===
-        //         this.showManagerId[this.showManagerIdLength - 1]
-        //       ) {
-        //         return true;
-        //       }
-        //     }
-        //     return false;
-        //   })
-        // );
         let topPoints = this.svg
           .selectAll(".topPoints")
           .data(
@@ -277,7 +266,7 @@ export default {
                   d[1].managerId[key] ===
                   this.showManagerId[this.showManagerIdLength - 1]
                 ) {
-                  console.log("id,manager:", d[0], d[1].managerId[key]);
+                  // console.log("id,manager:", d[0], d[1].managerId[key]);
                   return true;
                 }
               }

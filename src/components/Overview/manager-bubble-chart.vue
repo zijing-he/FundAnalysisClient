@@ -17,6 +17,8 @@ export default {
   name: "managerBubbleChart",
   props: {
     fundManagers: Object,
+    selectedManager: Array,
+    isRefresh: Number,
   },
   components: {},
   data() {
@@ -36,6 +38,10 @@ export default {
     fundManagers: function (value) {
       this.data = value;
       this.renderUpdate();
+    },
+    isRefresh: function () {
+      this.renderUpdate();
+      this.ClickUpdate();
     },
   },
   mounted: function () {
@@ -82,7 +88,7 @@ export default {
         .attr("viewBox", [0, 0, this.width, this.height])
         .append("g")
         .attr("transform", `translate(${this.margin.left},${this.margin.top})`)
-        .attr("z-index",1);
+        .attr("z-index", 1);
     },
     renderUpdate() {
       this.showManagerArray = [];
@@ -126,9 +132,11 @@ export default {
         tooltip.style("visibility", "hidden");
       };
       let managerData = this.data;
+      let _this = this;
       let showManagerFn = (d, isDelete) => {
         //function拿不到外面的this，就自己包装一下
         // console.log(d, isDelete);
+        _this.ClickUpdate(); //点击之后高亮
         if (!isDelete) {
           //是否删除
           this.showManagerArray.push(d);
@@ -146,29 +154,24 @@ export default {
           this.showManagerArray.length
         );
       };
-      let _this = this;
 
       let clickTooltip = function (event, d) {
         // console.log("看managerData[d]['isShow']", managerData[d]["isShow"]);
         if (!managerData[d]["isShow"]) {
           managerData[d]["isShow"] = true; //点亮
-          d3.select(this)
-            .attr("z-index", () => {
-              console.log("this.priority:", _this.priority);
-              return ++_this.priority;
-            })
-            .style("fill", (d) => managerData[d].color);
+          d3.select(this).style("fill", (d) => managerData[d].color);
           showManagerFn(d, false);
         } else {
           //再点击关闭
           managerData[d]["isShow"] = false;
-          d3.select(this).attr("z-index", -1).style("fill", "#D8D8D8");
+          d3.select(this).style("fill", "#D8D8D8");
           showManagerFn(d, true);
         }
       };
       this.svg.selectAll("circle").remove();
       this.svg
         .append("g")
+        .attr("z-index", "auto")
         .selectAll("dot")
         .data(this.managerId.filter((d) => this.data[d].other === false))
         .enter()
@@ -178,17 +181,32 @@ export default {
         .attr("cy", (d) => this.yScale(this.data[d].loc[1]))
         .attr("r", (d) => this.sizeScale(this.data[d].size))
         // .style("fill", (d) => this.data[d].color)
-        .style("fill", "#D8D8D8")
+        .style("fill", (d) => {
+          // console.log("this.managerId:", d);
+          if (this.selectedManager.indexOf(d) !== -1) {
+            this.showManagerArray.push(d); //加入现在选的基金经理
+            return managerData[d].color;
+          }
+          return "#D8D8D8";
+        })
         .style("stroke", "white")
         .style("stroke-width", "0.5px")
         .on("mouseover", showTooltip)
         .on("mousemove", moveTooltip)
         .on("mouseleave", hideTooltip)
         .on("click", clickTooltip);
+      //预设高亮几个
+      console.log("现在的showManagerArray:", this.showManagerArray);
+      this.$emit(
+        "showManager",
+        this.showManagerArray,
+        this.showManagerArray.length
+      );
 
       this.svg.selectAll("rect").remove();
       this.svg
         .append("g")
+        .attr("z-index", "auto")
         .selectAll("dot")
         .data(this.managerId.filter((d) => this.data[d].other === true))
         .enter()
@@ -199,6 +217,142 @@ export default {
         .attr("width", (d) => this.sizeScale(this.data[d].size) * 2)
         .attr("height", (d) => this.sizeScale(this.data[d].size) * 2)
         .style("fill", "#D8D8D8")
+        .style("stroke", "white")
+        .style("stroke-width", "0.5px")
+        .on("mouseover", showTooltip)
+        .on("mousemove", moveTooltip)
+        .on("mouseleave", hideTooltip)
+        .on("click", clickTooltip);
+    },
+    ClickUpdate() {
+      let tooltip = d3
+        .select("#manager_bubble_chart")
+        .append("div")
+        .style("position", "absolute")
+        // .style("opacity", 0)
+        .attr("class", "tooltip")
+        .style("visibility", "hidden")
+        .style("width", "150px")
+        .style("height", "90px")
+        .style("background-color", "black")
+        .style("border-radius", "5px")
+        .style("padding", "11px")
+        .style("color", "white");
+      let showTooltip = (event, d) => {
+        tooltip
+          .style("visibility", "visible")
+          .html(
+            "基金经理：" +
+              this.data[d].cn_name +
+              "<br /> 经理ID：" +
+              d +
+              "<br /> 任职天数：" +
+              this.data[d].days
+          )
+          .style("left", event.layerX + 70 + "px")
+          .style("top", event.layerY - 10 + "px");
+      };
+
+      let moveTooltip = (event) => {
+        tooltip
+          .style("left", event.layerX + 70 + "px")
+          .style("top", event.layerY - 10 + "px");
+      };
+
+      let hideTooltip = (event) => {
+        tooltip.style("visibility", "hidden");
+      };
+      let managerData = this.data;
+      let _this = this;
+      let showManagerFn = (d, isDelete) => {
+        //function拿不到外面的this，就自己包装一下
+        // console.log(d, isDelete);
+        _this.ClickUpdate();
+        if (!isDelete) {
+          //是否删除
+          this.showManagerArray.push(d);
+        } else {
+          if (this.showManagerArray.indexOf(d) !== -1) {
+            //删除d
+            this.showManagerArray.splice(this.showManagerArray.indexOf(d), 1);
+          }
+        }
+        // console.log(this.showManagerArray);
+        // this.$emit("showManager", d);
+        this.$emit(
+          "showManager",
+          this.showManagerArray,
+          this.showManagerArray.length
+        );
+      };
+
+      let clickTooltip = function (event, d) {
+        // console.log("看managerData[d]['isShow']", managerData[d]["isShow"]);
+        if (!managerData[d]["isShow"]) {
+          managerData[d]["isShow"] = true; //点亮
+          d3.select(this).style("fill", (d) => managerData[d].color);
+          showManagerFn(d, false);
+        } else {
+          //再点击关闭
+          managerData[d]["isShow"] = false;
+          d3.select(this).style("fill", "#D8D8D8");
+          showManagerFn(d, true);
+        }
+      };
+
+      //高亮一层
+      this.svg
+        .append("g")
+        .selectAll("dot")
+        .data(
+          this.managerId.filter((d) => {
+            if (
+              this.data[d].other === false &&
+              d === this.showManagerArray[this.showManagerArray.length - 1]
+            ) {
+              return true;
+            } else {
+              return false;
+            }
+          })
+        )
+        .enter()
+        .append("circle")
+        .attr("class", "manager_bubbles_circle")
+        .attr("cx", (d) => this.xScale(this.data[d].loc[0]))
+        .attr("cy", (d) => this.yScale(this.data[d].loc[1]))
+        .attr("r", (d) => this.sizeScale(this.data[d].size))
+        .style("fill", (d) => this.data[d].color)
+        .style("stroke", "white")
+        .style("stroke-width", "0.5px")
+        .on("mouseover", showTooltip)
+        .on("mousemove", moveTooltip)
+        .on("mouseleave", hideTooltip)
+        .on("click", clickTooltip);
+
+      this.svg
+        .append("g")
+        .selectAll("dot")
+        .data(
+          this.managerId.filter((d) => {
+            if (
+              this.data[d].other === true &&
+              d === this.showManagerArray[this.showManagerArray.length - 1]
+            ) {
+              return true;
+            } else {
+              return false;
+            }
+          })
+        )
+        .enter()
+        .append("rect")
+        .attr("class", "manager_bubbles_rect")
+        .attr("x", (d) => this.xScale(this.data[d].loc[0]))
+        .attr("y", (d) => this.yScale(this.data[d].loc[1]))
+        .attr("width", (d) => this.sizeScale(this.data[d].size) * 2)
+        .attr("height", (d) => this.sizeScale(this.data[d].size) * 2)
+        .style("fill", (d) => this.data[d].color)
         .style("stroke", "white")
         .style("stroke-width", "0.5px")
         .on("mouseover", showTooltip)

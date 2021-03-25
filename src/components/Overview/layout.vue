@@ -24,6 +24,8 @@
       <div class="fund_manager_container" v-if="!isRequesting">
         <managerBubbleChart
           :fundManagers="managers"
+          :selectedManager="selectedManager"
+          :isRefresh="isRefresh"
           v-on:showManager="handleShowManager"
         />
         <div
@@ -38,6 +40,7 @@
             :fundManagers="managers"
             :showManagerId="mangerId"
             :showManagerIdLength="mangerIdLength"
+            :reFresh="reFresh"
             :managerGruop="managerFunds[key]"
             :date="key"
             :key="key"
@@ -75,6 +78,8 @@ export default {
     totalWidth: Number,
     scrollLeft: Number,
     marginLeft: Array,
+    selectedManager:Array,
+    isRefresh:Number,
   },
   data() {
     return {
@@ -85,6 +90,7 @@ export default {
       isRequesting: true,
       marginLeftArray: null,
       mangerIdLength: 0,
+      reFresh:0,
     };
   },
   components: {
@@ -121,6 +127,7 @@ export default {
       // console.log("有变化：",mangerId,arrLength);
       this.mangerId = mangerId;
       this.mangerIdLength = arrLength;
+      ++this.reFresh;
     },
     handleScroll() {
       // console.log("滑动轴数值：", this.$refs.fund_bubble_container.scrollLeft);
