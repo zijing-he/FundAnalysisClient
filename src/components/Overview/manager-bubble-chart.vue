@@ -235,48 +235,11 @@ export default {
       // this.Highlight();
         
     },
-<<<<<<< HEAD
     //加入到showArray的最后一个，重画一遍覆盖
     Highlight() {
       //每次只能有一个凸显，先清除掉之前冗余的
       d3.selectAll(".manager_bubbles_top_circle").remove();
       d3.selectAll(".manager_bubbles_top_rect").remove();
-=======
-    ClickUpdate() {
-      let tooltip = d3
-        .select("#manager_bubble_chart")
-        .append("div")
-        .style("position", "absolute")
-        // .style("opacity", 0)
-        .attr("class", "tooltip")
-        .style("visibility", "hidden")
-        .style("width", "150px")
-        .style("max-height", "90px")
-        .style("background-color", "black")
-        .style("border-radius", "5px")
-        .style("padding", "11px")
-        .style("color", "white");
-      let showTooltip = (event, d) => {
-        tooltip
-          .style("visibility", "visible")
-          .html(
-            "Name: " +
-              this.data[d].cn_name +
-              "<br /> ID: " +
-              d +
-              "<br /> Tenure: " +
-              this.data[d].days
-          )
-          .style("left", event.layerX + 70 + "px")
-          .style("top", event.layerY - 10 + "px");
-      };
-
-      let moveTooltip = (event) => {
-        tooltip
-          .style("left", event.layerX + 70 + "px")
-          .style("top", event.layerY - 10 + "px");
-      };
->>>>>>> 9d7e4f277007c6ce9b8d6f509850f218ad78815e
 
       //凸显出来的一层支持的事件
       let managerData = this.data;
