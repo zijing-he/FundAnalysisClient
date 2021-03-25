@@ -27,6 +27,7 @@
         <a-form-item>
           <a-button
             class="submit-btn"
+            style="width: 140px; height: 30px; margin-left: 90px;"
             type="primary"
             html-type="submit"
             @click="handleSubmit"
@@ -194,7 +195,9 @@ export default {
     handleCheckbox(e) {
       if (e.target.checked && this.showFundProfileIDs.length === 8) {
         e.target.checked = false;
-        this.$message.warn("Can only compare no more than 8 funds at one time.");
+        this.$message.warn(
+          "Can only compare no more than 8 funds at one time."
+        );
         return;
       }
       this.$emit("clearCurManagerIDs");

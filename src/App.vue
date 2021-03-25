@@ -88,6 +88,9 @@
               {{ index + 1 }}
             </option>
           </select>
+          <a-button type="primary" class="button" @click="handleResetComparison">
+            <text>Reset</text>
+          </a-button>
           <a-button type="primary" class="button" @click="handleSaveComparison">
             <text>Save Comparison</text>
           </a-button>
@@ -134,7 +137,7 @@ export default {
     FundRankingLayout,
   },
   watch: {
-    selectIndex: function (val) {
+    selectIndex: function(val) {
       if (val === -1) return;
       // 重置基金经理ID
       this.curManagerIDs = [];
@@ -161,6 +164,8 @@ export default {
       isfundsID: false, //决定显不显示散点图
       startDate: "20110331", // 默认起始值
       endDate: "20191231",
+      lastStartDate: null,
+      lastEndDate: null,
       //初始化权重
       userWeight: {
         one_quarter_return: "1.0",
@@ -196,7 +201,7 @@ export default {
       allFundsID: [],
       allFundsData: [],
       curManagerIDs: [], // 展示的基金经理ID
-      isRefresh:0,//提醒组件，展示的基金经理ID已改变
+      isRefresh: 0, //提醒组件，展示的基金经理ID已改变
     };
   },
   computed: {},
@@ -229,11 +234,25 @@ export default {
             this.rankFundsData[d] = this.allFundsData[i];
           });
           this.managerToFund = data.manager2fund;
-          // 重置历史记录
-          this.historyFundsLikeScore = [];
+          // 时间不变则保留历史记录
+          if (
+            this.startDate === this.lastStartDate &&
+            this.endDate === this.lastEndDate
+          ) {
+            this.isTotalChange = false;
+            this.historyFundsLikeScore = this.$refs[
+              "fundProfileLayout"
+            ].historyFundsLikeScore;
+          } else {
+            this.isTotalChange = true;
+            // 重置历史记录
+            this.historyFundsLikeScore = [];
+          }
           this.selectIndex = -1;
-          this.isTotalChange = true;
           this.isRequestRanking = false;
+
+          this.lastStartDate = this.startDate;
+          this.lastEndDate = this.endDate;
         }
       );
     },
@@ -292,8 +311,8 @@ export default {
           1,
           newVal
         );
-         ++this.isRefresh;
-      console.log("curManagerIDs:", this.curManagerIDs,this.isRefresh);
+      ++this.isRefresh;
+      // console.log("curManagerIDs:", this.curManagerIDs, this.isRefresh);
     },
     handleFundProfileIDChange(showFundsID, lineStartYPos) {
       this.isTotalChange = false;
@@ -316,6 +335,13 @@ export default {
     },
     handleLineStartYPosChange(val) {
       this.lineStartYPos = val;
+    },
+    handleResetComparison() {
+      this.selectIndex = -1;
+      this.showFundsID = [];
+      this.$refs["fundRankingLayout"].handleChangeHistoryIndex(
+        this.showFundsID
+      );
     },
     handleSaveComparison() {
       let res = this.$refs["fundProfileLayout"].saveCurFundsLikeScore();
@@ -387,9 +413,9 @@ export default {
         );
       } else if (rankIndex !== -1) {
         this.$message.warn(
-          `Fund ${val} is already in Rank ${
-            rankIndex + 1 - this.searchFundsID.length
-          }.`
+          `Fund ${val} is already in Rank ${rankIndex +
+            1 -
+            this.searchFundsID.length}.`
         );
       } else {
         this.searchFundsID.unshift(this.allFundsID[index]);
@@ -433,9 +459,9 @@ export default {
               );
             } else if (rankIndex !== -1) {
               this.$message.warn(
-                `Fund ${thisManagerFundsID[i]} is already in Rank ${
-                  rankIndex + 1 - this.searchFundsID.length
-                }.`
+                `Fund ${thisManagerFundsID[i]} is already in Rank ${rankIndex +
+                  1 -
+                  this.searchFundsID.length}.`
               );
             }
             existCnt++;
@@ -509,7 +535,7 @@ export default {
 }
 #comparison_buttons {
   display: flex;
-  margin-left: 900px;
+  margin-left: 775px;
   margin-top: 5px;
 }
 #comparison_buttons .button {

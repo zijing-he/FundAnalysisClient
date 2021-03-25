@@ -18,7 +18,7 @@ export default {
     return {
       svg: null,
       raderChart: null,
-      margin: { top: 35, right: 265, bottom: 94, left: 70 },
+      margin: { top: 35, right: 265, bottom: 94, left: 105 },
       width: 260,
       height: 260,
       factor: 1,
@@ -429,7 +429,7 @@ export default {
           d.value = newValue;
 
           toolTip
-            .style("left", newX + width / 2 + 75 + "px")
+            .style("left", newX + width / 2 + 110 + "px")
             .style("top", height / 2 - newY - 20 + "px")
             .style("visibility", "visible");
           d3.select(".update_value_weight").text((newValue - 2).toFixed(2));
