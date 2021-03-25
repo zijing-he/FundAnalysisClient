@@ -336,8 +336,20 @@ export default {
               newY = zero_Y;
             }
           }
+          if (d.axis === "sharp_ratio") {
+            let zero_Y =
+              height / 2 -
+              (height / 2) *
+                (1 -
+                  (parseFloat(Math.max(2, 0)) / maxValue) *
+                    factor *
+                    Math.cos((i * radians) / total));
+            if (Math.abs(newY) < Math.abs(zero_Y)) {
+              newY = zero_Y;
+            }
+          }
 
-          newValue = ((newY / oldY) * d.value);
+          newValue = (newY / oldY) * d.value;
         } else {
           let slope = oldY / oldX;
 
@@ -383,6 +395,18 @@ export default {
             if (Math.abs(newX) < Math.abs(zero_X)) {
               newX = zero_X;
             }
+          } else if (d.axis === "information_ratio") {
+            if (Math.abs(newX) < Math.abs(zero_X)) {
+              newX = zero_X;
+            }
+          } else if (d.axis === "risk") {
+            if (Math.abs(newX) > Math.abs(zero_X)) {
+              newX = zero_X;
+            }
+          } else if (d.axis === "max_drop_down") {
+            if (Math.abs(newX) > Math.abs(zero_X)) {
+              newX = zero_X;
+            }
           }
 
           if (Math.abs(newX) > Math.abs(new_maxX)) {
@@ -396,11 +420,10 @@ export default {
           newY = newX * slope;
 
           let ratio = newX / oldX;
-          newValue = (ratio * d.value);
+          newValue = ratio * d.value;
         }
         //Bound the drag behavior to the max and min of the axis, not by pixels but by value calc (easier)
         if (newValue >= 1 && newValue <= 3) {
-       
           dragTarget.attr("cx", newX + width / 2).attr("cy", height / 2 - newY);
 
           d.value = newValue;
