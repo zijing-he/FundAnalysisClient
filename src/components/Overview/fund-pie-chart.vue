@@ -23,16 +23,16 @@ export default {
     scrollLeft: Number,
     showManagerId: Array,
     showManagerIdLength: Number, //数组长度无法解决数组直接替换切换基金经理的问题
-    reFresh:Number
+    reFresh: Number,
   },
   components: {},
   watch: {
-    quarterFundData: function (fundData) {
+    quarterFundData: function(fundData) {
       this.graphInit();
       this.renderUpdate();
     },
 
-    reFresh: function (value) {
+    reFresh: function(value) {
       //watch无法监测数组length的长度
       // console.log("最终的变化,", this.showManagerId, value);
       this.graphInit();
@@ -57,7 +57,7 @@ export default {
       G: null,
     };
   },
-  mounted: function () {
+  mounted: function() {
     // console.log(this.date);
     // console.log(this.quarterFundData);
     this.graphInit();
@@ -183,14 +183,14 @@ export default {
           .style("width", "150px")
           .style("height", "50px")
           .style("visibility", "visible")
-          .html("fundID: " + d.id)
-          .style("left", event.layerX + 10 + "px")
+          .html("Fund ID: " + d.id)
+          .style("left", event.layerX - 160 + "px")
           .style("top", event.layerY - 30 + "px");
       };
 
       let moveTooltip = (event) => {
         tooltip
-          .style("left", event.layerX + 10 + "px")
+          .style("left", event.layerX - 160 + "px")
           .style("top", event.layerY - 30 + "px");
       };
 
@@ -202,7 +202,10 @@ export default {
       //pieChart
       let pie = d3.pie().value((d) => d);
       let radius = 6;
-      let arc = d3.arc().innerRadius(0).outerRadius(radius);
+      let arc = d3
+        .arc()
+        .innerRadius(0)
+        .outerRadius(radius);
       let points = this.svg
         .selectAll("g")
         .data(this.G.nodes(true))
@@ -253,7 +256,6 @@ export default {
         .style("stroke", (d) => (d.other === true ? "black" : "none"))
         // d.new == true : "特殊操作" ? "默认"
         .style("stroke-dasharray", (d) => (d.other === true ? "2 2" : "0"));
-
 
       //突出当前选的基金ID
       if (this.showManagerIdLength > 0) {
@@ -369,16 +371,16 @@ export default {
         // console.log(d);
         tooltip
           .style("visibility", "visible")
-          .style("width", "150px")
-          .style("height", "70px")
-          .html("fundManagerID: " + d[2].managerId)
-          .style("left", event.layerX + 10 + "px")
+          .style("width", "200px")
+          .style("height", "50px")
+          .html("Manager ID: " + d[2].managerId)
+          .style("left", event.layerX - 210 + "px")
           .style("top", event.layerY - 30 + "px");
       };
 
       let moveLineTooltip = (event) => {
         tooltip
-          .style("left", event.layerX + 10 + "px")
+          .style("left", event.layerX - 210 + "px")
           .style("top", event.layerY - 30 + "px");
       };
 
