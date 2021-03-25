@@ -23,7 +23,7 @@
         <svg class="icon fund_list_icon" aria-hidden="true">
           <use xlink:href="#iconfund"></use>
         </svg>
-        <text>Fund List</text>
+        <text>Fund Panel</text>
       </a-row>
       <a-row>
         <FundRankingLayout
@@ -68,7 +68,7 @@
         <svg class="icon menuIcon" aria-hidden="true">
           <use xlink:href="#iconxitongcaidan"></use>
         </svg>
-        <text>Funds Comparison</text>
+        <text>Fund Comparison</text>
         <div id="comparison_buttons">
           <select
             style="
@@ -471,7 +471,7 @@ export default {
 }
 #update_button_container {
   width: 523px;
-  height: 63px;
+  height: 80px;
   background: #ffffff;
   box-shadow: 12px 2px 44px 0 rgba(0, 0, 0, 0.05);
 }

@@ -3,7 +3,7 @@
   <!-- <h5>基金经理气泡图</h5> -->
   <div id="manager_bubble_chart_container">
     <a-row>
-      <span id="manager_relation_text">Manager relation</span>
+      <span id="manager_relation_text">Manager Exploration</span>
     </a-row>
     <a-row>
       <div id="manager_bubble_chart"></div>

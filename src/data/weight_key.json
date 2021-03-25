@@ -6,122 +6,122 @@
   },
   "unit_nav": {
     "cn_name": "单位净值",
-    "en_name": "net asset value",
-    "en_sx": "net asset value"
+    "en_name": "Net Asset Value",
+    "en_sx": "Net Asset Value"
   },
   "acc_nav": {
     "cn_name": "累积净值",
-    "en_name": "acc net value",
-    "en_sx": "acc net value"
+    "en_name": "Acc Net Value",
+    "en_sx": "Acc Net Value"
   },
   "stock": {
     "cn_name": "股票",
-    "en_name": "stock",
-    "en_sx": "stock"
+    "en_name": "Stock",
+    "en_sx": "Stock"
   },
   "bond": {
     "cn_name": "债券",
-    "en_name": "bond",
-    "en_sx": "bond"
+    "en_name": "Bond",
+    "en_sx": "Bond"
   },
   "cash": {
     "cn_name": "现金",
-    "en_name": "cash",
-    "en_sx": "cash"
+    "en_name": "Cash",
+    "en_sx": "Cash"
   },
   "other": {
     "cn_name": "其他",
-    "en_name": "other",
-    "en_sx": "other"
+    "en_name": "Other",
+    "en_sx": "Other"
   },
   "size": {
     "cn_name": "基金规模",
-    "en_name": "fund size",
-    "en_sx": "Fund Size"
+    "en_name": "Asset Size",
+    "en_sx": "Asset Size"
   },
   "alpha": {
     "cn_name": "阿尔法系数",
-    "en_name": "alpha",
+    "en_name": "Alpha",
     "en_sx": "Alpha"
   },
   "beta": {
     "cn_name": "贝塔系数",
-    "en_name": "beta",
+    "en_name": "Beta",
     "en_sx": "Beta"
   },
   "risk": {
     "cn_name": "标准差",
-    "en_name": "standard deviation",
-    "en_sx": "Standard deviation"
+    "en_name": "Volatility",
+    "en_sx": "Volatility"
   },
   "sharp_ratio": {
     "cn_name": "夏普率",
-    "en_name": "sharp ratio",
-    "en_sx": "Sharp ratio"
+    "en_name": "Sharp Ratio",
+    "en_sx": "Sharp Ratio"
   },
   "max_drop_down": {
     "cn_name": "最大回撤率",
-    "en_name": "max drawdown",
-    "en_sx": "Max drawdown"
+    "en_name": "Max Drawdown",
+    "en_sx": "Max Drawdown"
   },
   "information_ratio": {
     "cn_name": "信息比率",
-    "en_name": "information ratio",
-    "en_sx": "Information ratio"
+    "en_name": "Information Ratio",
+    "en_sx": "Information Ratio"
   },
   "instl_weight": {
     "cn_name": "机构占比",
-    "en_name": "percentage of institutions",
-    "en_sx": "Percentage of institutions"
+    "en_name": "Percentage of Institutions",
+    "en_sx": "Percentage of Institutions"
   },
   "one_quarter_return": {
     "cn_name": "1个季度的收益率",
-    "en_name": "one quarter return",
+    "en_name": "One Quarter Return",
     "en_sx": "1Q-R"
   },
   "one_quarter_car": {
     "cn_name": "1个季度的超额收益率",
-    "en_name": "one quarter Cumulative abnormal return",
+    "en_name": "One Quarter Cumulative Abnormal Return",
     "en_sx": "1Q-CAR"
   },
   "one_quarter_hs300_return": {
     "cn_name": "1个季度的沪深300收益率",
-    "en_name": "one quarter CSI 300 return",
+    "en_name": "One Quarter CSI 300 Return",
     "en_sx": "1Q-CSI 300 R"
   },
   "one_year_return": {
     "cn_name": "1年的收益率",
-    "en_name": "one year return",
+    "en_name": "One Year Return",
     "en_sx": "1Y-R"
   },
   "one_year_car": {
     "cn_name": "1年的超额收益率",
-    "en_name": "one year Cumulative abnormal return",
+    "en_name": "One Year Cumulative Abnormal Return",
     "en_sx": "1Y-CAR"
   },
   "one_year_hs300_return": {
     "cn_name": "1年的沪深300收益率",
-    "en_name": "one year CSI 300 return",
+    "en_name": "One Year CSI 300 Return",
     "en_sx": "1Y-CSI 300 R"
   },
   "three_year_return": {
     "cn_name": "3年的收益率",
-    "en_name": "three year return",
+    "en_name": "Three Year Return",
     "en_sx": "3Y-R"
   },
   "three_year_car": {
     "cn_name": "3年的超额收益率",
-    "en_name": "three year Cumulative abnormal return",
+    "en_name": "Three Year Cumulative Abnormal Return",
     "en_sx": "3Y-CAR"
   },
   "three_year_hs300_return": {
     "cn_name": "3年的沪深300收益率",
-    "en_name": "three year CSI 300 return",
+    "en_name": "Three Year CSI 300 Return",
     "en_sx": "3Y-CSI 300 R"
   },
   "all_return": {
     "cn_name": "总收益率",
-    "en_name": "total return",
-    "en_sx": "total return"
+    "en_name": "Total Return",
+    "en_sx": "Total Return"
   }
 }

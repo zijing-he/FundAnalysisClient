@@ -4,7 +4,7 @@
       <svg class="icon menu_icon" aria-hidden="true">
         <use xlink:href="#iconxitongcaidan"></use>
       </svg>
-      <text>Funds Market</text>
+      <text>Fund Market</text>
     </a-row>
     <a-row>
       <div id="market_curvechart"></div>
@@ -34,7 +34,7 @@ export default {
       date: Object.keys(market_nav_date),
       marketNav: Object.values(market_nav_date),
       marketShares: Object.values(market_number_date),
-      keys: ["Fund Market Total Asset", "Market average fund nav"],
+      keys: ["Fund Market Total Asset", "Fund Market NAV"],
     };
   },
   watch: {
