@@ -78,8 +78,8 @@ export default {
     totalWidth: Number,
     scrollLeft: Number,
     marginLeft: Array,
-    selectedManager:Array,
-    isRefresh:Number,
+    selectedManager: Array,
+    isRefresh: Number,
   },
   data() {
     return {
@@ -90,7 +90,7 @@ export default {
       isRequesting: true,
       marginLeftArray: null,
       mangerIdLength: 0,
-      reFresh:0,
+      reFresh: 0,
     };
   },
   components: {
@@ -100,15 +100,17 @@ export default {
   },
   watch: {
     fundsData: function () {
-      console.log("fundsData:",this.fundsData);
+      this.isRequesting = true;
+      // console.log("fundsData:", this.fundsData);
       this.mangerId = []; //每次要清空
       this.mangerIdLength = 0;
-      this.isRequesting = true;
-      this.managers = this.fundsData.managers;  //经理的位置与颜色
-      this.funds = this.fundsData.funds;  //多个季度基金的位置
+      this.managers = this.fundsData.managers; //经理的位置与颜色
+      this.funds = this.fundsData.funds; //多个季度基金的位置
       this.managerFunds = this.fundsData.manager_funds; //每个经理手下的基金
       this.marginLeftArray = this.marginLeft;
-      this.isRequesting = false;
+      if (this.marginLeftArray) {
+        this.isRequesting = false;
+      }
     },
     scrollLeft: function (value) {
       this.$refs.fund_bubble_container.scrollLeft = value;

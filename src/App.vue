@@ -255,7 +255,7 @@ export default {
           end_date: this.endDate,
         },
         (data) => {
-          console.log("fundsData:", data);
+          // console.log("fundsData:", data);
           this.fundsData = data;
         }
       );
@@ -356,7 +356,7 @@ export default {
             data[key] = data[key].toFixed(4);
           }
           this.incomingWeight = data;
-          console.log("incomingWeight:", data);
+          // console.log("incomingWeight:", data);
           this.$message.success(
             "Weight updated! Please click the Update button."
           );

@@ -198,7 +198,7 @@ export default {
         .on("mouseleave", hideTooltip)
         .on("click", clickTooltip);
       //预设高亮几个
-      console.log("现在的showManagerArray:", this.showManagerArray);
+      // console.log("现在的showManagerArray:", this.showManagerArray);
       this.$emit(
         "showManager",
         this.showManagerArray,
