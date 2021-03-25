@@ -108,6 +108,7 @@ export default {
       this.funds = this.fundsData.funds; //多个季度基金的位置
       this.managerFunds = this.fundsData.manager_funds; //每个经理手下的基金
       this.marginLeftArray = this.marginLeft;
+      // console.log("marginLeftArray:",this.marginLeftArray);
       if (this.marginLeftArray) {
         this.isRequesting = false;
       }
