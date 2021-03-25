@@ -103,7 +103,7 @@ export default {
         .attr("class", "tooltip")
         .style("visibility", "hidden")
         .style("width", "150px")
-        .style("height", "90px")
+        .style("max-height", "90px")
         .style("background-color", "black")
         .style("border-radius", "5px")
         .style("padding", "11px")
@@ -113,11 +113,11 @@ export default {
         tooltip
           .style("visibility", "visible")
           .html(
-            "基金经理：" +
+            "Name: " +
               this.data[d].cn_name +
-              "<br /> 经理ID：" +
+              "<br /> ID: " +
               d +
-              "<br /> 任职天数：" +
+              "<br /> Tenure: " +
               this.data[d].days
           )
           .style("left", event.layerX + 70 + "px")
@@ -235,7 +235,7 @@ export default {
         .attr("class", "tooltip")
         .style("visibility", "hidden")
         .style("width", "150px")
-        .style("height", "90px")
+        .style("max-height", "90px")
         .style("background-color", "black")
         .style("border-radius", "5px")
         .style("padding", "11px")
@@ -244,11 +244,11 @@ export default {
         tooltip
           .style("visibility", "visible")
           .html(
-            "基金经理：" +
+            "Name: " +
               this.data[d].cn_name +
-              "<br /> 经理ID：" +
+              "<br /> ID: " +
               d +
-              "<br /> 任职天数：" +
+              "<br /> Tenure: " +
               this.data[d].days
           )
           .style("left", event.layerX + 70 + "px")
