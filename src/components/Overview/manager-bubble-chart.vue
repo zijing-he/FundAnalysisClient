@@ -29,6 +29,7 @@ export default {
       name: [],
       managerId: [],
       showManagerArray: [],
+      priority: 1,
     };
   },
   watch: {
@@ -38,7 +39,7 @@ export default {
     },
   },
   mounted: function () {
-    console.log("基金经理信息：", this.data);
+    // console.log("基金经理信息：", this.data);
     this.renderInit();
     this.renderUpdate();
   },
@@ -80,7 +81,8 @@ export default {
         .attr("height", this.height)
         .attr("viewBox", [0, 0, this.width, this.height])
         .append("g")
-        .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
+        .attr("transform", `translate(${this.margin.left},${this.margin.top})`)
+        .attr("z-index",1);
     },
     renderUpdate() {
       this.showManagerArray = [];
@@ -144,17 +146,23 @@ export default {
           this.showManagerArray.length
         );
       };
+      let _this = this;
 
       let clickTooltip = function (event, d) {
         // console.log("看managerData[d]['isShow']", managerData[d]["isShow"]);
         if (!managerData[d]["isShow"]) {
           managerData[d]["isShow"] = true; //点亮
-          d3.select(this).style("fill", (d) => managerData[d].color);
+          d3.select(this)
+            .attr("z-index", () => {
+              console.log("this.priority:", _this.priority);
+              return ++_this.priority;
+            })
+            .style("fill", (d) => managerData[d].color);
           showManagerFn(d, false);
         } else {
           //再点击关闭
           managerData[d]["isShow"] = false;
-          d3.select(this).style("fill", "#D8D8D8");
+          d3.select(this).attr("z-index", -1).style("fill", "#D8D8D8");
           showManagerFn(d, true);
         }
       };
@@ -178,7 +186,7 @@ export default {
         .on("mouseleave", hideTooltip)
         .on("click", clickTooltip);
 
-        this.svg.selectAll("rect").remove();
+      this.svg.selectAll("rect").remove();
       this.svg
         .append("g")
         .selectAll("dot")
@@ -188,8 +196,8 @@ export default {
         .attr("class", "manager_bubbles_rect")
         .attr("x", (d) => this.xScale(this.data[d].loc[0]))
         .attr("y", (d) => this.yScale(this.data[d].loc[1]))
-        .attr("width", (d) => this.sizeScale(this.data[d].size)*2)
-        .attr("height", (d) => this.sizeScale(this.data[d].size)*2)
+        .attr("width", (d) => this.sizeScale(this.data[d].size) * 2)
+        .attr("height", (d) => this.sizeScale(this.data[d].size) * 2)
         .style("fill", "#D8D8D8")
         .style("stroke", "white")
         .style("stroke-width", "0.5px")
@@ -197,8 +205,6 @@ export default {
         .on("mousemove", moveTooltip)
         .on("mouseleave", hideTooltip)
         .on("click", clickTooltip);
-
-
     },
   },
 };

@@ -197,6 +197,7 @@ export default {
         tooltip.style("visibility", "hidden");
       };
 
+      // console.log("filter:");
       //pieChart
       let pie = d3.pie().value((d) => d);
       let radius = 6;
@@ -241,7 +242,6 @@ export default {
         .on("mouseover", showTooltip)
         .on("mousemove", moveTooltip)
         .on("mouseleave", hideTooltip);
-
       pies
         .append("path")
         .attr("d", arc)
@@ -252,6 +252,92 @@ export default {
         .style("stroke", (d) => (d.other === true ? "black" : "none"))
         // d.new == true : "特殊操作" ? "默认"
         .style("stroke-dasharray", (d) => (d.other === true ? "2 2" : "0"));
+
+      if (this.showManagerIdLength > 0) {
+        // console.log(
+        //   "重新绘制:",
+        //   this.G.nodes(true).filter((d) => {
+        //     for (let key in d[1].managerId) {
+        //       if (
+        //         d[1].managerId[key] ===
+        //         this.showManagerId[this.showManagerIdLength - 1]
+        //       ) {
+        //         return true;
+        //       }
+        //     }
+        //     return false;
+        //   })
+        // );
+        let topPoints = this.svg
+          .selectAll(".topPoints")
+          .data(
+            this.G.nodes(true).filter((d) => {
+              for (let key in d[1].managerId) {
+                if (
+                  d[1].managerId[key] ===
+                  this.showManagerId[this.showManagerIdLength - 1]
+                ) {
+                  console.log("id,manager:", d[0], d[1].managerId[key]);
+                  return true;
+                }
+              }
+              return false;
+            })
+          )
+          .enter()
+          .append("g")
+          .attr(
+            "transform",
+            (d) => `translate(${this.xScale(d[1].x)},${this.yScale(d[1].y)})`
+          )
+          .attr("class", "topPies");
+        // console.log("topPoints:", topPoints);
+        // console.log("selectAll:", topPoints.selectAll(".topPies"));
+
+        let topPies = topPoints
+          .selectAll(".topPies")
+          .data((d) => {
+            let res = pie(d[1].data.split("-"));
+            // console.log(" d[1].other:",d[1].other)
+            if (res.length === 1 && res[0].data.length === 0) {
+              //没有被选中，画灰色
+              res[0].id = d[0];
+              res[0].endAngle = 6.283185307179586;
+              res[0].value = 1;
+              res[0].color = ["#D8D8D8"];
+              // res[0].color = ["black"];
+              d[1].color.push("#D8D8D8");
+              res[0].other = d[1].other;
+            } else if (res.length >= 1) {
+              res.forEach((dd) => {
+                dd.id = d[0];
+                dd.color = JSON.parse(JSON.stringify(d[1].color));
+                dd.other = d[1].other;
+              });
+            }
+            // console.log("d:", d, res);
+            return res;
+          })
+          .enter()
+          .append("g")
+          // .attr("class", "topArc")
+          .on("mouseover", showTooltip)
+          .on("mousemove", moveTooltip)
+          .on("mouseleave", hideTooltip);
+
+        // console.log("topPies:", topPies);
+        topPies
+          .append("path")
+          .attr("d", arc)
+          .attr("fill", (d, i) => {
+            // console.log("d:", d, i);
+            return d.color[i];
+            // return "black";
+          })
+          .style("stroke", (d) => (d.other === true ? "black" : "none"))
+          // d.new == true : "特殊操作" ? "默认"
+          .style("stroke-dasharray", (d) => (d.other === true ? "2 2" : "0"));
+      }
 
       //画圆
       // this.svg

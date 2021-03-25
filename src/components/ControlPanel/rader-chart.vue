@@ -443,7 +443,7 @@ export default {
                   this.factor *
                   Math.cos((i * this.radians) / this.total)),
           ]);
-          userData[d.axis] = (parseFloat(d.value) - 2).toFixed(4);
+          userData[d.axis] = (parseFloat(d.value) - 2).toFixed(2);
         });
 
         let str = "";
