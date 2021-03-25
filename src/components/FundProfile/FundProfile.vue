@@ -71,7 +71,7 @@
           :boxGap="63"
           :boxWidth="120"
           :contentWidth="120"
-          style="margin-top: 15px;"
+          style="margin-top: 17px;"
         >
         </InvestStyleBox>
         <div class="buttons-turn">
@@ -83,6 +83,10 @@
           </svg>
         </div>
       </div>
+      <div class="summary-top" :id="'summary_top_'+fundId">Performance</div>
+      <div class="summary-right" :id="'summary_right_'+fundId">Risk</div>
+      <div class="summary-bottom" :id="'summary_bottom_'+fundId">Abnormal Performance</div>
+      <div class="summary-left" :id="'summary_left_'+fundId">Basic</div>
     </div>
     <div
       class="invest_style_boxes"
@@ -977,6 +981,52 @@ export default {
   left: 215px;
   top: 70px;
   font-size: 27px;
+}
+
+.summary-top {
+  position: absolute;
+  left: 63px;
+  top: 57px;
+  width: 120px;
+  height: 15px;
+  font-family: "PingFangSC-Medium";
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.summary-right {
+  position: absolute;
+  left: 183px;
+  top: 70px;
+  width: 30px;
+  height: 120px;
+  font-family: "PingFangSC-Medium";
+  font-size: 10px;
+  font-weight: bold;
+  line-height: 120px;
+}
+
+.summary-bottom {
+  position: absolute;
+  left: 23px;
+  top: 199px;
+  width: 200px;
+  height: 15px;
+  font-family: "PingFangSC-Medium";
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.summary-left {
+  position: absolute;
+  left: 30px;
+  top: 70px;
+  width: 30px;
+  height: 120px;
+  font-family: "PingFangSC-Medium";
+  font-size: 10px;
+  font-weight: bold;
+  line-height: 120px;
 }
 
 .icon {

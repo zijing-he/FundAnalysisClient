@@ -18,23 +18,27 @@ import sectorDict from "@/data/sector_dict.json";
 import weightKey from "@/data/weight_key.json";
 
 const colorMap = {
-  alpha: "#d8d8d8",
-  beta: "#d8d8d8",
-  sharp_ratio: "#d8d8d8",
-  information_ratio: "#d8d8d8",
-  stock: "#d8d8d8",
-  bond: "#d8d8d8",
-  cash: "#d8d8d8",
-  other: "#d8d8d8",
-  one_quarter_return: "#d8d8d8",
-  one_year_return: "#d8d8d8",
-  three_year_return: "#d8d8d8",
-  one_quarter_hs300_return: "#d8d8d8",
-  one_year_hs300_return: "#d8d8d8",
-  three_year_hs300_return: "#d8d8d8",
-  risk: "#d8d8d8",
-  size: "#d8d8d8",
-  max_drop_down: "#d8d8d8",
+  // performance
+  one_quarter_return: "rgb(167, 183, 220)",
+  one_year_return: "rgb(167, 183, 220)",
+  three_year_return: "rgb(167, 183, 220)",
+  one_quarter_hs300_return: "rgb(167, 183, 220)",
+  one_year_hs300_return: "rgb(167, 183, 220)",
+  three_year_hs300_return: "rgb(167, 183, 220)",
+  // risk
+  risk: "rgb(211, 165, 154)",
+  max_drop_down: "rgb(211, 165, 154)",
+  sharp_ratio: "rgb(211, 165, 154)",
+  beta: "rgb(211, 165, 154)",
+  // abnormal performance
+  information_ratio: "rgb(221, 194, 236)",
+  alpha: "rgb(221, 194, 236)",
+  // basic
+  size: "rgb(236, 122, 75)",
+  stock: "rgb(236, 122, 75)",
+  bond: "rgb(236, 122, 75)",
+  cash: "rgb(236, 122, 75)",
+  other: "rgb(236, 122, 75)",
 };
 
 // 柱状图的起始x和宽度，根据每条边有多少根柱子而定 (以边长为80确定，后根据实际边长调整)

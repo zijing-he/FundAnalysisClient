@@ -7,23 +7,16 @@ import * as d3 from "d3";
 import { eachRight } from "lodash";
 
 const colorMap = {
-  all_hs300_return: "#d8d8d8",
-  one_quarter_return: "#d8d8d8",
-  one_year_return: "#d8d8d8",
-  three_year_return: "#d8d8d8",
-  all_return: "#d8d8d8",
-  stock: "#d8d8d8",
-  bond: "#d8d8d8",
-  cash: "#d8d8d8",
-  other: "#d8d8d8",
-  size: "#d8d8d8",
-  alpha: "#d8d8d8",
-  beta: "#d8d8d8",
-  sharp_ratio: "#d8d8d8",
-  max_drop_down: "#d8d8d8",
-  information_ratio: "#d8d8d8",
-  risk: "#d8d8d8",
-  instl_weight: "#d8d8d8",
+  // performance
+  one_quarter_return: "rgb(167, 183, 220)",
+  one_year_return: "rgb(167, 183, 220)",
+  three_year_return: "rgb(167, 183, 220)",
+  // risk
+  beta: "rgb(211, 165, 154)",
+  // abnormal performance
+  alpha: "rgb(221, 194, 236)",
+  // basic
+  size: "rgb(236, 122, 75)",
 };
 
 const dataGroup = [
