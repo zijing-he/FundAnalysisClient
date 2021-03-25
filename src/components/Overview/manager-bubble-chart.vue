@@ -38,6 +38,7 @@ export default {
     fundManagers: function (value) {
       this.data = value;
       this.renderUpdate();
+      this.ClickUpdate();
     },
     isRefresh: function () {
       this.renderUpdate();
@@ -48,6 +49,7 @@ export default {
     // console.log("基金经理信息：", this.data);
     this.renderInit();
     this.renderUpdate();
+    this.ClickUpdate();
   },
   computed: {
     innerWidth() {
