@@ -162,44 +162,42 @@ export default {
     handleMenuClick(d) {
       if (d.target.value == 1) {
         this.weight = {
-          one_quarter_return: "0.4",
           one_year_return: "0.3",
-          three_year_return: "0.3",
+          one_quarter_return: "0.4",
+          size: "1.0",
+          alpha: "0.1",
+          information_ratio: "0.1",
+          sharp_ratio: "1.0",
+          beta: "1.0",
           max_drop_down: "-1",
           risk: "-1.0",
-          sharp_ratio: "1.0",
-          information_ratio: "0.1",
-          alpha: "0.1",
-          beta: "1.0",
-          size: "1.0",
+          three_year_return: "0.3",
         };
       } else if (d.target.value == 2) {
         this.weight = {
-          one_quarter_return: "0.3",
           one_year_return: "0.3",
-          three_year_return: "0.4",
+          one_quarter_return: "0.3",
+          size: "0.1",
+          alpha: "0.1",
+          information_ratio: "0.5",
+          sharp_ratio: "0.5",
+          beta: "0.5",
           max_drop_down: "-0.5",
           risk: "-0.5",
-          sharp_ratio: "0.5",
-          information_ratio: "0.5",
-          alpha: "0.1",
-          beta: "0.5",
-          size: "0.1",
-          // instl_weight: "0.2",
+          three_year_return: "0.4",
         };
       } else if (d.target.value == 3) {
         this.weight = {
-          one_quarter_return: "0.1",
           one_year_return: "0.3",
-          three_year_return: "0.6",
+          one_quarter_return: "0.1",
+          size: "-0.5",
+          alpha: "0.5",
+          information_ratio: "1",
+          sharp_ratio: "0.1",
+          beta: "0.1",
           max_drop_down: "-0.1",
           risk: "-0.1",
-          sharp_ratio: "0.1",
-          information_ratio: "1",
-          alpha: "0.5",
-          beta: "0.1",
-          size: "-0.5",
-          // instl_weight: "0.0",
+          three_year_return: "0.6",
         };
       }
       this.handleWeightToData();
