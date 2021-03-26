@@ -265,7 +265,7 @@ export default {
       //突出当前选的基金ID
       if (this.showManagerId.length > 0) {
         let topPoints = this.svg.selectAll(".pies").filter((d) => {
-          console.log(d);
+          // console.log(d);
           for (let key in d[1].managerId) {
             if (this.showManagerId.indexOf(d[1].managerId[key]) !== -1) {
               return true;
