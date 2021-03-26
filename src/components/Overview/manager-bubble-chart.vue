@@ -13,6 +13,7 @@
 
 <script>
 import * as d3 from "d3";
+import managerToIndex from "@/data/manager_index.json";
 export default {
   name: "managerBubbleChart",
   props: {
@@ -114,9 +115,9 @@ export default {
           .style("visibility", "visible")
           .html(
             "Name: " +
-              this.data[d].cn_name +
+              this.data[d].en_name +
               "<br /> ID: " +
-              d +
+              managerToIndex[d] +
               "<br /> Tenure: " +
               this.data[d].days
           )

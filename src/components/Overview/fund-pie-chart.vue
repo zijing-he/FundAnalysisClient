@@ -12,6 +12,7 @@
 <script>
 import * as d3 from "d3";
 var jsnx = require("jsnetworkx");
+import managerToIndex from "@/data/manager_index.json";
 export default {
   name: "fundPieChart",
   props: {
@@ -396,7 +397,7 @@ export default {
           .style("visibility", "visible")
           .style("width", "200px")
           .style("height", "50px")
-          .html("Manager ID: " + d[2].managerId)
+          .html("Manager ID: " + managerToIndex[d[2].managerId])
           .style("left", event.layerX - 210 + "px")
           .style("top", event.layerY - 30 + "px");
       };

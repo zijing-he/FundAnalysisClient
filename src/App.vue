@@ -126,6 +126,8 @@ import MarketAnalysisLayout from "@/components/MarketAnalysis/layout";
 import OverViewLayout from "@/components/Overview/layout";
 import FundRankingLayout from "@/components/FundRanking/FundRankingLayout";
 import DataService from "@/utils/data-service";
+import managerToIndex from "@/data/manager_index.json";
+import indexToManager from "@/data/index_manager.json";
 
 export default {
   name: "App",
@@ -304,12 +306,12 @@ export default {
       this.curManagerIDs = [];
     },
     handleChangeManagerID(newVal, oldVal) {
-      if (oldVal === null) this.curManagerIDs.push(newVal);
+      if (oldVal === null) this.curManagerIDs.push(indexToManager[newVal]);
       else
         this.curManagerIDs.splice(
-          this.curManagerIDs.indexOf(oldVal),
+          this.curManagerIDs.indexOf(indexToManager[oldVal]),
           1,
-          newVal
+          indexToManager[newVal]
         );
       ++this.isRefresh;
       // console.log("curManagerIDs:", this.curManagerIDs, this.isRefresh);
@@ -468,7 +470,7 @@ export default {
           }
         }
         this.$message.success(
-          `Funds related to Manager ${val} has all been added to current Ranking (${addCnt} added, ${existCnt} exist).`
+          `Funds related to Manager ${managerToIndex[val]} has all been added to current Ranking (${addCnt} added, ${existCnt} exist).`
         );
       }
       setTimeout(() => {

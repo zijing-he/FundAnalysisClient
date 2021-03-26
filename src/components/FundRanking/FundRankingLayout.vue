@@ -107,6 +107,7 @@
 <script>
 import * as d3 from "d3";
 import NightingaleRoseChart from "@/components/FundRanking/NightingaleRoseChart";
+import indexToManager from "@/data/index_manager.json";
 
 export default {
   name: "FundRankingLayout",
@@ -187,7 +188,7 @@ export default {
       if (this.queryParam.fundCode !== "") {
         this.$emit("searchFundCode", this.queryParam.fundCode);
       } else if (this.queryParam.managerCode !== "") {
-        this.$emit("searchManagerCode", this.queryParam.managerCode);
+        this.$emit("searchManagerCode", indexToManager[this.queryParam.managerCode]);
       } else {
         this.$message.warn("At least enter one field to search!");
       }

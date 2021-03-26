@@ -40,9 +40,12 @@
           style="margin: auto; border-radius: 6px; cursor: pointer; width: 110px; margin-left: 24px; font-size: 15px;"
           v-model="selectManagerID"
         >
-          <option :value="item" :key="item" v-for="item in managerIDs">{{
-            item
-          }}</option>
+          <option
+            :value="managerToIndex[item]"
+            :key="managerToIndex[item]"
+            v-for="item in managerIDs"
+            >{{ managerToIndex[item] }}</option
+          >
         </select>
       </div>
       <div class="summary_box" v-if="!isLoading">
@@ -114,12 +117,7 @@
       @scroll="topHandleScroll()"
     >
       <div class="legends" :id="'legends_' + fundId" v-if="index === 0">
-        <svg
-          :id="'legends_svg_' + fundId"
-          width="300px"
-          height="49px"
-          viewBox="[0, 0, 300, 49]"
-        >
+        <svg :id="'legends_svg_' + fundId" width="300px" height="49px">
           <defs>
             <linearGradient id="legend-linear">
               <stop offset="0%" style="stop-color:#91cf60;"></stop>
@@ -221,8 +219,8 @@
 <script>
 import * as d3 from "d3";
 import InvestStyleBox from "./InvestStyleBox";
-import weightKey from "@/data/weight_key.json";
 import DataService from "@/utils/data-service";
+// import managerToIndex from "@/data/manager_index.json";
 
 export default {
   name: "FundProfile",
@@ -282,6 +280,7 @@ export default {
       eachMargin: [], // 传给气泡图
       summaryBoxWidth: this.index === 0 ? 96 : 120,
       summaryBoxGap: this.index === 0 ? 75 : 63,
+      managerToIndex: require("@/data/manager_index.json"),
     };
   },
 
@@ -318,7 +317,7 @@ export default {
         // console.log(data);
         this.fundData = data;
         this.managerIDs = data["total"][this.fundId]["manager_ids"];
-        this.selectManagerID = this.managerIDs[0];
+        this.selectManagerID = this.managerToIndex[this.managerIDs[0]];
         this.calcAttrs();
         this.renderInit();
         this.renderUpdate();
