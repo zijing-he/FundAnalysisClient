@@ -154,8 +154,8 @@
             height="15"
             style="fill:url(#legend-linear);"
           ></rect>
-          <text x="8" y="30">-</text>
-          <text x="208" y="30">+</text>
+          <text x="3" y="31">-1</text>
+          <text x="203" y="31">+1</text>
           <rect
             mask="url(#mask-stripe)"
             fill="#d8d8d8"
