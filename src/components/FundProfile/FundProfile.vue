@@ -68,10 +68,10 @@
           :betaData="summaryBetaData"
           :sharp_ratioData="summarySharpRatioData"
           :information_ratioData="summaryInfoRatioData"
-          :boxGap="63"
-          :boxWidth="120"
-          :contentWidth="120"
-          style="margin-top: 17px;"
+          :boxGap="summaryBoxGap"
+          :boxWidth="summaryBoxWidth"
+          :contentWidth="summaryBoxWidth"
+          style="margin-top: 19px;"
         >
         </InvestStyleBox>
         <div class="buttons-turn">
@@ -83,16 +83,92 @@
           </svg>
         </div>
       </div>
-      <div class="summary-top" :id="'summary_top_'+fundId">Performance</div>
-      <div class="summary-right" :id="'summary_right_'+fundId">Risk</div>
-      <div class="summary-bottom" :id="'summary_bottom_'+fundId">Abnormal Performance</div>
-      <div class="summary-left" :id="'summary_left_'+fundId">Basic</div>
+      <div class="summary-top" :id="'summary_top_' + fundId" v-if="index === 0">
+        Performance
+      </div>
+      <div
+        class="summary-right"
+        :id="'summary_right_' + fundId"
+        v-if="index === 0"
+      >
+        Risk
+      </div>
+      <div
+        class="summary-bottom"
+        :id="'summary_bottom_' + fundId"
+        v-if="index === 0"
+      >
+        Abnormal Performance
+      </div>
+      <div
+        class="summary-left"
+        :id="'summary_left_' + fundId"
+        v-if="index === 0"
+      >
+        Basic
+      </div>
     </div>
     <div
       class="invest_style_boxes"
       ref="topElement"
       @scroll="topHandleScroll()"
     >
+      <div class="legends" :id="'legends_' + fundId" v-if="index === 0">
+        <svg
+          :id="'legends_svg_' + fundId"
+          width="300px"
+          height="49px"
+          viewBox="[0, 0, 300, 49]"
+        >
+          <defs>
+            <linearGradient id="legend-linear">
+              <stop offset="0%" style="stop-color:#91cf60;"></stop>
+              <stop offset="100%" style="stop-color:#fc8d59;"></stop>
+            </linearGradient>
+            <pattern
+              id="pattern-stripe"
+              width="4"
+              height="4"
+              patternUnits="userSpaceOnUse"
+              patternTransform="rotate(45)"
+            >
+              <rect
+                width="2"
+                height="4"
+                transform="translate(0,0)"
+                fill="white"
+              ></rect>
+            </pattern>
+            <mask id="mask-stripe">
+              <rect
+                x="0"
+                y="0"
+                width="100%"
+                height="100%"
+                fill="url(#pattern-stripe)"
+              />
+            </mask>
+          </defs>
+          <rect
+            x="10"
+            y="5"
+            width="200"
+            height="15"
+            style="fill:url(#legend-linear);"
+          ></rect>
+          <text x="8" y="30">-</text>
+          <text x="208" y="30">+</text>
+          <rect
+            mask="url(#mask-stripe)"
+            fill="#d8d8d8"
+            x="10"
+            y="35"
+            width="15"
+            height="15"
+          ></rect>
+          <text x="28" y="47">: -</text>
+        </svg>
+      </div>
       <a-spin
         v-if="isLoading"
         size="large"
@@ -151,6 +227,7 @@ import DataService from "@/utils/data-service";
 export default {
   name: "FundProfile",
   props: {
+    index: Number, // 第一个展示图例
     fundId: String,
     fundIds: Array, // 要计算空余部分面积，只能一起请求后端数据
     startDate: String,
@@ -203,6 +280,8 @@ export default {
       summarySharpRatioData: undefined,
       summaryInfoRatioData: undefined,
       eachMargin: [], // 传给气泡图
+      summaryBoxWidth: this.index === 0 ? 96 : 120,
+      summaryBoxGap: this.index === 0 ? 75 : 63,
     };
   },
 
@@ -277,6 +356,54 @@ export default {
   },
 
   methods: {
+    resetLegends() {
+      if (this.index === 0) {
+        // 重置图例
+        let curTopSide = this.$refs[this.investStyleBoxes[0].boxId].curTopSide;
+        switch (curTopSide) {
+          case "top":
+            document.getElementById(`summary_top_${this.fundId}`).innerHTML =
+              "Performance";
+            document.getElementById(`summary_right_${this.fundId}`).innerHTML =
+              "Risk";
+            document.getElementById(`summary_bottom_${this.fundId}`).innerHTML =
+              "Abnormal Performance";
+            document.getElementById(`summary_left_${this.fundId}`).innerHTML =
+              "Basic";
+            break;
+          case "right":
+            document.getElementById(`summary_top_${this.fundId}`).innerHTML =
+              "Risk";
+            document.getElementById(`summary_right_${this.fundId}`).innerHTML =
+              "Abnormal Performance";
+            document.getElementById(`summary_bottom_${this.fundId}`).innerHTML =
+              "Basic";
+            document.getElementById(`summary_left_${this.fundId}`).innerHTML =
+              "Performance";
+            break;
+          case "bottom":
+            document.getElementById(`summary_top_${this.fundId}`).innerHTML =
+              "Abnormal Performance";
+            document.getElementById(`summary_right_${this.fundId}`).innerHTML =
+              "Basic";
+            document.getElementById(`summary_bottom_${this.fundId}`).innerHTML =
+              "Performance";
+            document.getElementById(`summary_left_${this.fundId}`).innerHTML =
+              "Risk";
+            break;
+          case "left":
+            document.getElementById(`summary_top_${this.fundId}`).innerHTML =
+              "Basic";
+            document.getElementById(`summary_right_${this.fundId}`).innerHTML =
+              "Performance";
+            document.getElementById(`summary_bottom_${this.fundId}`).innerHTML =
+              "Risk";
+            document.getElementById(`summary_left_${this.fundId}`).innerHTML =
+              "Abnormal Performance";
+            break;
+        }
+      }
+    },
     turnClockwise(isFatherCall = false) {
       this.svg.select(`#dashline_${this.fundId}`).remove();
       this.$refs[`${this.fundId}_summary`].removeDashline();
@@ -286,6 +413,7 @@ export default {
         this.$refs[d.boxId].turnClockwise();
       });
       if (!isFatherCall) this.$emit("turn", true, this.fundId);
+      this.resetLegends();
     },
     turnCounterClockwise(isFatherCall = false) {
       this.svg.select(`#dashline_${this.fundId}`).remove();
@@ -296,6 +424,7 @@ export default {
         this.$refs[d.boxId].turnCounterClockwise();
       });
       if (!isFatherCall) this.$emit("turn", false, this.fundId);
+      this.resetLegends();
     },
     likeFund() {
       if (this.thisFundLikeScore === 1) this.thisFundLikeScore = 0;
@@ -978,16 +1107,17 @@ export default {
 
 .buttons-turn {
   position: absolute;
-  left: 215px;
-  top: 70px;
-  font-size: 27px;
+  left: 185px;
+  top: 60px;
+  font-size: 23px;
+  display: flex;
 }
 
 .summary-top {
   position: absolute;
-  left: 63px;
-  top: 57px;
-  width: 120px;
+  left: 15px;
+  top: 60px;
+  width: 170px;
   height: 15px;
   font-family: "PingFangSC-Medium";
   font-size: 10px;
@@ -996,21 +1126,21 @@ export default {
 
 .summary-right {
   position: absolute;
-  left: 183px;
-  top: 70px;
+  left: 173px;
+  top: 90px;
   width: 30px;
   height: 120px;
   font-family: "PingFangSC-Medium";
   font-size: 10px;
   font-weight: bold;
-  line-height: 120px;
+  padding-top: 30px;
 }
 
 .summary-bottom {
   position: absolute;
-  left: 23px;
-  top: 199px;
-  width: 200px;
+  left: 15px;
+  top: 175px;
+  width: 170px;
   height: 15px;
   font-family: "PingFangSC-Medium";
   font-size: 10px;
@@ -1019,14 +1149,14 @@ export default {
 
 .summary-left {
   position: absolute;
-  left: 30px;
+  left: 0px;
   top: 70px;
   width: 30px;
-  height: 120px;
+  height: 100px;
   font-family: "PingFangSC-Medium";
   font-size: 10px;
   font-weight: bold;
-  line-height: 120px;
+  padding-top: 45px;
 }
 
 .icon {
@@ -1047,6 +1177,15 @@ export default {
   border-left: 1px dashed #979797;
   overflow-x: auto;
   overflow-y: hidden;
+}
+
+.legends {
+  position: absolute;
+  width: 300px;
+  height: 23%;
+  left: 5px;
+  top: 5px;
+  /* border: 1px solid black; */
 }
 
 .curve {

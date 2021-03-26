@@ -10,6 +10,8 @@ export default {
   name: "ControlPanelRaderChart2",
   props: {
     proData: Array,
+    // zeroData: Array,
+    // floorData: Array,
   },
   components: {},
   emits: ["updateUserData"],
@@ -30,17 +32,20 @@ export default {
       allAxis: [],
       total: 0,
       radius: 0,
+      // 中间那层空白
+      // whiteData: [],
+      // whiteDataValues: [],
     };
   },
   watch: {
-    proData: function (value) {
+    proData: function(value) {
       this.data = value;
       this.svg.selectAll("g").remove();
       this.renderInit();
       this.renderUpdate();
     },
   },
-  mounted: function () {
+  mounted: function() {
     console.log(this.data);
     this.svg = d3
       .select("#market_raderchart")
@@ -123,9 +128,8 @@ export default {
           })
           .attr(
             "transform",
-            `translate(${this.width / 2 - levelFactor},${
-              this.height / 2 - levelFactor
-            })`
+            `translate(${this.width / 2 - levelFactor},${this.height / 2 -
+              levelFactor})`
           );
       }
       let axis = this.raderChart
@@ -199,29 +203,27 @@ export default {
 
       this.raderChart.attr("transform", "translate(28,0)");
 
-      axis.select("#text_sharp_ratio").attr("transform", "translate(-10,-10)");
+      axis.select("#text_sharp_ratio").attr("transform", "translate(5,-10)");
       axis
         .select("#text_information_ratio")
-        .attr("transform", "translate(35,-10)");
+        .attr("transform", "translate(0,-10)");
       axis.select("#text_instl_weight").attr("transform", "translate(50,-35)");
-      axis.select("#text_risk").attr("transform", "translate(-20,-5)");
+      axis.select("#text_risk").attr("transform", "translate(5,-25)");
 
-      axis
-        .select("#text_max_drop_down")
-        .attr("transform", "translate(-15,-12)");
+      axis.select("#text_max_drop_down").attr("transform", "translate(25,-10)");
 
-      axis.select("#text_size").attr("transform", "translate(20,-28)");
+      axis.select("#text_size").attr("transform", "translate(-10,-25)");
       axis
         .select("#text_three_year_return")
-        .attr("transform", "translate(-12,-18)");
+        .attr("transform", "translate(-12,-20)");
       axis
         .select("#text_one_year_return")
         .attr("transform", "translate(0,-26)");
       axis
         .select("#text_one_quarter_return")
         .attr("transform", "translate(0,-20)");
-      axis.select("#text_beta").attr("transform", "translate(8,-18)");
-      axis.select("#text_alpha").attr("transform", "translate(13,-5)");
+      axis.select("#text_beta").attr("transform", "translate(8,-10)");
+      axis.select("#text_alpha").attr("transform", "translate(8,-10)");
     },
     renderUpdate() {
       let maxDataValues = [];
@@ -247,12 +249,90 @@ export default {
             (1 - this.factor * Math.cos((i * this.radians) / this.total)),
         ]);
       });
-      console.log("maxDataValue:", maxDataValues);
+      // console.log("maxDataValue:", maxDataValues);
       let str = "";
       for (let i = 0; i < this.dataValues.length; i++) {
         str = str + this.dataValues[i][0] + "," + this.dataValues[i][1] + " ";
       }
 
+      // 中间那层空白
+      // this.whiteData = [];
+      // this.data.forEach((d, i) => {
+      //   this.whiteData.push({
+      //     axis: d.axis,
+      //     value: Math.min(d.value, 2),
+      //   });
+      // });
+      // this.whiteData.forEach((d, i) => {
+      //   this.whiteDataValues.push([
+      //     (this.width / 2) *
+      //       (1 -
+      //         (parseFloat(Math.max(d.value, 0)) / this.maxValue) *
+      //           this.factor *
+      //           Math.sin((i * this.radians) / this.total)),
+      //     (this.height / 2) *
+      //       (1 -
+      //         (parseFloat(Math.max(d.value, 0)) / this.maxValue) *
+      //           this.factor *
+      //           Math.cos((i * this.radians) / this.total)),
+      //   ]);
+      // });
+      // let whiteDataStr = "";
+      // for (let i = 0; i < this.whiteDataValues.length; i++) {
+      //   whiteDataStr =
+      //     whiteDataStr +
+      //     this.whiteDataValues[i][0] +
+      //     "," +
+      //     this.whiteDataValues[i][1] +
+      //     " ";
+      // }
+
+      // let zeroDataValues = [],
+      //   floorDataValues = [];
+      // this.zeroData.forEach((d, i) => {
+      //   zeroDataValues.push([
+      //     (this.width / 2) *
+      //       (1 -
+      //         (parseFloat(Math.max(d.value, 0)) / this.maxValue) *
+      //           this.factor *
+      //           Math.sin((i * this.radians) / this.total)),
+      //     (this.height / 2) *
+      //       (1 -
+      //         (parseFloat(Math.max(d.value, 0)) / this.maxValue) *
+      //           this.factor *
+      //           Math.cos((i * this.radians) / this.total)),
+      //   ]);
+      // });
+      // this.floorData.forEach((d, i) => {
+      //   floorDataValues.push([
+      //     (this.width / 2) *
+      //       (1 -
+      //         (parseFloat(Math.max(d.value, 0)) / this.maxValue) *
+      //           this.factor *
+      //           Math.sin((i * this.radians) / this.total)),
+      //     (this.height / 2) *
+      //       (1 -
+      //         (parseFloat(Math.max(d.value, 0)) / this.maxValue) *
+      //           this.factor *
+      //           Math.cos((i * this.radians) / this.total)),
+      //   ]);
+      // });
+      // let zeroDataStr = "",
+      //   floorDataStr = "";
+      // for (let i = 0; i < zeroDataValues.length; i++) {
+      //   zeroDataStr =
+      //     zeroDataStr + zeroDataValues[i][0] + "," + zeroDataValues[i][1] + " ";
+      // }
+      // for (let i = 0; i < floorDataValues.length; i++) {
+      //   floorDataStr =
+      //     floorDataStr +
+      //     floorDataValues[i][0] +
+      //     "," +
+      //     floorDataValues[i][1] +
+      //     " ";
+      // }
+
+      // 雷达层
       this.raderChart
         .append("g")
         .selectAll(".area")
@@ -263,12 +343,80 @@ export default {
         .attr("id", "radar-chart-area")
         .style("stroke-width", "3px")
         .style("stroke", "#50A1FF")
-        .style("fill", "rgba(80,161,255,0.10)")  //颜色
+        .style("fill", "rgba(80,161,255,0.10)") //颜色
         // .style("fill-opacity", 0.2)
         .attr("points", str);
 
-      let dragstarted = function (event, d) {
-        d3.select(this).raise().attr("r", "8px").style("opacity", "0.8");
+      // 条纹defs
+      // const defs = this.raderChart.append("defs");
+      // defs
+      //   .append("pattern")
+      //   .attr("id", `pattern_stripe`)
+      //   .attr("width", 4)
+      //   .attr("height", 4)
+      //   .attr("patternUnits", "userSpaceOnUse")
+      //   .attr("patternTransform", "rotate(45)")
+      //   .append("rect")
+      //   .attr("width", 2)
+      //   .attr("height", 4)
+      //   .attr("transform", "translate(0, 0)")
+      //   .attr("fill", "white");
+      // defs
+      //   .append("mask")
+      //   .attr("id", `mask_stripe`)
+      //   .append("rect")
+      //   .attr("x", 0)
+      //   .attr("y", 0)
+      //   .attr("width", "100%")
+      //   .attr("height", "100%")
+      //   .attr("fill", `url(#pattern_stripe)`)
+      //   .attr("stroke", "black");
+
+      // // 0线层
+      // this.raderChart
+      //   .append("g")
+      //   .selectAll(".area")
+      //   .data([zeroDataValues])
+      //   .enter()
+      //   .append("polygon")
+      //   .attr("class", "radar-chart-area")
+      //   .attr("id", "radar-chart-area-zero")
+      //   .attr("mask", "url(#mask_stripe)")
+      //   .style("fill", "rgba(80,161,255,0.5)")
+      //   .attr("points", zeroDataStr);
+
+      // // 中间空白层
+      // this.raderChart
+      //   .append("g")
+      //   .selectAll(".area")
+      //   .data([this.whiteDataValues])
+      //   .enter()
+      //   .append("polygon")
+      //   .attr("class", "radar-chart-area")
+      //   .attr("id", "radar-chart-area-white")
+      //   .style("fill", "rgb(255,255,255)")
+      //   .attr("points", whiteDataStr);
+
+      // // 下限层
+      // this.raderChart
+      //   .append("g")
+      //   .selectAll(".area")
+      //   .data([floorDataValues])
+      //   .enter()
+      //   .append("polygon")
+      //   .attr("class", "radar-chart-area")
+      //   .attr("id", "radar-chart-area-floor")
+      //   .style("stroke-width", "1px")
+      //   .style("stroke", "black")
+      //   .style("fill", "#d8d8d8")
+      //   .style("fill-opacity", 0.7)
+      //   .attr("points", floorDataStr);
+
+      let dragstarted = function(event, d) {
+        d3.select(this)
+          .raise()
+          .attr("r", "8px")
+          .style("opacity", "0.8");
         d3.select(".update_value_weight").text((d.value - 2).toFixed(2));
         // .style("fill", "#FFFFFF")
         // if (nameDictionary[d.axis].en_sx.length <= 5) {
@@ -286,7 +434,7 @@ export default {
       let factor = this.factor;
       let radians = this.radians;
       let total = this.total;
-      let move = function (event, d) {
+      let move = function(event, d) {
         const e = nodesGroup.nodes();
         const i = e.indexOf(this); //获取index
         // console.log("d.axis ", d.axis, d.value);
@@ -439,7 +587,7 @@ export default {
           //   .style("text-align", "center");
           // .style("visibility", "visible");
 
-          updatePoly();  //重画多边形
+          updatePoly(); //重画多边形
         } else {
           if (newValue <= 1) {
             newValue = 1;
@@ -484,8 +632,10 @@ export default {
         // }, 1000);
       };
 
-      let dragended = function (event, d) {
-        d3.select(this).style("r", "3.5px").style("opacity", "1");
+      let dragended = function(event, d) {
+        d3.select(this)
+          .style("r", "3.5px")
+          .style("opacity", "1");
         toolTip.style("visibility", "hidden");
         // d3.select(".update_value_value").style("visibility", "hidden");
       };

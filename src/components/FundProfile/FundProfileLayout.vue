@@ -14,6 +14,7 @@
     </div> -->
     <div class="fund-profiles" id="fund_profiles" v-if="refresh">
       <FundProfile
+        :index="index"
         :ref="item"
         :fundId="item"
         :fundIds="fundsID"
@@ -28,7 +29,7 @@
         @updateMargin="updateMargin"
         @turn="handleTurn"
         @changeManagerID="handleChangeManagerID"
-        v-for="item in fundsID"
+        v-for="(item, index) in fundsID"
       >
       </FundProfile>
     </div>
