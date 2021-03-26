@@ -263,7 +263,7 @@ export default {
         .attr("id", "radar-chart-area")
         .style("stroke-width", "3px")
         .style("stroke", "#50A1FF")
-        .style("fill", "rgba(80,161,255,0.10)")
+        .style("fill", "rgba(80,161,255,0.10)")  //颜色
         // .style("fill-opacity", 0.2)
         .attr("points", str);
 
@@ -408,7 +408,6 @@ export default {
               newX = zero_X;
             }
           }
-
           if (Math.abs(newX) > Math.abs(new_maxX)) {
             newX = new_maxX;
           }
@@ -440,7 +439,7 @@ export default {
           //   .style("text-align", "center");
           // .style("visibility", "visible");
 
-          updatePoly();
+          updatePoly();  //重画多边形
         } else {
           if (newValue <= 1) {
             newValue = 1;

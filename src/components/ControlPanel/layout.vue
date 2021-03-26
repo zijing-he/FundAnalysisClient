@@ -193,6 +193,7 @@ export default {
         });
       }
       this.data = JSON.parse(JSON.stringify(tempData)); //深拷贝，给散点图的id
+      //添加变量
     },
   },
   mounted() {},
