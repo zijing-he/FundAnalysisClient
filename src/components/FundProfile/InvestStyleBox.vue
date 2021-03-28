@@ -118,9 +118,9 @@ export default {
       topSvg: null,
       rightSvg: null,
       bottomSvg: null,
-      initBottomBars: ["information_ratio", "alpha"],
+      initBottomBars: ["sharp_ratio", "information_ratio", "alpha"],
       initLeftBars: ["size", "stock", "bond", "cash", "other"],
-      initRightBars: ["risk", "max_drop_down", "sharp_ratio", "beta"],
+      initRightBars: ["risk", "max_drop_down", "beta"],
       barTopMargin: 5,
       curDegree: 0,
       lastTopBars: [],
@@ -658,14 +658,14 @@ export default {
               : "none"
           )
           .attr("x", 0)
-          .attr("y", (barAttrs.four.startX[i] * this.boxWidth) / 200)
+          .attr("y", (barAttrs.three.startX[i] * this.boxWidth) / 200)
           .attr(
             "width",
             this.yScale(
               Math.abs(eval(`this.${this.initRightBars[i]}Data.norm`))
             ) - this.yScale(0)
           )
-          .attr("height", (barAttrs.four.width * this.boxWidth) / 200);
+          .attr("height", (barAttrs.three.width * this.boxWidth) / 200);
         if (eval(`this.${this.initRightBars[i]}Data.norm`) < 0) {
           let dom = d3.select(`#${this.initRightBars[i]}-${this.boxId}`);
           let x = parseFloat(dom.attr("x")),
@@ -721,9 +721,9 @@ export default {
               ? `url(#bottom_mask_stripe_${this.boxId})`
               : "none"
           )
-          .attr("x", (barAttrs.two.startX[i] * this.boxWidth) / 200)
+          .attr("x", (barAttrs.three.startX[i] * this.boxWidth) / 200)
           .attr("y", 0)
-          .attr("width", (barAttrs.two.width * this.boxWidth) / 200)
+          .attr("width", (barAttrs.three.width * this.boxWidth) / 200)
           .attr(
             "height",
             this.yScale(

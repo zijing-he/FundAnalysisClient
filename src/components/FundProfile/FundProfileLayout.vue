@@ -180,7 +180,7 @@ export default {
         return 0; // 新纪录
       } else {
         this.historyFundsLikeScore[index] = this.fundsLikeScore_n;
-        return 3; // 更新已有记录
+        return index + 100; // 更新已有记录
       }
     },
     calcLineEndYPos() {

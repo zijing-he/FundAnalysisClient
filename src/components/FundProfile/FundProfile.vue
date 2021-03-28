@@ -564,7 +564,7 @@ export default {
             traverseEndY =
               traverseEndY - (20 * this.investStyleBoxWidth) / 200 - 5;
           } else if (
-            ["risk", "max_drop_down", "sharp_ratio", "beta"].indexOf(type) !==
+            ["risk", "max_drop_down", "beta"].indexOf(type) !==
             -1
           ) {
             // right
@@ -576,7 +576,7 @@ export default {
               (60 * this.investStyleBoxWidth) / 200 -
               (traverseEndY - (20 * this.investStyleBoxWidth) / 200 - 5);
             traverseEndY = this.investStyleBoxWidth;
-          } else if (["information_ratio", "alpha"].indexOf(type) !== -1) {
+          } else if (["sharp_ratio", "information_ratio", "alpha"].indexOf(type) !== -1) {
             // bottom
             traverseStartX = this.investStyleBoxWidth;
             traverseStartY =
@@ -632,7 +632,7 @@ export default {
           thatX2 = this.investStyleBoxWidth;
           thatY2 = thisY2 - (20 * this.investStyleBoxWidth) / 200 - 5;
         } else if (
-          ["risk", "max_drop_down", "sharp_ratio", "beta"].indexOf(type) !== -1
+          ["risk", "max_drop_down", "beta"].indexOf(type) !== -1
         ) {
           // right
           thatX1 =
@@ -643,7 +643,7 @@ export default {
             (60 * this.investStyleBoxWidth) / 200 -
             (thisY2 - (20 * this.investStyleBoxWidth) / 200 - 5);
           thatY2 = this.investStyleBoxWidth;
-        } else if (["information_ratio", "alpha"].indexOf(type) !== -1) {
+        } else if (["sharp_ratio", "information_ratio", "alpha"].indexOf(type) !== -1) {
           // bottom
           thatX1 = this.investStyleBoxWidth;
           thatY1 =
@@ -698,14 +698,14 @@ export default {
         lastX = 0;
         lastY = lastTmpY - (20 * this.investStyleBoxWidth) / 200 - 5;
       } else if (
-        ["risk", "max_drop_down", "sharp_ratio", "beta"].indexOf(type) !== -1
+        ["risk", "max_drop_down", "beta"].indexOf(type) !== -1
       ) {
         // right
         lastX =
           (60 * this.investStyleBoxWidth) / 200 -
           (lastTmpY - (20 * this.investStyleBoxWidth) / 200 - 5);
         lastY = 0;
-      } else if (["information_ratio", "alpha"].indexOf(type) !== -1) {
+      } else if (["sharp_ratio", "information_ratio", "alpha"].indexOf(type) !== -1) {
         // bottom
         lastX = this.investStyleBoxWidth;
         lastY =

@@ -1,25 +1,27 @@
 <template>
-  <a-row class="first_row">
-    <MarketAnalysisCurveChart
-      :start="marketStart"
-      :end="marketEnd"
-      v-on:updateBrush="handleUpdateBrush"
-    />
-  </a-row>
-  <a-row class="second_row">
-    <a-row type="flex" class="industry_selection_style">
-      <svg class="icon menu_icon" aria-hidden="true">
-        <use xlink:href="#iconxitongcaidan"></use>
-      </svg>
-      <text>Industry Selection</text>
+  <div style="width: 535px;">
+    <a-row class="first_row">
+      <MarketAnalysisCurveChart
+        :start="marketStart"
+        :end="marketEnd"
+        v-on:updateBrush="handleUpdateBrush"
+      />
     </a-row>
-    <MarketAnalysisStramGraph
-      :start="industryStart"
-      :end="industryEnd"
-      v-on:updateBrushStream="handleupdateBrushStream"
-      v-on:getSector="handleGetSector"
-    />
-  </a-row>
+    <a-row class="second_row">
+      <a-row type="flex" class="industry_selection_style">
+        <svg class="icon menu_icon" aria-hidden="true">
+          <use xlink:href="#iconxitongcaidan"></use>
+        </svg>
+        <text>Industry Selection</text>
+      </a-row>
+      <MarketAnalysisStramGraph
+        :start="industryStart"
+        :end="industryEnd"
+        v-on:updateBrushStream="handleupdateBrushStream"
+        v-on:getSector="handleGetSector"
+      />
+    </a-row>
+  </div>
 </template>
 <script>
 import MarketAnalysisCurveChart from "@/components/MarketAnalysis/curvechart";
@@ -38,10 +40,10 @@ export default {
     MarketAnalysisCurveChart,
     MarketAnalysisStramGraph,
   },
-  emits: ["updateTimeBoundary","updateSector"],
+  emits: ["updateTimeBoundary", "updateSector"],
   methods: {
-    handleGetSector(sector){
-      this.$emit("updateSector",sector);
+    handleGetSector(sector) {
+      this.$emit("updateSector", sector);
     },
     handleUpdateBrush(start, end, oriStart, oriEnd) {
       this.industryStart = oriStart;
@@ -62,14 +64,14 @@ export default {
 <style scoped>
 .first_row {
   height: 307px;
-  width: 523px;
+  width: 535px;
   background: #ffffff;
   box-shadow: 12px 2px 44px 0 rgba(0, 0, 0, 0.05);
 }
 .second_row {
   /* border-top: 1px solid black; */
   height: 380px;
-  width: 523px;
+  width: 535px;
   /* border: 1px solid red; */
   /* transform: rotate(-90deg); */
   background: #ffffff;

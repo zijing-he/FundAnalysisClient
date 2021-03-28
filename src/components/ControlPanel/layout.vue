@@ -1,10 +1,10 @@
 <template>
   <div class="container">
     <a-row class="control_panel">
-      <svg class="icon control_icon" aria-hidden="true">
+      <!-- <svg class="icon control_icon" aria-hidden="true">
         <use xlink:href="#iconcontrol"></use>
       </svg>
-      <text>Control Panel</text>
+      <text>Control Panel</text> -->
     </a-row>
     <a-row class="investment_style">
       <svg class="icon menu_icon" aria-hidden="true">
@@ -228,7 +228,7 @@ export default {
 <style scoped>
 .container {
   height: 529px;
-  width: 523px;
+  width: 535px;
   background: #ffffff;
   box-shadow: 12px 2px 44px 0 rgba(0, 0, 0, 0.05);
 }
@@ -237,6 +237,7 @@ export default {
 .control_panel {
   background: #011f41;
   box-shadow: 1px -3px 4px 0 rgba(36, 15, 57, 0.1);
+  height: 37px;
 }
 
 .control_panel text {

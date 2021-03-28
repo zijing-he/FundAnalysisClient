@@ -67,9 +67,10 @@ export default {
   },
   methods: {
     renderInit() {
-      d3.select("#rose_chart").attr("id", `rose_chart_${this.fundId}`);
+      let randNum = Math.floor(Math.random() * Math.floor(100));
+      d3.select("#rose_chart").attr("id", `rose_chart_${this.fundId}_${randNum}`);
       this.svg = d3
-        .select(`#rose_chart_${this.fundId}`)
+        .select(`#rose_chart_${this.fundId}_${randNum}`)
         .append("svg")
         .attr("width", this.width)
         .attr("height", this.height)

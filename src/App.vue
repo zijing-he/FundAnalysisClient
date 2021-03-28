@@ -20,10 +20,10 @@
 
     <a-col :span="3">
       <a-row class="fund_list">
-        <svg class="icon fund_list_icon" aria-hidden="true">
+        <!-- <svg class="icon fund_list_icon" aria-hidden="true">
           <use xlink:href="#iconfund"></use>
         </svg>
-        <text>Fund Panel</text>
+        <text>Fund Panel</text> -->
       </a-row>
       <a-row>
         <FundRankingLayout
@@ -44,7 +44,9 @@
       </a-row>
     </a-col>
     <a-col :span="16">
-      <a-row id="fund_list_extent"></a-row>
+      <a-row id="fund_list_extent">
+        <text>FundPicker</text>
+      </a-row>
       <a-row class="funds_title" style="margin-top: 0px">
         <svg class="icon menuIcon" aria-hidden="true">
           <use xlink:href="#iconxitongcaidan"></use>
@@ -88,7 +90,11 @@
               {{ index + 1 }}
             </option>
           </select>
-          <a-button type="primary" class="button" @click="handleResetComparison">
+          <a-button
+            type="primary"
+            class="button"
+            @click="handleResetComparison"
+          >
             <text>Reset</text>
           </a-button>
           <a-button type="primary" class="button" @click="handleSaveComparison">
@@ -148,8 +154,19 @@ export default {
       // this.showFundsID = Object.keys(this.historyFundsLikeScore[val]);
       // js对象不保留顺序，只能遍历以确保展示顺序
       let tmpShowFundsID = [];
+      for (let i = 0; i < this.searchFundsID.length; i++)
+        for (let j = 0; j < this.searchFundsID[i].length; j++)
+          if (
+            this.searchFundsID[i][j] in this.historyFundsLikeScore[val] &&
+            tmpShowFundsID.indexOf(this.searchFundsID[i][j]) === -1
+          )
+            tmpShowFundsID.push(this.searchFundsID[i][j]);
+
       for (let i = 0; i < this.rankFundsID.length; i++) {
-        if (this.rankFundsID[i] in this.historyFundsLikeScore[val])
+        if (
+          this.rankFundsID[i] in this.historyFundsLikeScore[val] &&
+          tmpShowFundsID.indexOf(this.rankFundsID[i]) === -1
+        )
           tmpShowFundsID.push(this.rankFundsID[i]);
       }
       this.showFundsID = tmpShowFundsID;
@@ -185,8 +202,8 @@ export default {
       incomingWeight: null, //基金画像调整后传入的权重存放在这
       isRequestRanking: true,
       rankFundsID: null, // 给FundRanking
-      searchFundsID: null, // 搜索得到的基金ID
-      searchFundsRank: null, // 搜索得到的基金排名
+      searchFundsID: null, // 搜索得到的基金ID，二维数组，每行表示一次搜索
+      searchFundsRank: null, // 搜索得到的基金排名，同样为二维数组
       rankFundsData: null,
       showFundsID: [], // 展示的FundProfile
       showFundsLikeScore: {},
@@ -196,6 +213,7 @@ export default {
       scrollLeft: 0,
       marginLeft: [],
       historyFundsLikeScore: [],
+      historyFundsSelectGroup: [], // 搜索可能重复，确定到底是哪一个组内点击的基金, [{fundID0: g0, fundID1: g1, ...}, ...]
       selectIndex: -1, // 选中的历史记录index
       isTotalChange: true, // 为真表示是改变了所有rank的数据，要重置historyFundsLikeScore；为假则表示查看历史记录或者重新选取rank，无需重置
       userSectors: null,
@@ -358,6 +376,8 @@ export default {
         "fundProfileLayout"
       ].historyFundsLikeScore;
       if (res === 0) this.selectIndex = this.historyFundsLikeScore.length - 1;
+      // 更新已有记录
+      if (res >= 100) this.selectIndex = res - 100;
       this.$message.success("Saving successful!");
     },
     handleUpdateWeight() {
@@ -405,24 +425,32 @@ export default {
     handleSearchFundCode(val) {
       this.isRequestRanking = true;
       let index = this.allFundsID.indexOf(val);
-      let rankIndex = this.rankFundsID.indexOf(val);
-      let searchIndex = this.searchFundsID.indexOf(val);
+      // let rankIndex = this.rankFundsID.indexOf(val);
+      // let searchIndex = this.searchFundsID.indexOf(val);
+      // if (index === -1) {
+      //   this.$message.warn("Nothing found in current Ranking.");
+      // } else if (searchIndex !== -1) {
+      //   this.$message.warn(
+      //     `Fund ${val} is already in Rank ${this.searchFundsRank[searchIndex]}.`
+      //   );
+      // } else if (rankIndex !== -1) {
+      //   this.$message.warn(
+      //     `Fund ${val} is already in Rank ${rankIndex +
+      //       1 -
+      //       this.searchFundsID.length}.`
+      //   );
+      // } else {
+      //   this.searchFundsID.unshift(this.allFundsID[index]);
+      //   this.searchFundsRank.unshift(index + 1);
+      //   this.rankFundsID.unshift(this.allFundsID[index]);
+      //   this.rankFundsData[this.allFundsID[index]] = this.allFundsData[index];
+      //   this.$message.success(`Fund ${val} has been added to current Ranking.`);
+      // }
       if (index === -1) {
         this.$message.warn("Nothing found in current Ranking.");
-      } else if (searchIndex !== -1) {
-        this.$message.warn(
-          `Fund ${val} is already in Rank ${this.searchFundsRank[searchIndex]}.`
-        );
-      } else if (rankIndex !== -1) {
-        this.$message.warn(
-          `Fund ${val} is already in Rank ${rankIndex +
-            1 -
-            this.searchFundsID.length}.`
-        );
       } else {
-        this.searchFundsID.unshift(this.allFundsID[index]);
-        this.searchFundsRank.unshift(index + 1);
-        this.rankFundsID.unshift(this.allFundsID[index]);
+        this.searchFundsID.unshift([this.allFundsID[index]]);
+        this.searchFundsRank.unshift([index + 1]);
         this.rankFundsData[this.allFundsID[index]] = this.allFundsData[index];
         this.$message.success(`Fund ${val} has been added to current Ranking.`);
       }
@@ -436,42 +464,66 @@ export default {
       if (!(val in this.managerToFund)) {
         this.$message.warn("Nothing found in current Ranking.");
       } else {
-        let addCnt = 0,
-          existCnt = 0;
+        // let addCnt = 0,
+        //   existCnt = 0;
+        // let thisManagerFundsID = this.managerToFund[val];
+        // for (let i = 0; i < thisManagerFundsID.length; i++) {
+        //   let index = this.allFundsID.indexOf(thisManagerFundsID[i]);
+        //   let rankIndex = this.rankFundsID.indexOf(thisManagerFundsID[i]);
+        //   let searchIndex = this.searchFundsID.indexOf(thisManagerFundsID[i]);
+        //   if (index !== -1 && rankIndex === -1 && searchIndex === -1) {
+        //     this.searchFundsID.unshift(thisManagerFundsID[i]);
+        //     this.searchFundsRank.unshift(index + 1);
+        //     this.rankFundsID.unshift(thisManagerFundsID[i]);
+        //     this.rankFundsData[thisManagerFundsID[i]] = this.allFundsData[
+        //       index
+        //     ];
+        //     addCnt++;
+        //     this.$message.success(
+        //       `Fund ${thisManagerFundsID[i]} has been added to current Ranking.`
+        //     );
+        //   } else if (index !== -1 && (rankIndex !== -1 || searchIndex !== -1)) {
+        //     if (searchIndex !== -1) {
+        //       this.$message.warn(
+        //         `Fund ${thisManagerFundsID[i]} is already in Rank ${this.searchFundsRank[searchIndex]}.`
+        //       );
+        //     } else if (rankIndex !== -1) {
+        //       this.$message.warn(
+        //         `Fund ${thisManagerFundsID[i]} is already in Rank ${rankIndex +
+        //           1 -
+        //           this.searchFundsID.length}.`
+        //       );
+        //     }
+        //     existCnt++;
+        //   }
+        // }
+        // this.$message.success(
+        //   `Funds related to Manager ${managerToIndex[val]} has all been added to current Ranking (${addCnt} added, ${existCnt} exist).`
+        // );
         let thisManagerFundsID = this.managerToFund[val];
+        let curSearchFundsID = [],
+          curSearchFundsRank = [];
         for (let i = 0; i < thisManagerFundsID.length; i++) {
           let index = this.allFundsID.indexOf(thisManagerFundsID[i]);
-          let rankIndex = this.rankFundsID.indexOf(thisManagerFundsID[i]);
-          let searchIndex = this.searchFundsID.indexOf(thisManagerFundsID[i]);
-          if (index !== -1 && rankIndex === -1 && searchIndex === -1) {
-            this.searchFundsID.unshift(thisManagerFundsID[i]);
-            this.searchFundsRank.unshift(index + 1);
-            this.rankFundsID.unshift(thisManagerFundsID[i]);
-            this.rankFundsData[thisManagerFundsID[i]] = this.allFundsData[
+          if (index !== -1) {
+            this.rankFundsData[this.allFundsID[index]] = this.allFundsData[
               index
             ];
-            addCnt++;
-            this.$message.success(
-              `Fund ${thisManagerFundsID[i]} has been added to current Ranking.`
-            );
-          } else if (index !== -1 && (rankIndex !== -1 || searchIndex !== -1)) {
-            if (searchIndex !== -1) {
-              this.$message.warn(
-                `Fund ${thisManagerFundsID[i]} is already in Rank ${this.searchFundsRank[searchIndex]}.`
-              );
-            } else if (rankIndex !== -1) {
-              this.$message.warn(
-                `Fund ${thisManagerFundsID[i]} is already in Rank ${rankIndex +
-                  1 -
-                  this.searchFundsID.length}.`
-              );
-            }
-            existCnt++;
+            curSearchFundsRank.push(index + 1);
           }
         }
-        this.$message.success(
-          `Funds related to Manager ${managerToIndex[val]} has all been added to current Ranking (${addCnt} added, ${existCnt} exist).`
-        );
+        if (curSearchFundsRank.length !== 0) {
+          curSearchFundsRank.sort((a, b) => a - b);
+          for (let i = 0; i < curSearchFundsRank.length; i++)
+            curSearchFundsID.push(this.allFundsID[curSearchFundsRank[i]]);
+          this.searchFundsID.unshift(curSearchFundsID);
+          this.searchFundsRank.unshift(curSearchFundsRank);
+          this.$message.success(
+            `Funds related to Manager ${managerToIndex[val]} has all been added to current Ranking.`
+          );
+        } else {
+          this.$message.warn("Nothing found in current Ranking.");
+        }
       }
       setTimeout(() => {
         this.isRequestRanking = false;
@@ -498,7 +550,7 @@ export default {
   overflow: hidden;
 }
 #update_button_container {
-  width: 523px;
+  width: 535px;
   height: 80px;
   background: #ffffff;
   box-shadow: 12px 2px 44px 0 rgba(0, 0, 0, 0.05);
@@ -557,6 +609,7 @@ export default {
 .fund_list {
   background: #011f41;
   box-shadow: 1px -3px 4px 0 rgba(36, 15, 57, 0.1);
+  height: 37px;
 }
 
 .fund_list text {
@@ -578,6 +631,13 @@ export default {
   width: 1706.66px;
   background: #011f41;
   box-shadow: 1px -3px 4px 0 rgba(36, 15, 57, 0.1);
+}
+#fund_list_extent text {
+  font-family: PingFangSC-Semibold;
+  font-size: 24px;
+  color: #d0dde7;
+  letter-spacing: 0;
+  margin-left: 363px;
 }
 #fakeOverViewLayout {
   width: 1647px;
