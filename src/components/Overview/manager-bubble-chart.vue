@@ -90,8 +90,7 @@ export default {
         .attr("height", this.height)
         .attr("viewBox", [0, 0, this.width, this.height])
         .append("g")
-        .attr("transform", `translate(${this.margin.left},${this.margin.top})`)
-        .attr("z-index", 1);
+        .attr("transform", `translate(${this.margin.left},${this.margin.top})`);
     },
     renderUpdate() {
       this.showManagerArray = [];
@@ -103,8 +102,8 @@ export default {
         // .style("opacity", 0)
         .attr("class", "tooltip")
         .style("visibility", "hidden")
-        .style("width", "150px")
-        .style("max-height", "90px")
+        .style("width", "200px")
+        .style("max-height", "110px")
         .style("background-color", "black")
         .style("border-radius", "5px")
         .style("padding", "11px")
@@ -167,7 +166,9 @@ export default {
         if (!managerData[d]["isShow"]) {
           managerData[d]["isShow"] = true; //点亮
           showManagerFn(d, false);
-          d3.select(this).raise().style("fill", (d) => managerData[d].color);
+          d3.select(this)
+            .raise()
+            .style("fill", (d) => managerData[d].color);
         } else {
           //再点击关闭
           managerData[d]["isShow"] = false;
@@ -175,13 +176,34 @@ export default {
           d3.select(this).style("fill", "#D8D8D8");
         }
       };
-      this.svg.selectAll("circle").remove();
+
+      this.svg.selectAll("g").remove();
       this.svg
+        .selectAll(".manager_bubbles_rect")
+        .data(this.managerId.filter((d) => this.data[d].other === true))
+        .enter()
         .append("g")
-        .attr("z-index", "auto")
-        .selectAll("dot")
+        .append("rect")
+        .attr("class", "manager_bubbles_rect")
+        .attr("x", (d) => this.xScale(this.data[d].loc[0]))
+        .attr("y", (d) => this.yScale(this.data[d].loc[1]))
+        .attr("width", (d) => this.sizeScale(this.data[d].size) * 2)
+        .attr("height", (d) => this.sizeScale(this.data[d].size) * 2)
+        .style("fill", "#D8D8D8")
+        .style("stroke", "white")
+        .style("stroke-width", "0.5px")
+        .on("mouseover", showTooltip)
+        .on("mousemove", moveTooltip)
+        .on("mouseleave", hideTooltip)
+        .on("click", clickTooltip);
+
+      let managerCircles = this.svg
+        .selectAll(".manager_bubbles_circle")
         .data(this.managerId.filter((d) => this.data[d].other === false))
         .enter()
+        .append("g");
+
+      managerCircles
         .append("circle")
         .attr("class", "manager_bubbles_circle")
         .attr("cx", (d) => this.xScale(this.data[d].loc[0]))
@@ -190,6 +212,7 @@ export default {
         // .style("fill", (d) => this.data[d].color)
         .style("fill", (d) => {
           // console.log("this.managerId:", d);
+          // console.log("this:", d3.select(this));
           if (this.selectedManager.indexOf(d) !== -1) {
             this.showManagerArray.push(d); //加入现在选的基金经理
             this.showManagerArray = Array.from(new Set(this.showManagerArray));
@@ -212,29 +235,16 @@ export default {
         this.showManagerArray.length
       );
 
-      this.svg.selectAll("rect").remove();
-      this.svg
-        .append("g")
-        .attr("z-index", "auto")
-        .selectAll("dot")
-        .data(this.managerId.filter((d) => this.data[d].other === true))
-        .enter()
-        .append("rect")
-        .attr("class", "manager_bubbles_rect")
-        .attr("x", (d) => this.xScale(this.data[d].loc[0]))
-        .attr("y", (d) => this.yScale(this.data[d].loc[1]))
-        .attr("width", (d) => this.sizeScale(this.data[d].size) * 2)
-        .attr("height", (d) => this.sizeScale(this.data[d].size) * 2)
-        .style("fill", "#D8D8D8")
-        .style("stroke", "white")
-        .style("stroke-width", "0.5px")
-        .on("mouseover", showTooltip)
-        .on("mousemove", moveTooltip)
-        .on("mouseleave", hideTooltip)
-        .on("click", clickTooltip);
+      let topManager = managerCircles.filter((d) => {
+        // console.log("circle:", d);
+        if (this.showManagerArray.indexOf(d) !== -1) {
+          return true;
+        } else return false;
+      });
+      topManager.raise();
+
       //初次画完，凸显最后一个：
       // this.Highlight();
-        
     },
     //加入到showArray的最后一个，重画一遍覆盖
     Highlight() {
@@ -260,10 +270,10 @@ export default {
           }
         }
         //增加或删除后，都凸显最后一个！
-        this.Highlight();
+        // this.Highlight();
         // console.log(this.showManagerArray);
         // this.$emit("showManager", d);
-        console.log("showManagerArray2", this.showManagerArray);
+        // console.log("showManagerArray2", this.showManagerArray);
         this.$emit(
           "showManager",
           this.showManagerArray,
@@ -284,13 +294,11 @@ export default {
         }
       };
 
-
       //高亮一层
       this.svg
         .append("g")
         .selectAll("dot")
         .data(
-          
           this.managerId.filter((d) => {
             if (
               this.data[d].other === false &&
@@ -316,7 +324,7 @@ export default {
         // .on("mouseover", showTooltip)
         // .on("mousemove", moveTooltip)
         // .on("mouseleave", hideTooltip)
-        .on("click", clickTooltip);  //凸显出来的也要只支持删除！
+        .on("click", clickTooltip); //凸显出来的也要只支持删除！
 
       this.svg
         .append("g")
