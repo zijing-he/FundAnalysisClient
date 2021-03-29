@@ -1,11 +1,11 @@
 <template>
   <div class="container">
-    <a-row class="control_panel">
+    <!-- <a-row class="control_panel"> -->
       <!-- <svg class="icon control_icon" aria-hidden="true">
         <use xlink:href="#iconcontrol"></use>
       </svg>
       <text>Control Panel</text> -->
-    </a-row>
+    <!-- </a-row> -->
     <a-row class="investment_style">
       <svg class="icon menu_icon" aria-hidden="true">
         <use xlink:href="#iconxitongcaidan"></use>
@@ -227,7 +227,7 @@ export default {
 
 <style scoped>
 .container {
-  height: 529px;
+  height: 487px;
   width: 535px;
   background: #ffffff;
   box-shadow: 12px 2px 44px 0 rgba(0, 0, 0, 0.05);
@@ -255,10 +255,11 @@ export default {
   left: 22px;
 }
 .investment_style {
-  margin-top: 5px;
+  /* margin-top: 5px; */
   margin-bottom: 5px;
 }
 .investment_style text {
+  margin-top: 5px;
   font-family: "PingFangSC-Semibold";
   font-size: 19px;
   font-weight: 800;
@@ -267,10 +268,11 @@ export default {
   margin-left: 25px;
 }
 .investment_style .menu_icon {
+  margin-top: 5px;
   position: relative;
   color: #185bbd;
   font-size: 23px;
-  bottom: 4px;
+  /* bottom: 4px; */
   left: 20px;
 }
 .custormer_type {

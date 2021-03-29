@@ -19,12 +19,12 @@
     </a-col>
 
     <a-col :span="3">
-      <a-row class="fund_list">
+      <!-- <a-row class="fund_list"> -->
         <!-- <svg class="icon fund_list_icon" aria-hidden="true">
           <use xlink:href="#iconfund"></use>
         </svg>
         <text>Fund Panel</text> -->
-      </a-row>
+      <!-- </a-row> -->
       <a-row>
         <FundRankingLayout
           :rankFundsID="rankFundsID"
@@ -44,9 +44,9 @@
       </a-row>
     </a-col>
     <a-col :span="16">
-      <a-row id="fund_list_extent">
+      <!-- <a-row id="fund_list_extent">
         <text>FundPicker</text>
-      </a-row>
+      </a-row> -->
       <a-row class="funds_title" style="margin-top: 0px">
         <svg class="icon menuIcon" aria-hidden="true">
           <use xlink:href="#iconxitongcaidan"></use>

@@ -216,7 +216,7 @@ export default {
   position: relative;
   margin-top: 50px;
   width: 100%;
-  height: 965px;
+  height: 1003px;
   /* border: 1px solid black; */
   overflow-y: auto;
   overflow-x: hidden;

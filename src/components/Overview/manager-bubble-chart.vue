@@ -121,13 +121,13 @@ export default {
               this.data[d].days
           )
           .style("left", event.layerX + 70 + "px")
-          .style("top", event.layerY - 10 + "px");
+          .style("top", event.layerY - 30 + "px");
       };
 
       let moveTooltip = (event) => {
         tooltip
           .style("left", event.layerX + 70 + "px")
-          .style("top", event.layerY - 10 + "px");
+          .style("top", event.layerY - 30 + "px");
       };
 
       let hideTooltip = (event) => {
@@ -367,7 +367,7 @@ export default {
   border-right: 1px dashed #979797;
   height: 190px;
   width: 247px;
-  margin-bottom: 10px;
+  /* margin-bottom: 10px; */
   text-align: center;
 }
 #manager_bubble_chart {

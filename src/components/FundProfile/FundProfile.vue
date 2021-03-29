@@ -256,7 +256,7 @@ export default {
       investStyleBoxes: [],
       investStyleBoxWidth: (200 * this.boxHeight) / 270,
       contentWidth: (200 * this.boxHeight) / 270,
-      boxGap: 200,
+      boxGap: 120,
       thisFundLikeScore: this.fundLikeScore,
       // summary中的数据
       summaryHoldingData: undefined,
@@ -563,10 +563,7 @@ export default {
             traverseEndX = this.investStyleBoxWidth;
             traverseEndY =
               traverseEndY - (20 * this.investStyleBoxWidth) / 200 - 5;
-          } else if (
-            ["risk", "max_drop_down", "beta"].indexOf(type) !==
-            -1
-          ) {
+          } else if (["risk", "max_drop_down", "beta"].indexOf(type) !== -1) {
             // right
             traverseStartX =
               (60 * this.investStyleBoxWidth) / 200 -
@@ -576,7 +573,9 @@ export default {
               (60 * this.investStyleBoxWidth) / 200 -
               (traverseEndY - (20 * this.investStyleBoxWidth) / 200 - 5);
             traverseEndY = this.investStyleBoxWidth;
-          } else if (["sharp_ratio", "information_ratio", "alpha"].indexOf(type) !== -1) {
+          } else if (
+            ["sharp_ratio", "information_ratio", "alpha"].indexOf(type) !== -1
+          ) {
             // bottom
             traverseStartX = this.investStyleBoxWidth;
             traverseStartY =
@@ -631,9 +630,7 @@ export default {
           thatY1 = thisY1 - (20 * this.investStyleBoxWidth) / 200 - 5;
           thatX2 = this.investStyleBoxWidth;
           thatY2 = thisY2 - (20 * this.investStyleBoxWidth) / 200 - 5;
-        } else if (
-          ["risk", "max_drop_down", "beta"].indexOf(type) !== -1
-        ) {
+        } else if (["risk", "max_drop_down", "beta"].indexOf(type) !== -1) {
           // right
           thatX1 =
             (60 * this.investStyleBoxWidth) / 200 -
@@ -643,7 +640,9 @@ export default {
             (60 * this.investStyleBoxWidth) / 200 -
             (thisY2 - (20 * this.investStyleBoxWidth) / 200 - 5);
           thatY2 = this.investStyleBoxWidth;
-        } else if (["sharp_ratio", "information_ratio", "alpha"].indexOf(type) !== -1) {
+        } else if (
+          ["sharp_ratio", "information_ratio", "alpha"].indexOf(type) !== -1
+        ) {
           // bottom
           thatX1 = this.investStyleBoxWidth;
           thatY1 =
@@ -697,15 +696,15 @@ export default {
         // top
         lastX = 0;
         lastY = lastTmpY - (20 * this.investStyleBoxWidth) / 200 - 5;
-      } else if (
-        ["risk", "max_drop_down", "beta"].indexOf(type) !== -1
-      ) {
+      } else if (["risk", "max_drop_down", "beta"].indexOf(type) !== -1) {
         // right
         lastX =
           (60 * this.investStyleBoxWidth) / 200 -
           (lastTmpY - (20 * this.investStyleBoxWidth) / 200 - 5);
         lastY = 0;
-      } else if (["sharp_ratio", "information_ratio", "alpha"].indexOf(type) !== -1) {
+      } else if (
+        ["sharp_ratio", "information_ratio", "alpha"].indexOf(type) !== -1
+      ) {
         // bottom
         lastX = this.investStyleBoxWidth;
         lastY =
@@ -1008,7 +1007,7 @@ export default {
             .append("path")
             .attr("fill", "none")
             .attr("stroke", this.detailCarData[i][j].color)
-            .attr("stroke-width", 8)
+            .attr("stroke-width", 4)
             .attr(
               "d",
               `M ${this.xScale(
@@ -1228,5 +1227,7 @@ export default {
   pointer-events: none;
   display: none;
   font-size: 10px;
+  z-index: 99;
+  /* transform: scale(0.83, 0.83); */
 }
 </style>

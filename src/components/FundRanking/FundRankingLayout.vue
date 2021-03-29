@@ -454,7 +454,7 @@ export default {
 }
 
 .ranking {
-  max-height: 971px;
+  max-height: 1009px;
   overflow-y: auto;
   overflow-x: hidden;
   font-size: 15px;

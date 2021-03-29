@@ -341,7 +341,7 @@ export default {
         .append("polygon")
         .attr("class", "radar-chart-area")
         .attr("id", "radar-chart-area")
-        .style("stroke-width", "3px")
+        .style("stroke-width", "4px")
         .style("stroke", "#50A1FF")
         .style("fill", "rgba(80,161,255,0.10)") //颜色
         // .style("fill-opacity", 0.2)
@@ -634,7 +634,7 @@ export default {
 
       let dragended = function(event, d) {
         d3.select(this)
-          .style("r", "3.5px")
+          .style("r", "5px")
           .style("opacity", "1");
         toolTip.style("visibility", "hidden");
         // d3.select(".update_value_value").style("visibility", "hidden");
@@ -647,7 +647,7 @@ export default {
         .enter()
         .append("circle")
         .attr("class", "nodes")
-        .attr("r", "3.5px")
+        .attr("r", "5px")
         .attr(
           "cx",
           (d, i) =>

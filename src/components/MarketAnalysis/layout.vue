@@ -7,13 +7,15 @@
         v-on:updateBrush="handleUpdateBrush"
       />
     </a-row>
+    <a-row id="divider"></a-row>
     <a-row class="second_row">
-      <a-row type="flex" class="industry_selection_style">
+      <!-- <a-row type="flex" class="industry_selection_style">
         <svg class="icon menu_icon" aria-hidden="true">
           <use xlink:href="#iconxitongcaidan"></use>
         </svg>
-        <text>Industry Selection</text>
-      </a-row>
+        <text>Sector Market</text>
+      </a-row> -->
+      <a-row><text id="sector_market_text">Sector Market</text></a-row>
       <MarketAnalysisStramGraph
         :start="industryStart"
         :end="industryEnd"
@@ -63,9 +65,9 @@ export default {
 
 <style scoped>
 .first_row {
-  height: 307px;
+  height: 349px;
   width: 535px;
-  background: #ffffff;
+  background: white;
   box-shadow: 12px 2px 44px 0 rgba(0, 0, 0, 0.05);
 }
 .second_row {
@@ -74,7 +76,7 @@ export default {
   width: 535px;
   /* border: 1px solid red; */
   /* transform: rotate(-90deg); */
-  background: #ffffff;
+  background: white;
   box-shadow: 12px 2px 44px 0 rgba(0, 0, 0, 0.05);
 }
 
@@ -97,5 +99,22 @@ export default {
   font-size: 23px;
   bottom: 4px;
   left: 20px;
+}
+#sector_market_text {
+  font-family: "PingFangSC-Medium";
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 32px;
+  color: #4b4b4b;
+  letter-spacing: -0.22px;
+  text-align: right;
+  margin-left: 28px;
+  margin-top: 10px;
+}
+#divider {
+  margin: auto;
+  width: 89%;
+  /* height: 1px; */
+  border-bottom: 1px solid #dedede;
 }
 </style>
