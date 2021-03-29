@@ -68,7 +68,7 @@ export default {
   height: 349px;
   width: 535px;
   background: white;
-  box-shadow: 12px 2px 44px 0 rgba(0, 0, 0, 0.05);
+  /* box-shadow: 12px 2px 44px 0 rgba(0, 0, 0, 0.05); */
 }
 .second_row {
   /* border-top: 1px solid black; */
@@ -77,7 +77,7 @@ export default {
   /* border: 1px solid red; */
   /* transform: rotate(-90deg); */
   background: white;
-  box-shadow: 12px 2px 44px 0 rgba(0, 0, 0, 0.05);
+  /* box-shadow: 12px 2px 44px 0 rgba(0, 0, 0, 0.05); */
 }
 
 .industry_selection_style {

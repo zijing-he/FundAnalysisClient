@@ -553,7 +553,7 @@ export default {
   width: 535px;
   height: 80px;
   background: #ffffff;
-  box-shadow: 12px 2px 44px 0 rgba(0, 0, 0, 0.05);
+  /* box-shadow: 12px 2px 44px 0 rgba(0, 0, 0, 0.05); */
 }
 #update_button_container #update_button {
   width: 89%;

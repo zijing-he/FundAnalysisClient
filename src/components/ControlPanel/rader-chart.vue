@@ -118,10 +118,14 @@ export default {
           .style("stroke", () => {
             // if (i === 3) return "red";
             // else
+            if (i === 3) return "black";
             return "#979797";
           })
           .style("stroke-opacity", "0.56")
-          .style("stroke-width", "1px")
+          .style("stroke-width", () => {
+            // if (i === 3) return "2px"
+            return "2px";
+          })
           .attr("stroke-dasharray", () => {
             if (i === 3) return "0";
             else return "4";
@@ -341,7 +345,7 @@ export default {
         .append("polygon")
         .attr("class", "radar-chart-area")
         .attr("id", "radar-chart-area")
-        .style("stroke-width", "4px")
+        .style("stroke-width", "2px")
         .style("stroke", "#50A1FF")
         .style("fill", "rgba(80,161,255,0.10)") //颜色
         // .style("fill-opacity", 0.2)
@@ -415,7 +419,7 @@ export default {
       let dragstarted = function(event, d) {
         d3.select(this)
           .raise()
-          .attr("r", "8px")
+          .attr("r", "5px")
           .style("opacity", "0.8");
         d3.select(".update_value_weight").text((d.value - 2).toFixed(2));
         // .style("fill", "#FFFFFF")
@@ -634,7 +638,7 @@ export default {
 
       let dragended = function(event, d) {
         d3.select(this)
-          .style("r", "5px")
+          .style("r", "4px")
           .style("opacity", "1");
         toolTip.style("visibility", "hidden");
         // d3.select(".update_value_value").style("visibility", "hidden");
@@ -647,7 +651,7 @@ export default {
         .enter()
         .append("circle")
         .attr("class", "nodes")
-        .attr("r", "5px")
+        .attr("r", "4px")
         .attr(
           "cx",
           (d, i) =>

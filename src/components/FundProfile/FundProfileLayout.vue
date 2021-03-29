@@ -106,7 +106,7 @@ export default {
     return {
       isRequesting: true,
       isFirst: true,
-      eachHeight: 213,
+      eachHeight: 225,
       fundsLikeScore_n: this.fundsLikeScore,
       historyFundsLikeScore: [],
       refresh: true,

@@ -230,13 +230,13 @@ export default {
   height: 487px;
   width: 535px;
   background: #ffffff;
-  box-shadow: 12px 2px 44px 0 rgba(0, 0, 0, 0.05);
+  /* box-shadow: 12px 2px 44px 0 rgba(0, 0, 0, 0.05); */
 }
 /* 从这里开始放新的样式 */
 
 .control_panel {
   background: #011f41;
-  box-shadow: 1px -3px 4px 0 rgba(36, 15, 57, 0.1);
+  /* box-shadow: 1px -3px 4px 0 rgba(36, 15, 57, 0.1); */
   height: 37px;
 }
 
