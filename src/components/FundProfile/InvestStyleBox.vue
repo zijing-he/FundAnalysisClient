@@ -28,9 +28,9 @@ const colorMap = {
   // risk#ccebc5
   risk: "#ccebc5",
   max_drop_down: "#ccebc5",
-  sharp_ratio: "#ccebc5",
   beta: "#ccebc5",
   // abnormal performance
+  sharp_ratio: "#fbb4ae",
   information_ratio: "#fbb4ae",
   alpha: "#fbb4ae",
   // basic
@@ -119,7 +119,7 @@ export default {
       rightSvg: null,
       bottomSvg: null,
       initBottomBars: ["sharp_ratio", "information_ratio", "alpha"],
-      initLeftBars: ["size", "stock", "bond", "cash", "other"],
+      initLeftBars: ["size", "other", "cash", "bond", "stock"],
       initRightBars: ["risk", "max_drop_down", "beta"],
       barTopMargin: 5,
       curDegree: 0,
@@ -848,9 +848,9 @@ export default {
       this.yScale.domain([0, 1]);
       let curTotalWidth = 0;
       for (let i = 1; i < this.initLeftBars.length; i++) {
-        let curX = this.yScale(
-          Math.abs(eval(`this.${this.initLeftBars[i]}Data.norm`))
-        ) - curTotalWidth;
+        let curX =
+          this.yScale(Math.abs(eval(`this.${this.initLeftBars[i]}Data.norm`))) -
+          curTotalWidth;
         let curWidth =
           this.yScale(0) -
           this.yScale(Math.abs(eval(`this.${this.initLeftBars[i]}Data.norm`)));
