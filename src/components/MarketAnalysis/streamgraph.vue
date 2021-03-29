@@ -25,8 +25,6 @@
                 aria-hidden="true"
                 :style="activationSelect(item)"
               >
-                <!-- <use v-if="item === '医药生物'" xlink:href="#iconyiyao"></use>
-                <use v-if="item === '电子'" xlink:href="#icondianzi"></use> -->
                 <use :xlink:href="sectorItem[item]"></use>
               </svg>
               <text>{{ sectorDictionary[item].en_name }}</text>
