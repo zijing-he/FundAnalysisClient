@@ -203,7 +203,60 @@ export default {
         d3.select(this).raise();
       };
 
-      // console.log("filter:");
+
+ //画边
+      let link = this.svg
+        .append("g")
+        .selectAll("line")
+        .data(this.G.edges(true)) //this.G.edges(true)
+        .enter()
+        .append("line")
+        .attr("class", (d) => `funds_manager_${d[2].managerId}`)
+        .style("stroke", (d) => {
+          // console.log(
+          //   "康康边：",
+          //   d,
+          //   d[2].managerId,
+          //   this.fundManagers[d[2].managerId]
+          // );
+
+          // if (d[2].managerId === this.showMangerId) {
+          if (
+            this.showManagerIdLength &&
+            this.showManagerId.indexOf(d[2].managerId) !== -1
+          ) {
+            return this.fundManagers[
+              this.showManagerId[this.showManagerId.indexOf(d[2].managerId)]
+            ].color;
+          } else {
+            return "#D8D8D8";
+          }
+        })
+        .style("stroke-width", "2")
+        .style("visibility", (d) => {
+          // if (d[2].managerId === this.showMangerId) {
+          if (
+            this.showManagerIdLength &&
+            this.showManagerId.indexOf(d[2].managerId) !== -1
+          ) {
+            return "visible";
+          } else {
+            return "hidden";
+          }
+        })
+        // .style("opacity", "0.4")
+        .attr("x1", (d) => {
+          // console.log(d);
+          return this.xScale(d[2].source.x);
+        })
+        .attr("y1", (d) => this.yScale(d[2].source.y))
+        .attr("x2", (d) => this.xScale(d[2].target.x))
+        .attr("y2", (d) => this.yScale(d[2].target.y))
+        .on("mouseover", showLineTooltip)
+        .on("mousemove", moveLineTooltip)
+        .on("mouseleave", hideLineTooltip);
+
+        //边
       //pieChart
       let pie = d3.pie().value((d) => d);
       let radius = 6;
@@ -412,57 +465,8 @@ export default {
         tooltip.style("visibility", "hidden");
       };
 
-      //画边
-      let link = this.svg
-        .append("g")
-        .selectAll("line")
-        .data(this.G.edges(true)) //this.G.edges(true)
-        .enter()
-        .append("line")
-        .attr("class", (d) => `funds_manager_${d[2].managerId}`)
-        .style("stroke", (d) => {
-          // console.log(
-          //   "康康边：",
-          //   d,
-          //   d[2].managerId,
-          //   this.fundManagers[d[2].managerId]
-          // );
-
-          // if (d[2].managerId === this.showMangerId) {
-          if (
-            this.showManagerIdLength &&
-            this.showManagerId.indexOf(d[2].managerId) !== -1
-          ) {
-            return this.fundManagers[
-              this.showManagerId[this.showManagerId.indexOf(d[2].managerId)]
-            ].color;
-          } else {
-            return "#D8D8D8";
-          }
-        })
-        .style("stroke-width", "2")
-        .style("visibility", (d) => {
-          // if (d[2].managerId === this.showMangerId) {
-          if (
-            this.showManagerIdLength &&
-            this.showManagerId.indexOf(d[2].managerId) !== -1
-          ) {
-            return "visible";
-          } else {
-            return "hidden";
-          }
-        })
-        // .style("opacity", "0.4")
-        .attr("x1", (d) => {
-          // console.log(d);
-          return this.xScale(d[2].source.x);
-        })
-        .attr("y1", (d) => this.yScale(d[2].source.y))
-        .attr("x2", (d) => this.xScale(d[2].target.x))
-        .attr("y2", (d) => this.yScale(d[2].target.y))
-        .on("mouseover", showLineTooltip)
-        .on("mousemove", moveLineTooltip)
-        .on("mouseleave", hideLineTooltip);
+      //边原来的位置
+     
     },
   },
 };

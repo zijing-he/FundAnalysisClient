@@ -68,22 +68,6 @@ export default {
     return {
       //默认值
       weight:
-        // {
-        //   size: "0.5000",
-        //   three_year_return: "0.5000",
-        //   one_year_return: "0.5000",
-        //   one_quarter_return: "0.5000",
-        //   beta: "0.5000",
-        //   alpha: "0.5000",
-        //   sharp_ratio: "0.5000",
-        //   instl_weight: "0.5000",
-        //   risk: "0.5000",
-        //   information_ratio: "0.5000",
-        //   max_drop_down: "0.5000",
-        //   one_quarter_car: "0.5000",
-        //   three_year_car: "0.5000",
-        //   one_year_car: "0.5000",
-        // },
         {
           one_year_return: "0.3",
           one_quarter_return: "0.4",

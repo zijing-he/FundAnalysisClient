@@ -454,9 +454,9 @@ export default {
           newValue = 0;
         let maxX = maxDataValues[i][0] - width / 2;
         let maxY = height / 2 - maxDataValues[i][1];
-        let QR1 = parseFloat(tempData[0].value);
-        let YR1 = parseFloat(tempData[1].value);
-        let YR3 = parseFloat(tempData[2].value);
+        let YR1 = parseFloat(tempData[0].value);
+        let QR1 = parseFloat(tempData[1].value);
+        let YR3 = parseFloat(tempData[9].value);
 
         if (oldX === 0) {
           newY = oldY - event.dy;
@@ -464,13 +464,13 @@ export default {
             //应该只在这里加
             newY = maxY;
           }
-          //特判:直接计算坐标，从坐标上克制
-          if (d.axis === "one_quarter_return") {
+          //特判:直接计算坐标，从坐标上限制
+          if (d.axis === "one_year_return") {
             let new_maxY =
               height / 2 -
               (height / 2) *
                 (1 -
-                  (parseFloat(Math.max(7 - YR1 - YR3, 0)) / maxValue) *
+                  (parseFloat(Math.max(8 - QR1 - YR3, 0)) / maxValue) *
                     factor *
                     Math.cos((i * radians) / total));
             let zero_Y =
@@ -515,21 +515,11 @@ export default {
                   Math.sin((i * radians) / total)) -
             width / 2;
 
-          // if (d.axis === "one_quarter_return") {
-          //   new_maxX =
-          //     (width / 2) *
-          //       (1 -
-          //         (parseFloat(Math.max(7 - YR1 - YR3, 0)) / maxValue) *
-          //           factor *
-          //           Math.sin((i * radians) / total)) -
-          //     width / 2;
-          // }
-          // else
-          if (d.axis === "one_year_return") {
+          if (d.axis === "one_quarter_return") {
             new_maxX =
               (width / 2) *
                 (1 -
-                  (parseFloat(Math.max(7 - QR1 - YR3, 0)) / maxValue) *
+                  (parseFloat(Math.max(8 - YR1 - YR3, 0)) / maxValue) *
                     factor *
                     Math.sin((i * radians) / total)) -
               width / 2;
@@ -540,7 +530,7 @@ export default {
             new_maxX =
               (width / 2) *
                 (1 -
-                  (parseFloat(Math.max(7 - YR1 - QR1, 0)) / maxValue) *
+                  (parseFloat(Math.max(8 - YR1 - QR1, 0)) / maxValue) *
                     factor *
                     Math.sin((i * radians) / total)) -
               width / 2;
