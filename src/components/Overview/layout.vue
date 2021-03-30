@@ -35,6 +35,7 @@
           :style="autoWidth"
           v-if="!isRequesting"
         >
+          <div id="title_container"><text>Management Graph</text></div>
           <fundPieChart
             :quarterFundData="val"
             :fundManagers="managers"
@@ -99,7 +100,7 @@ export default {
     managerBubbleChart,
   },
   watch: {
-    fundsData: function () {
+    fundsData: function() {
       this.isRequesting = true;
       // console.log("fundsData:", this.fundsData);
       this.mangerId = []; //每次要清空
@@ -113,7 +114,7 @@ export default {
         this.isRequesting = false;
       }
     },
-    scrollLeft: function (value) {
+    scrollLeft: function(value) {
       this.$refs.fund_bubble_container.scrollLeft = value;
     },
   },
@@ -159,7 +160,7 @@ export default {
   justify-content: center;
 }
 .fund_bubble_chart_outer_container {
-  /* position: absolute; */
+  position: relative;
 
   /* width: 1300px; */
   max-width: 1400px;
@@ -168,7 +169,7 @@ export default {
   display: flex;
   overflow-x: auto;
   overflow-y: hidden;
-  margin-bottom: 10px;
+  /* margin-bottom: 10px; */
 }
 .manager_bubble_chart_container {
   width: 15%;
@@ -210,5 +211,20 @@ export default {
 .fund_manager_container {
   display: flex;
   justify-content: flex-start;
+}
+
+#title_container {
+  position: absolute;
+  left: 10px;
+}
+
+#title_container text {
+  font-family: "PingFangSC-Medium";
+  font-size: 15px;
+  font-weight: 600;
+  /* line-height: 32px; */
+  color: #4b4b4b;
+  letter-spacing: -0.22px;
+  text-align: right;
 }
 </style>

@@ -106,7 +106,7 @@ export default {
     return {
       isRequesting: true,
       isFirst: true,
-      eachHeight: 213,
+      eachHeight: 225,
       fundsLikeScore_n: this.fundsLikeScore,
       historyFundsLikeScore: [],
       refresh: true,
@@ -216,7 +216,7 @@ export default {
   position: relative;
   margin-top: 50px;
   width: 100%;
-  height: 965px;
+  height: 1003px;
   /* border: 1px solid black; */
   overflow-y: auto;
   overflow-x: hidden;

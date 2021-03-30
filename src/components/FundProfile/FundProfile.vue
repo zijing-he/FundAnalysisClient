@@ -74,7 +74,7 @@
           :boxGap="summaryBoxGap"
           :boxWidth="summaryBoxWidth"
           :contentWidth="summaryBoxWidth"
-          style="margin-top: 19px;"
+          style="margin-top: 14px;"
         >
         </InvestStyleBox>
         <div class="buttons-turn">
@@ -246,7 +246,7 @@ export default {
       svg: null,
       margin: { top: 10, right: 100, bottom: 100, left: 20 },
       width: 1395,
-      height: 213,
+      height: 225,
       isSyncTop: false,
       isSyncBottom: false,
       dateData: [],
@@ -256,7 +256,7 @@ export default {
       investStyleBoxes: [],
       investStyleBoxWidth: (200 * this.boxHeight) / 270,
       contentWidth: (200 * this.boxHeight) / 270,
-      boxGap: 200,
+      boxGap: 120,
       thisFundLikeScore: this.fundLikeScore,
       // summary中的数据
       summaryHoldingData: undefined,
@@ -278,8 +278,8 @@ export default {
       summarySharpRatioData: undefined,
       summaryInfoRatioData: undefined,
       eachMargin: [], // 传给气泡图
-      summaryBoxWidth: this.index === 0 ? 96 : 120,
-      summaryBoxGap: this.index === 0 ? 75 : 63,
+      summaryBoxWidth: 120,
+      summaryBoxGap: 63.5,
       managerToIndex: require("@/data/manager_index.json"),
     };
   },
@@ -563,10 +563,7 @@ export default {
             traverseEndX = this.investStyleBoxWidth;
             traverseEndY =
               traverseEndY - (20 * this.investStyleBoxWidth) / 200 - 5;
-          } else if (
-            ["risk", "max_drop_down", "beta"].indexOf(type) !==
-            -1
-          ) {
+          } else if (["risk", "max_drop_down", "beta"].indexOf(type) !== -1) {
             // right
             traverseStartX =
               (60 * this.investStyleBoxWidth) / 200 -
@@ -576,7 +573,9 @@ export default {
               (60 * this.investStyleBoxWidth) / 200 -
               (traverseEndY - (20 * this.investStyleBoxWidth) / 200 - 5);
             traverseEndY = this.investStyleBoxWidth;
-          } else if (["sharp_ratio", "information_ratio", "alpha"].indexOf(type) !== -1) {
+          } else if (
+            ["sharp_ratio", "information_ratio", "alpha"].indexOf(type) !== -1
+          ) {
             // bottom
             traverseStartX = this.investStyleBoxWidth;
             traverseStartY =
@@ -631,9 +630,7 @@ export default {
           thatY1 = thisY1 - (20 * this.investStyleBoxWidth) / 200 - 5;
           thatX2 = this.investStyleBoxWidth;
           thatY2 = thisY2 - (20 * this.investStyleBoxWidth) / 200 - 5;
-        } else if (
-          ["risk", "max_drop_down", "beta"].indexOf(type) !== -1
-        ) {
+        } else if (["risk", "max_drop_down", "beta"].indexOf(type) !== -1) {
           // right
           thatX1 =
             (60 * this.investStyleBoxWidth) / 200 -
@@ -643,7 +640,9 @@ export default {
             (60 * this.investStyleBoxWidth) / 200 -
             (thisY2 - (20 * this.investStyleBoxWidth) / 200 - 5);
           thatY2 = this.investStyleBoxWidth;
-        } else if (["sharp_ratio", "information_ratio", "alpha"].indexOf(type) !== -1) {
+        } else if (
+          ["sharp_ratio", "information_ratio", "alpha"].indexOf(type) !== -1
+        ) {
           // bottom
           thatX1 = this.investStyleBoxWidth;
           thatY1 =
@@ -697,15 +696,15 @@ export default {
         // top
         lastX = 0;
         lastY = lastTmpY - (20 * this.investStyleBoxWidth) / 200 - 5;
-      } else if (
-        ["risk", "max_drop_down", "beta"].indexOf(type) !== -1
-      ) {
+      } else if (["risk", "max_drop_down", "beta"].indexOf(type) !== -1) {
         // right
         lastX =
           (60 * this.investStyleBoxWidth) / 200 -
           (lastTmpY - (20 * this.investStyleBoxWidth) / 200 - 5);
         lastY = 0;
-      } else if (["sharp_ratio", "information_ratio", "alpha"].indexOf(type) !== -1) {
+      } else if (
+        ["sharp_ratio", "information_ratio", "alpha"].indexOf(type) !== -1
+      ) {
         // bottom
         lastX = this.investStyleBoxWidth;
         lastY =
@@ -1008,7 +1007,7 @@ export default {
             .append("path")
             .attr("fill", "none")
             .attr("stroke", this.detailCarData[i][j].color)
-            .attr("stroke-width", 8)
+            .attr("stroke-width", 4)
             .attr(
               "d",
               `M ${this.xScale(
@@ -1072,7 +1071,7 @@ export default {
 <style scoped>
 .fund_profile {
   position: relative;
-  height: 213px;
+  height: 225px;
   width: calc(100% - 30px);
   background: #ffffff;
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.1);
@@ -1110,52 +1109,59 @@ export default {
   top: 60px;
   font-size: 23px;
   display: flex;
+  z-index: 99;
 }
 
 .summary-top {
   position: absolute;
-  left: 15px;
+  left: 33px;
   top: 60px;
   width: 170px;
   height: 15px;
   font-family: "PingFangSC-Medium";
   font-size: 10px;
   font-weight: bold;
+  z-index: 50;
 }
 
 .summary-right {
   position: absolute;
-  left: 173px;
-  top: 90px;
+  left: 190px;
+  top: 85px;
   width: 30px;
   height: 120px;
   font-family: "PingFangSC-Medium";
   font-size: 10px;
   font-weight: bold;
-  padding-top: 30px;
+  /* padding-top: 25px; */
+  writing-mode: vertical-rl;
+  z-index: 50;
 }
 
 .summary-bottom {
   position: absolute;
-  left: 15px;
-  top: 175px;
+  left: 33px;
+  top: 205px;
   width: 170px;
   height: 15px;
   font-family: "PingFangSC-Medium";
   font-size: 10px;
   font-weight: bold;
+  z-index: 50;
 }
 
 .summary-left {
   position: absolute;
-  left: 0px;
-  top: 70px;
+  left: 25px;
+  top: 80px;
   width: 30px;
   height: 100px;
   font-family: "PingFangSC-Medium";
   font-size: 10px;
   font-weight: bold;
-  padding-top: 45px;
+  padding-top: 30px;
+  writing-mode: vertical-rl;
+  z-index: 50;
 }
 
 .icon {
@@ -1228,5 +1234,7 @@ export default {
   pointer-events: none;
   display: none;
   font-size: 10px;
+  z-index: 99;
+  /* transform: scale(0.83, 0.83); */
 }
 </style>

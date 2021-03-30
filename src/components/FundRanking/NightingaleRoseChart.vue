@@ -8,15 +8,15 @@ import { eachRight } from "lodash";
 
 const colorMap = {
   // performance
-  one_quarter_return: "rgb(167, 183, 220)",
-  one_year_return: "rgb(167, 183, 220)",
-  three_year_return: "rgb(167, 183, 220)",
+  one_quarter_return: "#b3cde3",
+  one_year_return: "#b3cde3",
+  three_year_return: "#b3cde3",
   // risk
-  beta: "rgb(211, 165, 154)",
+  beta: "#ccebc5",
   // abnormal performance
-  alpha: "rgb(221, 194, 236)",
+  alpha: "#fbb4ae",
   // basic
-  size: "rgb(236, 122, 75)",
+  size: "#decbe4",
 };
 
 const dataGroup = [
@@ -113,7 +113,7 @@ export default {
           gChart
             .append("path")
             .attr("id", `path_${this.fundId}_${curGroup[j]}`)
-            .attr("stroke", "black")
+            .attr("stroke", "rgb(147, 147, 147)")
             .attr("fill", colorMap[curGroup[j]])
             .attr(
               "mask",
@@ -151,7 +151,7 @@ export default {
             if (this.fundData[curGroup[j]].norm < 0) {
               gChart
                 .append("path")
-                .attr("stroke", "black")
+                .attr("stroke", "rgb(147, 147, 147)")
                 .attr("fill", "none")
                 .attr(
                   "d",

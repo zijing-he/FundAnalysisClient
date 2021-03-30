@@ -357,19 +357,19 @@ export default {
 
       this.svg
         .append("circle")
-        .attr("cx", this.innerWidth - 151)
+        .attr("cx", this.innerWidth - 115)
         .attr("cy", -16)
         .attr("r", 7)
         .style("fill", "rgba(80,161,255,0.30)");
       // .style("fill", "red");
       this.svg
         .append("text")
-        .attr("x", this.innerWidth - 134)
+        .attr("x", this.innerWidth - 100)
         .attr("y", -15)
         .style("fill", "#9F9F9F")
         .style("font-family", "PingFangSC-Regular")
         .style("letter-spacing", "-0.18px")
-        .style("font-size", "17px")
+        .style("font-size", "13px")
         .text("Industry Average")
         .attr("text-anchor", "left")
         .style("alignment-baseline", "middle");

@@ -4,8 +4,9 @@
       <svg class="icon menu_icon" aria-hidden="true">
         <use xlink:href="#iconxitongcaidan"></use>
       </svg>
-      <text>Fund Market</text>
+      <text>Market Timing</text>
     </a-row>
+    <a-row><text id="fund_market_text">Fund Market</text></a-row>
     <a-row>
       <div id="market_curvechart"></div>
     </a-row>
@@ -34,20 +35,20 @@ export default {
       date: Object.keys(market_nav_date),
       marketNav: Object.values(market_nav_date),
       marketShares: Object.values(market_number_date),
-      keys: ["Fund Market Total Asset", "Fund Market NAV"],
+      keys: ["Fund Market Total Asset", "CSI 300"],
     };
   },
   watch: {
-    start: function () {
+    start: function() {
       this.isSelf = false;
       this.updateTimeBrush();
     },
-    end: function () {
+    end: function() {
       this.isSelf = false;
       this.updateTimeBrush();
     },
   },
-  mounted: function () {
+  mounted: function() {
     this.renderInit();
     this.renderUpdate();
   },
@@ -67,7 +68,10 @@ export default {
         .nice();
     },
     yScale() {
-      return d3.scaleLinear().range([this.innerHeight, 0]).nice();
+      return d3
+        .scaleLinear()
+        .range([this.innerHeight, 0])
+        .nice();
     },
     linePath() {
       return d3
@@ -224,13 +228,11 @@ export default {
         .attr("d", this.area);
 
       //marketNav
-      this.yScale.domain([0.8,d3.max(this.marketNav)]);
+      this.yScale.domain([0.8, d3.max(this.marketNav)]);
       this.svg
         .append("g")
         .attr("id", "marketNav_yAxis")
-        .call(d3.axisRight(this.yScale)
-        .ticks(6)
-        )
+        .call(d3.axisRight(this.yScale).ticks(6))
         .attr("transform", `translate(${this.innerWidth},0)`)
         .select(".domain")
         .remove();
@@ -256,7 +258,7 @@ export default {
         .data(this.keys)
         .enter()
         .append("circle")
-        .attr("cx", (d, i) => 15 + i * 230)
+        .attr("cx", (d, i) => 170 + i * 200)
         .attr("cy", -49)
         .attr("r", "6px")
         .style("fill", (d) => this.colorScale(d));
@@ -266,11 +268,11 @@ export default {
         .data(this.keys)
         .enter()
         .append("text")
-        .attr("x", (d, i) => 30 + i * 230)
+        .attr("x", (d, i) => 185 + i * 200)
         .attr("y", -48)
         .style("fill", "#9F9F9F")
         .style("font-family", "PingFangSC-Medium")
-        .style("font-size", "14px")
+        .style("font-size", "13px")
         .style("letter-spacing", "-0.18px")
         .text((d) => d)
         .attr("text-anchor", "left")
@@ -287,7 +289,10 @@ export default {
           [this.innerWidth, this.innerHeight],
         ])
         .on("end", this.updateDate);
-      this.svg.append("g").attr("class", "brush").call(brush);
+      this.svg
+        .append("g")
+        .attr("class", "brush")
+        .call(brush);
     },
   },
 };
@@ -295,7 +300,7 @@ export default {
 
 <style scoped>
 .container {
-  height: 307px;
+  height: 349px;
   width: 523px;
 }
 #market_curvechart {
@@ -321,5 +326,17 @@ export default {
   font-size: 23px;
   bottom: 4px;
   left: 20px;
+}
+
+#fund_market_text {
+  font-family: "PingFangSC-Medium";
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 32px;
+  color: #4b4b4b;
+  letter-spacing: -0.22px;
+  text-align: right;
+  margin-left: 28px;
+  margin-top: 10px;
 }
 </style>

@@ -19,26 +19,26 @@ import weightKey from "@/data/weight_key.json";
 
 const colorMap = {
   // performance
-  one_quarter_return: "rgb(167, 183, 220)",
-  one_year_return: "rgb(167, 183, 220)",
-  three_year_return: "rgb(167, 183, 220)",
-  one_quarter_hs300_return: "rgb(167, 183, 220)",
-  one_year_hs300_return: "rgb(167, 183, 220)",
-  three_year_hs300_return: "rgb(167, 183, 220)",
-  // risk
-  risk: "rgb(211, 165, 154)",
-  max_drop_down: "rgb(211, 165, 154)",
-  sharp_ratio: "rgb(211, 165, 154)",
-  beta: "rgb(211, 165, 154)",
+  one_quarter_return: "#b3cde3",
+  one_year_return: "#b3cde3",
+  three_year_return: "#b3cde3",
+  one_quarter_hs300_return: "#b3cde3",
+  one_year_hs300_return: "#b3cde3",
+  three_year_hs300_return: "#b3cde3",
+  // risk#ccebc5
+  risk: "#ccebc5",
+  max_drop_down: "#ccebc5",
+  beta: "#ccebc5",
   // abnormal performance
-  information_ratio: "rgb(221, 194, 236)",
-  alpha: "rgb(221, 194, 236)",
+  sharp_ratio: "#fbb4ae",
+  information_ratio: "#fbb4ae",
+  alpha: "#fbb4ae",
   // basic
-  size: "rgb(236, 122, 75)",
-  stock: "rgb(236, 122, 75)",
-  bond: "rgb(236, 122, 75)",
-  cash: "rgb(236, 122, 75)",
-  other: "rgb(236, 122, 75)",
+  size: "#decbe4",
+  stock: "#decbe4",
+  bond: "#decbe4",
+  cash: "#decbe4",
+  other: "#decbe4",
 };
 
 // 柱状图的起始x和宽度，根据每条边有多少根柱子而定 (以边长为80确定，后根据实际边长调整)
@@ -119,7 +119,7 @@ export default {
       rightSvg: null,
       bottomSvg: null,
       initBottomBars: ["sharp_ratio", "information_ratio", "alpha"],
-      initLeftBars: ["size", "stock", "bond", "cash", "other"],
+      initLeftBars: ["size", "other", "cash", "bond", "stock"],
       initRightBars: ["risk", "max_drop_down", "beta"],
       barTopMargin: 5,
       curDegree: 0,
@@ -352,7 +352,7 @@ export default {
             .attr("id", `${this.initTopBars[i]}-${this.boxId}`)
             .attr("fill", eval(`colorMap.${this.initTopBars[i]}`))
             .attr("stroke-dasharray", i % 2 === 0 ? "none" : "2, 2")
-            .attr("stroke", "black")
+            .attr("stroke", "rgb(147, 147, 147)")
             .attr(
               "mask",
               eval(`this.${this.initTopBars[i]}Data.norm`) < 0
@@ -384,7 +384,7 @@ export default {
             gRectsTop
               .append("path")
               .attr("fill", "none")
-              .attr("stroke", "black")
+              .attr("stroke", "rgb(147, 147, 147)")
               .attr(
                 "d",
                 `M ${x} ${y + height} v ${-height} h ${width} v ${height} Z`
@@ -443,7 +443,7 @@ export default {
             .attr("id", `${this.initTopBars[i]}-${this.boxId}`)
             .attr("fill", eval(`colorMap.${this.initTopBars[i]}`))
             .attr("stroke-dasharray", i % 2 === 0 ? "none" : "2, 2")
-            .attr("stroke", "black")
+            .attr("stroke", "rgb(147, 147, 147)")
             .attr(
               "mask",
               eval(`this.${this.initTopBars[i]}Data.norm`) < 0
@@ -474,7 +474,7 @@ export default {
             gRectsTop
               .append("path")
               .attr("fill", "none")
-              .attr("stroke", "black")
+              .attr("stroke", "rgb(147, 147, 147)")
               .attr(
                 "d",
                 `M ${x} ${y + height} v ${-height} h ${width} v ${height} Z`
@@ -532,7 +532,7 @@ export default {
             .attr("id", `${this.initTopBars[i]}-${this.boxId}`)
             .attr("fill", eval(`colorMap.${this.initTopBars[i]}`))
             .attr("stroke-dasharray", i % 2 === 0 ? "none" : "2, 2")
-            .attr("stroke", "black")
+            .attr("stroke", "rgb(147, 147, 147)")
             .attr(
               "mask",
               eval(`this.${this.initTopBars[i]}Data.norm`) < 0
@@ -563,7 +563,7 @@ export default {
             gRectsTop
               .append("path")
               .attr("fill", "none")
-              .attr("stroke", "black")
+              .attr("stroke", "rgb(147, 147, 147)")
               .attr(
                 "d",
                 `M ${x} ${y + height} v ${-height} h ${width} v ${height} Z`
@@ -650,7 +650,7 @@ export default {
           .append("rect")
           .attr("id", `${this.initRightBars[i]}-${this.boxId}`)
           .attr("fill", eval(`colorMap.${this.initRightBars[i]}`))
-          .attr("stroke", "black")
+          .attr("stroke", "rgb(147, 147, 147)")
           .attr(
             "mask",
             eval(`this.${this.initRightBars[i]}Data.norm`) < 0
@@ -675,7 +675,7 @@ export default {
           gRectsRight
             .append("path")
             .attr("fill", "none")
-            .attr("stroke", "black")
+            .attr("stroke", "rgb(147, 147, 147)")
             .attr("d", `M 0 ${y} h ${width} v ${height} h ${-width} Z`);
         }
       }
@@ -714,7 +714,7 @@ export default {
           .append("rect")
           .attr("id", `${this.initBottomBars[i]}-${this.boxId}`)
           .attr("fill", eval(`colorMap.${this.initBottomBars[i]}`))
-          .attr("stroke", "black")
+          .attr("stroke", "rgb(147, 147, 147)")
           .attr(
             "mask",
             eval(`this.${this.initBottomBars[i]}Data.norm`) < 0
@@ -739,7 +739,7 @@ export default {
           gRectsBottom
             .append("path")
             .attr("fill", "none")
-            .attr("stroke", "black")
+            .attr("stroke", "rgb(147, 147, 147)")
             .attr("d", `M ${x} 0 h ${width} v ${height} h ${-width} Z`);
         }
       }
@@ -818,7 +818,7 @@ export default {
         .append("rect")
         .attr("id", `size-${this.boxId}`)
         .attr("fill", colorMap.size)
-        .attr("stroke", "black")
+        .attr("stroke", "rgb(147, 147, 147)")
         .attr(
           "mask",
           this.sizeData.norm < 0
@@ -841,16 +841,16 @@ export default {
         gRectsLeft
           .append("path")
           .attr("fill", "none")
-          .attr("stroke", "black")
+          .attr("stroke", "rgb(147, 147, 147)")
           .attr("d", `M ${x} ${y} h ${width} v ${height} h ${-width} Z`);
       }
       // 资产分布改成堆叠图
       this.yScale.domain([0, 1]);
       let curTotalWidth = 0;
       for (let i = 1; i < this.initLeftBars.length; i++) {
-        let curX = this.yScale(
-          Math.abs(eval(`this.${this.initLeftBars[i]}Data.norm`))
-        ) - curTotalWidth;
+        let curX =
+          this.yScale(Math.abs(eval(`this.${this.initLeftBars[i]}Data.norm`))) -
+          curTotalWidth;
         let curWidth =
           this.yScale(0) -
           this.yScale(Math.abs(eval(`this.${this.initLeftBars[i]}Data.norm`)));
@@ -858,7 +858,7 @@ export default {
           .append("rect")
           .attr("id", `${this.initLeftBars[i]}-${this.boxId}`)
           .attr("fill", eval(`colorMap.${this.initLeftBars[i]}`))
-          .attr("stroke", "black")
+          .attr("stroke", "rgb(147, 147, 147)")
           .attr("x", curX)
           .attr("y", (barAttrs.two.startX[1] * this.boxWidth) / 200)
           .attr("width", curWidth)
@@ -869,7 +869,7 @@ export default {
       gRectsLeft
         .append("path")
         .attr("stroke-dasharray", "2, 2")
-        .attr("stroke", "black")
+        .attr("stroke", "rgb(147, 147, 147)")
         .attr(
           "d",
           `m ${this.yScale(1)} ${(barAttrs.two.startX[1] * this.boxWidth) /
@@ -1184,7 +1184,7 @@ export default {
   position: absolute;
   height: 80px;
   width: 80px;
-  border: 1px solid black;
+  border: 1px solid rgb(147, 147, 147);
   left: 60px;
   top: 60px;
 }
