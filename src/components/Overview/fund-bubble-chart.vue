@@ -44,8 +44,8 @@ export default {
   data() {
     return {
       svg: null,
-      width: 157.766,
-      height: 157.766,
+      width: 166.667,
+      height: 166.667,
       margin: { top: 20, right: 20, bottom: 20, left: 20 },
       data: null,
       data_values: [],
@@ -276,7 +276,7 @@ export default {
 .fund_bubble_chart_inner_container {
   position: relative;
   height: 176px;
-  width: 157.766px;
+  width: 166.667px;
   flex-shrink: 0;
   /* border: 1px dashed #979797; */
 }

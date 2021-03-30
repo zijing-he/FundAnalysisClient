@@ -365,7 +365,7 @@ export default {
 <style scoped>
 #manager_bubble_chart_container {
   border-right: 1px dashed #979797;
-  height: 190px;
+  height: 200px;
   width: 247px;
   /* margin-bottom: 10px; */
   text-align: center;
