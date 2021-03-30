@@ -23,6 +23,7 @@
         :boxHeight="eachHeight"
         :fundLikeScore="fundsLikeScore_n[item]"
         :userSectors="userSectors"
+        :searchManagerShowFundsManagerID="searchManagerShowFundsManagerID"
         :key="item"
         @handleScroll="handleScroll"
         @updateWidth="updateWidth"
@@ -50,6 +51,7 @@ export default {
     lineStartYPos: Array,
     isTotalChange: Boolean,
     userSectors: Array,
+    searchManagerShowFundsManagerID: Object,
   },
   watch: {
     fundsID: function(newVal, oldVal) {

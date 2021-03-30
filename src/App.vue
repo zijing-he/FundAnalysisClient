@@ -20,7 +20,7 @@
 
     <a-col :span="3">
       <!-- <a-row class="fund_list"> -->
-        <!-- <svg class="icon fund_list_icon" aria-hidden="true">
+      <!-- <svg class="icon fund_list_icon" aria-hidden="true">
           <use xlink:href="#iconfund"></use>
         </svg>
         <text>Fund Panel</text> -->
@@ -114,6 +114,7 @@
           :lineStartYPos="lineStartYPos"
           :isTotalChange="isTotalChange"
           :userSectors="userSectors"
+          :searchManagerShowFundsManagerID="searchManagerShowFundsManagerID"
           ref="fundProfileLayout"
           @updateWidth="handleUpdateWidth"
           @updateScrollLeft="handleScrollLeft"
@@ -206,6 +207,8 @@ export default {
       searchFundsRank: null, // 搜索得到的基金排名，同样为二维数组
       rankFundsData: null,
       showFundsID: [], // 展示的FundProfile
+      searchManagerShowFundsID: [], // 通过基金经理搜出来的，要将搜索的经理置顶
+      searchManagerShowFundsManagerID: {},
       showFundsLikeScore: {},
       lineStartYPos: [], // 连线起始y坐标
       // 3个给气泡图的变量
@@ -234,6 +237,8 @@ export default {
       this.isRequestRanking = true;
       this.showFundsID = [];
       this.curManagerIDs = [];
+      this.searchManagerShowFundsID = [];
+      this.searchManagerShowFundsManagerID = {};
       DataService.post(
         "get_fund_ranks",
         {
@@ -416,6 +421,8 @@ export default {
           this.showFundsID = [];
           this.showFundsLikeScore = {};
           this.curManagerIDs = [];
+          this.searchManagerShowFundsID = [];
+          this.searchManagerShowFundsManagerID = {};
           // 重置历史记录
           this.historyFundsLikeScore = [];
           this.selectIndex = -1;
@@ -514,8 +521,10 @@ export default {
         }
         if (curSearchFundsRank.length !== 0) {
           curSearchFundsRank.sort((a, b) => a - b);
-          for (let i = 0; i < curSearchFundsRank.length; i++)
+          for (let i = 0; i < curSearchFundsRank.length; i++) {
             curSearchFundsID.push(this.allFundsID[curSearchFundsRank[i] - 1]);
+            this.searchManagerShowFundsManagerID[this.allFundsID[curSearchFundsRank[i] - 1]] = managerToIndex[val];
+          }
           this.searchFundsID.unshift(curSearchFundsID);
           this.searchFundsRank.unshift(curSearchFundsRank);
           this.$message.success(

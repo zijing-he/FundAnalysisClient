@@ -234,6 +234,7 @@ export default {
     boxHeight: Number,
     fundLikeScore: Number,
     userSectors: Array,
+    searchManagerShowFundsManagerID: Object,
   },
   components: {
     InvestStyleBox,
@@ -318,7 +319,15 @@ export default {
         // console.log(data);
         this.fundData = data;
         this.managerIDs = data["total"][this.fundId]["manager_ids"];
-        this.selectManagerID = this.managerToIndex[this.managerIDs[0]];
+        if (
+          Object.keys(this.searchManagerShowFundsManagerID).indexOf(
+            this.fundId
+          ) !== -1
+        )
+          this.selectManagerID = this.searchManagerShowFundsManagerID[
+            this.fundId
+          ];
+        else this.selectManagerID = this.managerToIndex[this.managerIDs[0]];
         this.calcAttrs();
         this.renderInit();
         this.renderUpdate();
