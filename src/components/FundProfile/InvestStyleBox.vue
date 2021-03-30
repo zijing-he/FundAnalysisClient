@@ -953,7 +953,11 @@ export default {
         .attr("fill-opacity", 0.6)
         .attr("width", (d) => d.x1 - d.x0)
         .attr("height", (d) => d.y1 - d.y0);
-      leaf.append("title").text((d) => `${d.data.name}\n${d.value.toFixed(2)}`);
+      leaf
+        .append("title")
+        .text(
+          (d) => `${sectorDict[d.data.name].en_name}\n${d.value.toFixed(2)}`
+        );
     },
     turnClockwise() {
       this.curDegree += 90;

@@ -258,7 +258,7 @@ export default {
       investStyleBoxes: [],
       investStyleBoxWidth: (200 * this.boxHeight) / 270,
       contentWidth: (200 * this.boxHeight) / 270,
-      boxGap: 120,
+      boxGap: 150,
       thisFundLikeScore: this.fundLikeScore,
       // summary中的数据
       summaryHoldingData: undefined,
