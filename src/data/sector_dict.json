@@ -1,118 +1,118 @@
 {
     "\u533b\u836f\u751f\u7269": {
         "color": "#4F6AA5",
-        "en_name": "medical biology"
+        "en_name": "Medical Biology"
     },
     "\u7535\u5b50": {
         "color": "#7D1F00",
-        "en_name": "electronics"
+        "en_name": "Electronics"
     },
     "\u98df\u54c1\u996e\u6599": {
         "color": "#6182CB",
-        "en_name": "food and beverage"
+        "en_name": "Food and Beverage"
     },
     "\u5316\u5de5": {
         "color": "#D3A599",
-        "en_name": "chemical industry"
+        "en_name": "Chemical Industry"
     },
     "\u8ba1\u7b97\u673a": {
         "color": "#01277D",
-        "en_name": "computer"
+        "en_name": "Computer"
     },
     "\u673a\u68b0\u8bbe\u5907": {
         "color": "#ECCBC1",
-        "en_name": "mechanical equipment"
+        "en_name": "Mechanical Equipment"
     },
     "\u975e\u94f6\u91d1\u878d": {
         "color": "#E68700",
-        "en_name": "non bank finance"
+        "en_name": "Non-bank Finance"
     },
     "\u4f20\u5a92": {
         "color": "#ECC1D6",
-        "en_name": "media"
+        "en_name": "Media"
     },
     "\u6c7d\u8f66": {
         "color": "#A25A4B",
-        "en_name": "car"
+        "en_name": "Car"
     },
     "\u7535\u6c14\u8bbe\u5907": {
         "color": "#B7786B",
-        "en_name": "electronic equipment"
+        "en_name": "Electronic Equipment"
     },
     "\u623f\u5730\u4ea7": {
         "color": "#C8C05C",
-        "en_name": "real estate"
+        "en_name": "Real Estate"
     },
     "\u94f6\u884c": {
         "color": "#FFA600",
-        "en_name": "bank"
+        "en_name": "Bank"
     },
     "\u5bb6\u7528\u7535\u5668": {
         "color": "#9AA8CA",
-        "en_name": "household appliances"
+        "en_name": "Household Appliances"
     },
     "\u516c\u7528\u4e8b\u4e1a": {
         "color": "#B997A7",
-        "en_name": "public utilities"
+        "en_name": "Public Utilities"
     },
     "\u901a\u4fe1": {
         "color": "#7D003C",
-        "en_name": "communication"
+        "en_name": "Communication"
     },
     "\u5efa\u7b51\u88c5\u9970": {
         "color": "#7D7401",
-        "en_name": "architectural decoration"
+        "en_name": "Architectural Decoration"
     },
     "\u6709\u8272\u91d1\u5c5e": {
         "color": "#4BA266",
-        "en_name": "non-ferrous metal"
+        "en_name": "Non-ferrous Metal"
     },
     "\u519c\u6797\u7267\u6e14": {
         "color": "#007D27",
-        "en_name": "agriculture,forestry,animal husbandry and fisheries"
+        "en_name": "Agriculture, Forestry, Animal Husbandry and Fisheries"
     },
     "\u4ea4\u901a\u8fd0\u8f93": {
         "color": "#A3004E",
-        "en_name": "transportation"
+        "en_name": "Transportation"
     },
     "\u8f7b\u5de5\u5236\u9020": {
         "color": "#C1CEEC",
-        "en_name": "light industry manufacturing"
+        "en_name": "Light Industry Manufacturing"
     },
     "\u5546\u4e1a\u8d38\u6613": {
         "color": "#6E3350",
-        "en_name": "commercial trade"
+        "en_name": "Commercial Trade"
     },
     "\u56fd\u9632\u519b\u5de5": {
         "color": "#61352C",
-        "en_name": "national defense industry"
+        "en_name": "National Defense Industry"
     },
     "\u5efa\u7b51\u6750\u6599": {
         "color": "#A29C4B",
-        "en_name": "building materials"
+        "en_name": "Building Materials"
     },
     "\u91c7\u6398": {
         "color": "#5CC87E",
-        "en_name": "mining"
+        "en_name": "Mining"
     },
     "\u4f11\u95f2\u670d\u52a1": {
         "color": "#F009F8",
-        "en_name": "leisure service"
+        "en_name": "Leisure Service"
     },
     "\u7eba\u7ec7\u670d\u88c5": {
         "color": "#B3C3E4",
-        "en_name": "textile and apparel"
+        "en_name": "Textile and Apparel"
     },
     "\u7efc\u5408": {
         "color": "#51007D",
-        "en_name": "comprehensive"
+        "en_name": "Comprehensive"
     },
     "\u94a2\u94c1": {
         "color": "#A07D74",
-        "en_name": "steel"
+        "en_name": "Steel"
     },
     "\u672a\u77e5": {
         "color": "#844BA2",
-        "en_name": "unknown"
+        "en_name": "Unknown"
     }
 }
