@@ -107,7 +107,8 @@ export default {
         .style("background-color", "black")
         .style("border-radius", "5px")
         .style("padding", "11px")
-        .style("color", "white");
+        .style("color", "white")
+        .style("z-index", 99);
 
       let showTooltip = (event, d) => {
         tooltip
