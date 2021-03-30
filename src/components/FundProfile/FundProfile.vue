@@ -120,8 +120,9 @@
         <svg :id="'legends_svg_' + fundId" width="300px" height="49px">
           <defs>
             <linearGradient id="legend-linear">
-              <stop offset="0%" style="stop-color:#91cf60;"></stop>
-              <stop offset="100%" style="stop-color:#fc8d59;"></stop>
+              <stop offset="0%" style="stop-color:green;"></stop>
+              <stop offset="50%" style="stop-color:#ecf7e4;"></stop>
+              <stop offset="100%" style="stop-color:red;"></stop>
             </linearGradient>
             <pattern
               id="pattern-stripe"
@@ -164,7 +165,7 @@
             width="15"
             height="15"
           ></rect>
-          <text x="28" y="47">: -</text>
+          <text x="29" y="46" style="font-size: 12;">Negative</text>
         </svg>
       </div>
       <a-spin
@@ -233,6 +234,7 @@ export default {
     boxHeight: Number,
     fundLikeScore: Number,
     userSectors: Array,
+    searchManagerShowFundsManagerID: Object,
   },
   components: {
     InvestStyleBox,
@@ -317,7 +319,15 @@ export default {
         // console.log(data);
         this.fundData = data;
         this.managerIDs = data["total"][this.fundId]["manager_ids"];
-        this.selectManagerID = this.managerToIndex[this.managerIDs[0]];
+        if (
+          Object.keys(this.searchManagerShowFundsManagerID).indexOf(
+            this.fundId
+          ) !== -1
+        )
+          this.selectManagerID = this.searchManagerShowFundsManagerID[
+            this.fundId
+          ];
+        else this.selectManagerID = this.managerToIndex[this.managerIDs[0]];
         this.calcAttrs();
         this.renderInit();
         this.renderUpdate();

@@ -122,10 +122,7 @@ export default {
             return "#979797";
           })
           .style("stroke-opacity", "0.56")
-          .style("stroke-width", () => {
-            // if (i === 3) return "2px"
-            return "2px";
-          })
+          .style("stroke-width", "1px")
           .attr("stroke-dasharray", () => {
             if (i === 3) return "0";
             else return "4";
@@ -179,6 +176,28 @@ export default {
           else return "1px";
         })
         .style("stroke-dasharray", "4");
+
+      axis
+        .append("text")
+        .attr("x", 117)
+        .attr("y", 85)
+        .attr("font-size", 10)
+        .style("fill", "rgb(147, 147, 147)")
+        .text("-1");
+      axis
+        .append("text")
+        .attr("x", 121)
+        .attr("y", 43)
+        .attr("font-size", 10)
+        .style("fill", "rgb(147, 147, 147)")
+        .text("0");
+      axis
+        .append("text")
+        .attr("x", 121)
+        .attr("y", -1)
+        .attr("font-size", 10)
+        .style("fill", "rgb(147, 147, 147)")
+        .text("1");
 
       axis
         .append("text")
@@ -345,7 +364,7 @@ export default {
         .append("polygon")
         .attr("class", "radar-chart-area")
         .attr("id", "radar-chart-area")
-        .style("stroke-width", "2px")
+        .style("stroke-width", "3px")
         .style("stroke", "#50A1FF")
         .style("fill", "rgba(80,161,255,0.10)") //颜色
         // .style("fill-opacity", 0.2)
