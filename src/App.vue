@@ -515,7 +515,7 @@ export default {
         if (curSearchFundsRank.length !== 0) {
           curSearchFundsRank.sort((a, b) => a - b);
           for (let i = 0; i < curSearchFundsRank.length; i++)
-            curSearchFundsID.push(this.allFundsID[curSearchFundsRank[i]]);
+            curSearchFundsID.push(this.allFundsID[curSearchFundsRank[i] - 1]);
           this.searchFundsID.unshift(curSearchFundsID);
           this.searchFundsRank.unshift(curSearchFundsRank);
           this.$message.success(
