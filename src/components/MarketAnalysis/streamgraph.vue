@@ -56,7 +56,7 @@ export default {
   data() {
     return {
       svg: null,
-      margin: { top: 60, right: 30, bottom: 30, left: 55 },
+      margin: { top: 60, right: 34, bottom: 30, left: 55 },
       width: 519,
       height: 290,
       date: Object.keys(dataJSON),

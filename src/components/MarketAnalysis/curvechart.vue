@@ -15,7 +15,7 @@
 
 <script>
 import * as d3 from "d3";
-import market_nav_date from "@/data/CurveChart/market_nav_date.json";
+import market_nav_date from "@/data/CurveChart/market_hs300_date.json";
 import market_number_date from "@/data/CurveChart/market_number_date.json";
 
 export default {
@@ -28,7 +28,7 @@ export default {
   data() {
     return {
       svg: null,
-      margin: { top: 70, right: 30, bottom: 30, left: 55 },
+      margin: { top: 70, right: 34, bottom: 30, left: 55 },
       width: 520,
       height: 253,
       isSelf: true,
