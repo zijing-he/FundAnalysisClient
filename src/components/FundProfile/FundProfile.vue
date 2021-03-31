@@ -101,7 +101,7 @@
         :id="'summary_bottom_' + fundId"
         v-if="index === 0"
       >
-        Abnormal Performance
+        Active Performance
       </div>
       <div
         class="summary-left"
@@ -376,7 +376,7 @@ export default {
             document.getElementById(`summary_right_${this.fundId}`).innerHTML =
               "Risk";
             document.getElementById(`summary_bottom_${this.fundId}`).innerHTML =
-              "Abnormal Performance";
+              "Active Performance";
             document.getElementById(`summary_left_${this.fundId}`).innerHTML =
               "Basic";
             break;
@@ -384,7 +384,7 @@ export default {
             document.getElementById(`summary_top_${this.fundId}`).innerHTML =
               "Risk";
             document.getElementById(`summary_right_${this.fundId}`).innerHTML =
-              "Abnormal Performance";
+              "Active Performance";
             document.getElementById(`summary_bottom_${this.fundId}`).innerHTML =
               "Basic";
             document.getElementById(`summary_left_${this.fundId}`).innerHTML =
@@ -392,7 +392,7 @@ export default {
             break;
           case "bottom":
             document.getElementById(`summary_top_${this.fundId}`).innerHTML =
-              "Abnormal Performance";
+              "Active Performance";
             document.getElementById(`summary_right_${this.fundId}`).innerHTML =
               "Basic";
             document.getElementById(`summary_bottom_${this.fundId}`).innerHTML =
@@ -408,7 +408,7 @@ export default {
             document.getElementById(`summary_bottom_${this.fundId}`).innerHTML =
               "Risk";
             document.getElementById(`summary_left_${this.fundId}`).innerHTML =
-              "Abnormal Performance";
+              "Active Performance";
             break;
         }
       }

@@ -29,7 +29,7 @@ const colorMap = {
   risk: "#ccebc5",
   max_drop_down: "#ccebc5",
   beta: "#ccebc5",
-  // abnormal performance
+  // active performance
   sharp_ratio: "#fbb4ae",
   information_ratio: "#fbb4ae",
   alpha: "#fbb4ae",

@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <!-- <a-row class="control_panel"> -->
-      <!-- <svg class="icon control_icon" aria-hidden="true">
+    <!-- <svg class="icon control_icon" aria-hidden="true">
         <use xlink:href="#iconcontrol"></use>
       </svg>
       <text>Control Panel</text> -->
@@ -14,7 +14,7 @@
     </a-row>
 
     <a-row class="custormer_type">
-      <text id="custormer_type_text">Investing Portfolio</text>
+      <!-- <text id="custormer_type_text">Investing Portfolio</text> -->
       <!-- <a-dropdown>
         <template #overlay>
           <a-menu @click="handleMenuClick">
@@ -38,10 +38,14 @@
         </a-button>
       </a-dropdown> -->
 
-      <select id="select_container" @change="handleMenuClick">
-        <option value="1">Conservative Portfolio</option>
-        <option value="2">Moderate Portfolio</option>
-        <option value="3">Aggressive Portfolio</option>
+      <select
+        style="width: 89%; height: 30px;"
+        id="select_container"
+        @change="handleMenuClick"
+      >
+        <option value="1">Conservative Investor</option>
+        <option value="2">Moderate Investor</option>
+        <option value="3">Aggressive Investor</option>
       </select>
     </a-row>
     <a-row id="divider"></a-row>
@@ -67,19 +71,18 @@ export default {
   data() {
     return {
       //默认值
-      weight:
-        {
-          one_year_return: "0.3",
-          one_quarter_return: "0.4",
-          size: "1.0",
-          alpha: "0.1",
-          information_ratio: "0.1",
-          sharp_ratio: "1.0",
-          beta: "1.0",
-          max_drop_down: "-1",
-          risk: "-1",
-          three_year_return: "0.3",
-        },
+      weight: {
+        one_year_return: "0.3",
+        one_quarter_return: "0.4",
+        size: "1.0",
+        alpha: "0.1",
+        information_ratio: "0.1",
+        sharp_ratio: "1.0",
+        beta: "1.0",
+        max_drop_down: "-1",
+        risk: "-1",
+        three_year_return: "0.3",
+      },
       // 选择层
       data: [
         { axis: "one_year_return", value: 2.3 },
@@ -123,11 +126,11 @@ export default {
   },
   watch: {
     //基金画像更新权重
-    weights: function (value) {
+    weights: function(value) {
       if (value) {
         // this.weight = value;
-        // console.log(this.weight); 
-        for(let key in value){
+        // console.log(this.weight);
+        for (let key in value) {
           this.weight[key] = value[key];
         }
         // console.log(this.weight);

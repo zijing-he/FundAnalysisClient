@@ -13,7 +13,7 @@ const colorMap = {
   three_year_return: "#b3cde3",
   // risk
   beta: "#ccebc5",
-  // abnormal performance
+  // active performance
   alpha: "#fbb4ae",
   // basic
   size: "#decbe4",
