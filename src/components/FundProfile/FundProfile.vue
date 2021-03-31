@@ -155,17 +155,25 @@
             height="15"
             style="fill:url(#legend-linear);"
           ></rect>
-          <text x="3" y="31">-1</text>
-          <text x="203" y="31">+1</text>
+          <text x="3" y="31" style="font-size: 12;">-1</text>
+          <text x="203" y="31" style="font-size: 12;">+1</text>
           <rect
             mask="url(#mask-stripe)"
             fill="#d8d8d8"
             x="10"
             y="35"
-            width="15"
+            width="50"
             height="15"
           ></rect>
-          <text x="29" y="46" style="font-size: 12;">Negative</text>
+          <text x="64" y="46" style="font-size: 12;">neg</text>
+          <rect
+            fill="#d8d8d8"
+            x="100"
+            y="35"
+            width="50"
+            height="15"
+          ></rect>
+          <text x="154" y="46" style="font-size: 12;">pos</text>
         </svg>
       </div>
       <a-spin
