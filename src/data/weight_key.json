@@ -56,8 +56,8 @@
   },
   "sharp_ratio": {
     "cn_name": "夏普率",
-    "en_name": "Sharp Ratio",
-    "en_sx": "Sharp Ratio"
+    "en_name": "Sharpe Ratio",
+    "en_sx": "Sharpe Ratio"
   },
   "max_drop_down": {
     "cn_name": "最大回撤率",
