@@ -4,7 +4,7 @@
 
 <script>
 import * as d3 from "d3";
-import { eachRight } from "lodash";
+import weightKey from "@/data/weight_key.json";
 
 const colorMap = {
   // performance
@@ -12,17 +12,17 @@ const colorMap = {
   one_year_return: "#b3cde3",
   three_year_return: "#b3cde3",
   // risk
-  beta: "#ccebc5",
+  risk: "#ccebc5",
   // active performance
-  alpha: "#fbb4ae",
+  sharp_ratio: "#fbb4ae",
   // basic
   size: "#decbe4",
 };
 
 const dataGroup = [
   ["one_quarter_return", "one_year_return", "three_year_return"],
-  ["beta"],
-  ["alpha"],
+  ["risk"],
+  ["sharp_ratio"],
   ["size"],
 ];
 
@@ -68,7 +68,10 @@ export default {
   methods: {
     renderInit() {
       let randNum = Math.floor(Math.random() * Math.floor(100));
-      d3.select("#rose_chart").attr("id", `rose_chart_${this.fundId}_${randNum}`);
+      d3.select("#rose_chart").attr(
+        "id",
+        `rose_chart_${this.fundId}_${randNum}`
+      );
       this.svg = d3
         .select(`#rose_chart_${this.fundId}_${randNum}`)
         .append("svg")
@@ -136,15 +139,21 @@ export default {
                   .arc()
                   .innerRadius(0)
                   .outerRadius(interpolate(t))
-                  .startAngle(-Math.PI / 4 + ((Math.PI * 2) / 4) * i + j * eachAngle)
-                  .endAngle(-Math.PI / 4 + ((Math.PI * 2) / 4) * i + (j + 1) * eachAngle);
+                  .startAngle(
+                    -Math.PI / 4 + ((Math.PI * 2) / 4) * i + j * eachAngle
+                  )
+                  .endAngle(
+                    -Math.PI / 4 + ((Math.PI * 2) / 4) * i + (j + 1) * eachAngle
+                  );
                 return arc();
               };
             });
           d3.select(`#path_${this.fundId}_${curGroup[j]}`)
             .append("title")
             .text(
-              `${curGroup[j]} ${this.fundData[curGroup[j]].value.toFixed(2)}`
+              `${weightKey[curGroup[j]].en_name} ${this.fundData[
+                curGroup[j]
+              ].value.toFixed(2)}`
             );
           // 使用mask会导致边框为虚线，再描一遍path
           setTimeout(() => {
